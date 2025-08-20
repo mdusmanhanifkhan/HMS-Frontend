@@ -1,10 +1,12 @@
-import type { ReactNode } from "react";
+import React from "react";
 
-interface ContainerProps {
-  children?: ReactNode;
+type ContainerProps = {
+  children: React.ReactNode;
   className?: string;
-}
+};
 
-export default function Container({ children, className = "" }: ContainerProps) {
-  return <div className={`${className} p-10`}>{children}</div>;
-}
+const Container: React.FC<ContainerProps> = ({ children, className }) => {
+  return <div className={`p-4 ${className ?? ""}`}>{children}</div>;
+};
+
+export default Container;

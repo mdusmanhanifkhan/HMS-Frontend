@@ -2,7 +2,7 @@ import { Outlet } from "react-router-dom";
 import "./App.css";
 import { Sidebar } from "./components/sidebar/Sidebar";
 import { Topbar } from "./components/topbar/Topbar";
-import Container from "./layout/Conatiner";
+import Container from "./layout/Container";
 
 function App() {
   return (
@@ -18,7 +18,7 @@ function App() {
       <div className="flex flex-col w-full">
         <Topbar />
 
-        <Container className="w-full h-full" >
+        <Container className="w-full h-full">
           <Outlet />
         </Container>
 

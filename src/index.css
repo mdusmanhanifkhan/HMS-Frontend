@@ -8,9 +8,17 @@
   --breakpoint-desktop-lg: 1440px;
   --breakpoint-desktop: 1280px;
 
+  /* Custom Color */
   --color-*:initial;
   --color-dark:#060505;
-
   --color-white:#fff;
   --color-red:#AC0505;
+
+  /* Custom Fontsize */
+  --text-*:initial;
+  --text-xl:25px;
+  --text-lg:20px;
+  --text-base:16px;
+  --text-sm:12px;
+  --text-xs:10px;
 }
