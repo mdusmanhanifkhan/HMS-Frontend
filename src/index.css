@@ -1,1 +1,16 @@
 @import "tailwindcss";
+
+@theme {
+  /* Custom Break Points */
+  --breakpoint-*: initial;
+  --breakpoint-desktop-2xl: 2560px;
+  --breakpoint-desktop-xl: 1920px;
+  --breakpoint-desktop-lg: 1440px;
+  --breakpoint-desktop: 1280px;
+
+  --color-*:initial;
+  --color-dark:#060505;
+
+  --color-white:#fff;
+  --color-red:#AC0505;
+}
