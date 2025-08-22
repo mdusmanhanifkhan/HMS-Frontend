@@ -6,6 +6,7 @@ export const SidebarRoutes = [
   { name: "Find Patient", link: routePaths.FIND_PATIENT },
   { name: "Appointments", link: routePaths.APPOINTMENTS },
   { name: "Departments", link: routePaths.DEPARTMENTS },
+  { name: "Procedure", link: routePaths.PROCEDURE },
   { name: "Doctors", link: routePaths.DOCTORS },
   { name: "Billing & Receipts", link: routePaths.BILLING },
   { name: "Vitals Check", link: routePaths.VITALS },

@@ -10,7 +10,19 @@ export const Topbar = () => {
           id=""
         />
       </div>
-      <p className="text-white ">Noti</p>
+      <div className="relative cursor-pointer">
+        <svg
+          className="text-white w-8 h-8"
+          viewBox="0 0 12 12"
+          fill=""
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <use href="/assets/svg/notification-icon.svg#notification-icon" />
+        </svg>
+        <p className="absolute top-0 right-[2px] w-[14px] h-[14px] bg-red text-white rounded-full p-[2px] text-[10px] flex justify-center items-center">
+          1
+        </p>
+      </div>
       <div className="flex items-center gap-2">
         <div className="bg-white rounded-full w-10 h-10"></div>
         <div className="text-white leading-5">
@@ -19,5 +31,5 @@ export const Topbar = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

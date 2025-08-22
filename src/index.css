@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
   /* Custom Break Points */
@@ -9,16 +9,19 @@
   --breakpoint-desktop: 1280px;
 
   /* Custom Color */
-  --color-*:initial;
-  --color-dark:#060505;
-  --color-white:#fff;
-  --color-red:#AC0505;
+  --color-*: initial;
+  --color-dark: #060505;
+  --color-white: #fff;
+  --color-red: #ac0505;
+  --color-gray: #dfdede;
+  --color-gray-100: #cccccc;
 
   /* Custom Fontsize */
-  --text-*:initial;
-  --text-xl:25px;
-  --text-lg:20px;
-  --text-base:16px;
-  --text-sm:12px;
-  --text-xs:10px;
+  --text-*: initial;
+  --text-xl: 25px;
+  --text-lg: 20px;
+  --text-base: 16px;
+  --text-sm: 14px;
+  --text-xs: 12px;
+  --text-2xs: 10px;
 }

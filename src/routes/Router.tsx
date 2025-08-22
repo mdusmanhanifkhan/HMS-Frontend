@@ -1,20 +1,44 @@
-import { createBrowserRouter } from "react-router-dom";
-import PatientRegisteration from "../pages/PatientRegisteration.js";
-import App from "../App.js";
-import {routePaths} from "../constants/routePaths.ts"
-import ComingSoon from "../pages/ComingSoon.tsx";
+import { createBrowserRouter } from 'react-router-dom'
+import PatientRegisteration from '../pages/PatientRegisteration.js'
+import App from '../App.js'
+import { routePaths } from '../constants/routePaths.ts'
+import ComingSoon from '../pages/ComingSoon.tsx'
+import Departments from '../pages/departments/index.tsx'
+import AddDepartments from '../pages/departments/AddDepartments.tsx'
+import EditDepartments from '../pages/departments/EditDepartments.tsx'
+import Procedures from '../pages/procedures/index.tsx'
+import AddProcedure from '../pages/procedures/AddProcedure.tsx'
+import EditProcedure from '../pages/procedures/EditProcedure.tsx'
+import ViewProcedure from '../pages/procedures/ViewProcedure.tsx'
+import Doctors from '../pages/doctors/index.tsx'
+import AddDoctor from '../pages/doctors/AddDoctor.tsx'
+import EditDoctor from '../pages/doctors/EditDoctor.tsx'
+import ViewDoctor from '../pages/doctors/ViewDoctor.tsx'
 
 export const router = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     element: <App />,
     children: [
-      { path: "/", element: <p>Dashboard</p> },
-      { path: routePaths.NEW_PATIENTS , element: <PatientRegisteration />},
-       { path: routePaths.FIND_PATIENT, element: <ComingSoon /> },
-      { path: routePaths.APPOINTMENTS, element: <ComingSoon  /> },
-      { path: routePaths.DEPARTMENTS, element: <ComingSoon /> },
-      { path: routePaths.DOCTORS, element: <ComingSoon /> },
+      { path: '/', element: <p>Dashboard</p> },
+      { path: routePaths.NEW_PATIENTS, element: <PatientRegisteration /> },
+      { path: routePaths.FIND_PATIENT, element: <ComingSoon /> },
+      { path: routePaths.APPOINTMENTS, element: <ComingSoon /> },
+      // Department
+      { path: routePaths.DEPARTMENTS, element: <Departments/> },
+      { path: routePaths.ADD_DEPARTMENT, element: <AddDepartments/> },
+      { path: routePaths.EDIT_DEPARTMENT, element: <EditDepartments/> },
+      // Procedure
+      { path: routePaths.PROCEDURE, element: <Procedures/> },
+      { path: routePaths.ADD_PROCEDURE, element: <AddProcedure/> },
+      { path: routePaths.EDIT_PROCEDURE, element: <EditProcedure/> },
+      { path: routePaths.VIEW_PROCEDURE, element: <ViewProcedure/> },
+      // Doctors
+      { path: routePaths.DOCTORS, element: <Doctors /> },
+      { path: routePaths.ADD_DOCTOR, element: <AddDoctor /> },
+      { path: routePaths.EDIT_DOCTOR, element: <EditDoctor /> },
+      { path: routePaths.VIEW_DOCTOR, element: <ViewDoctor /> },
+      // Coming soon
       { path: routePaths.BILLING, element: <ComingSoon /> },
       { path: routePaths.VITALS, element: <ComingSoon /> },
       { path: routePaths.CONSULTATION, element: <ComingSoon /> },
@@ -26,4 +50,4 @@ export const router = createBrowserRouter([
       { path: routePaths.SETTINGS, element: <ComingSoon /> },
     ],
   },
-]);
+])
