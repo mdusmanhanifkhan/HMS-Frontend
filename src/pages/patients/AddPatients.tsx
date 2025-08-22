@@ -1,9 +1,10 @@
-import { GroupInput } from "../components/input/GroupInput"
-import { Input } from "../components/input/Input"
-import { Label } from "../components/input/Label"
-import TextArea from "../components/input/TextArea"
+import Button from "../../components/button/Button"
+import { GroupInput } from "../../components/input/GroupInput"
+import { Input } from "../../components/input/Input"
+import { Label } from "../../components/input/Label"
+import TextArea from "../../components/input/TextArea"
 
-const PatientRegisteration = () => {
+const AddPatients = () => {
   return (
     <>
       <p className="text-3xl font-semibold">New Patient</p>
@@ -73,9 +74,14 @@ const PatientRegisteration = () => {
           <Label>Address</Label>
           <TextArea placeholder="Enter full address" />
         </GroupInput>
+        <div className="col-span-full mx-auto" >
+          <Button>
+            Add patient
+          </Button>
+        </div>
       </div>
     </>
   )
 }
 
-export default PatientRegisteration
+export default AddPatients

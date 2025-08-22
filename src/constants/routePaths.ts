@@ -1,6 +1,7 @@
 export const routePaths = {
   DASHBOARD: "/",
-  NEW_PATIENTS: "/patients/new",
+  PATIENTS: "/patients",
+  ADD_PATIENTS: "/add-patients",
   FIND_PATIENT: "/patients/search",
   APPOINTMENTS: "/appointments",
   DEPARTMENTS: "/departments",

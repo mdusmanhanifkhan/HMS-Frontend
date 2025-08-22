@@ -1,5 +1,4 @@
 import { createBrowserRouter } from 'react-router-dom'
-import PatientRegisteration from '../pages/PatientRegisteration.js'
 import App from '../App.js'
 import { routePaths } from '../constants/routePaths.ts'
 import ComingSoon from '../pages/ComingSoon.tsx'
@@ -14,6 +13,8 @@ import Doctors from '../pages/doctors/index.tsx'
 import AddDoctor from '../pages/doctors/AddDoctor.tsx'
 import EditDoctor from '../pages/doctors/EditDoctor.tsx'
 import ViewDoctor from '../pages/doctors/ViewDoctor.tsx'
+import Patients from '../pages/patients/index.tsx'
+import AddPatients from '../pages/patients/AddPatients.tsx'
 
 export const router = createBrowserRouter([
   {
@@ -21,7 +22,8 @@ export const router = createBrowserRouter([
     element: <App />,
     children: [
       { path: '/', element: <p>Dashboard</p> },
-      { path: routePaths.NEW_PATIENTS, element: <PatientRegisteration /> },
+      { path: routePaths.PATIENTS, element: <Patients /> },
+      { path: routePaths.ADD_PATIENTS, element: <AddPatients /> },
       { path: routePaths.FIND_PATIENT, element: <ComingSoon /> },
       { path: routePaths.APPOINTMENTS, element: <ComingSoon /> },
       // Department
