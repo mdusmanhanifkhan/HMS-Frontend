@@ -38,22 +38,22 @@ const Patients = () => {
                     <use href="/assets/svg/caret-arrow.svg#caret-arrow" />
                   </svg>
                 </div>
-                ID
+               Patient ID
               </th>
               <th scope="col" className="px-6 py-3">
-                Doctor Name
+            Full Name
               </th>
               <th scope="col" className="px-6 py-3">
-                Specialization
+             Gender
               </th>
               <th scope="col" className="px-6 py-3">
-                Department
+                Age
               </th>
               <th scope="col" className="px-6 py-3">
-                Fee
+               CNIC / ID
               </th>
               <th scope="col" className="px-6 py-3">
-                Status
+              Contact No.
               </th>
               <th scope="col" className="px-6 py-3">
                 Action
@@ -66,23 +66,19 @@ const Patients = () => {
                 scope="row"
                 className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap "
               >
-                DR001
+P-001
               </th>
               <th
                 scope="row"
                 className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap "
               >
-                Dr. Ahmed Khan
+           Sara Ahmed
               </th>
-              <td className="px-6 py-4">Cardiologist</td>
-              <td className="px-6 py-4">Cardiologist</td>
-              <td className="px-6 py-4">Cardiology</td>
-              <td className="px-6 py-4 ">
-                <div className="flex items-center gap-1">
-                  <span className="w-[10px] h-[10px] rounded-full bg-[#00cc00] block"></span>
-                  Active
-                </div>
-              </td>
+              <td className="px-6 py-4">Female</td>
+              <td className="px-6 py-4">27</td>
+              <td className="px-6 py-4">35202-7654321-0</td>
+              <td className="px-6 py-4">0321-7654321</td>
+            
               <td className="px-6 py-4 flex items-center gap-2">
                 <a
                   href="#"
@@ -108,6 +104,14 @@ const Patients = () => {
                   <use href='/assets/svg/delete-icon.svg#delete-icon' />
                   </svg>
                 </a>
+                <Link
+                  to={routePaths.PATIENTS_RECEIPT_GENERATE}
+                  className="font-medium text-blue-600 dark:text-blue-500 hover:underline bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200"
+                >
+                  <svg className='w-[18px] h-[18px] text-white group-hover:text-dark' viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <use href='/assets/svg/printer-icon.svg#printer-icon' />
+                  </svg>
+                </Link>
               </td>
             </tr>
           </tbody>

@@ -15,6 +15,7 @@ import EditDoctor from '../pages/doctors/EditDoctor.tsx'
 import ViewDoctor from '../pages/doctors/ViewDoctor.tsx'
 import Patients from '../pages/patients/index.tsx'
 import AddPatients from '../pages/patients/AddPatients.tsx'
+import PatientReceiptGenerator from '../pages/patients/PatientReceiptGenerator.tsx'
 
 export const router = createBrowserRouter([
   {
@@ -24,6 +25,7 @@ export const router = createBrowserRouter([
       { path: '/', element: <p>Dashboard</p> },
       { path: routePaths.PATIENTS, element: <Patients /> },
       { path: routePaths.ADD_PATIENTS, element: <AddPatients /> },
+      { path: routePaths.PATIENTS_RECEIPT_GENERATE, element: <PatientReceiptGenerator /> },
       { path: routePaths.FIND_PATIENT, element: <ComingSoon /> },
       { path: routePaths.APPOINTMENTS, element: <ComingSoon /> },
       // Department

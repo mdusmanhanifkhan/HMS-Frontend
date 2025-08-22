@@ -2,13 +2,12 @@ import { routePaths } from "../constants/routePaths";
 
 export const SidebarRoutes = [
   { name: "Dashboard", link: routePaths.DASHBOARD },
-  { name: "New Patient", link: routePaths.NEW_PATIENTS },
-  { name: "Find Patient", link: routePaths.FIND_PATIENT },
-  { name: "Appointments", link: routePaths.APPOINTMENTS },
+  { name: "Patient", link: routePaths.PATIENTS },
   { name: "Departments", link: routePaths.DEPARTMENTS },
   { name: "Procedure", link: routePaths.PROCEDURE },
   { name: "Doctors", link: routePaths.DOCTORS },
   { name: "Billing & Receipts", link: routePaths.BILLING },
+  { name: "Appointments", link: routePaths.APPOINTMENTS },
   { name: "Vitals Check", link: routePaths.VITALS },
   { name: "Consultation", link: routePaths.CONSULTATION },
   { name: "Pharmacy", link: routePaths.PHARMACY },
