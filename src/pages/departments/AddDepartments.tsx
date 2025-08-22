@@ -8,7 +8,7 @@ import TextArea from "../../components/input/TextArea";
 const AddDepartments = () => {
   const [form, setForm] = useState({
     status: false,
-    departmentName: "",
+    name: "",
     shortCode: "",
     timeFrom: "",
     timeTo: "",
@@ -26,10 +26,31 @@ const AddDepartments = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Department Data:", form);
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  // Convert HH:MM -> full ISO datetime
+  const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+  const body = {
+    ...form,
+    timeFrom: `${today}T${form.timeFrom}:00Z`, // "2025-08-22T10:30:00Z"
+    timeTo: `${today}T${form.timeTo}:00Z`
   };
+
+  try {
+    const res = await fetch(`http://localhost:3000/api/department`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+    const resData = await res.json();
+    console.log(resData);
+  } catch (error) {
+    console.log(error);
+  }
+};
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-10">
@@ -57,9 +78,9 @@ const AddDepartments = () => {
         <GroupInput>
           <Label htmlFor="departmentName">Department Name</Label>
           <Input
-            id="departmentName"
+            id="name"
             placeholder="Enter Department Name"
-            value={form.departmentName}
+            value={form.name}
             onChange={handleChange}
           />
         </GroupInput>
