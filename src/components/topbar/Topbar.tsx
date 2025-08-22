@@ -4,7 +4,7 @@ export const Topbar = () => {
       <div className="h-full flex justify-end items-center">
         <input
           type="text"
-          className="bg-white border-none outline-none rounded-full py-1.5 px-2"
+          className="bg-white border-none outline-none rounded-full py-1.5 px-2 text-sm w-full placeholder:text-gray-100 min-w-[250px]"
           placeholder="Search here..."
           name=""
           id=""

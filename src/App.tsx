@@ -9,8 +9,8 @@ function App() {
     <div className="flex">
       <div className="bg-[#060505] max-w-[250px] h-screen w-full">
 
-        <p className="text-white text-2xl font-medium mx-auto py-5 w-fit">
-          Enjin X
+        <p className="text-white text-xl font-light mx-auto py-5 w-fit">
+          HMS Enjin X
         </p>
 
         <Sidebar />
