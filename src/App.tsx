@@ -18,7 +18,7 @@ function App() {
       <div className="flex flex-col w-full">
         <Topbar />
 
-        <Container className="w-full h-full">
+        <Container className="w-full h-[93vh] overflow-y-auto">
           <Outlet />
         </Container>
 

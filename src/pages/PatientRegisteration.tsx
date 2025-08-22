@@ -1,13 +1,14 @@
 import { GroupInput } from "../components/input/GroupInput"
 import { Input } from "../components/input/Input"
 import { Label } from "../components/input/Label"
+import TextArea from "../components/input/TextArea"
 
 const PatientRegisteration = () => {
   return (
     <>
       <p className="text-3xl font-semibold">New Patient</p>
 
-      <div className="grid min-[1440px]:grid-cols-4 gap-x-3 gap-y-4 mt-6">
+      <div className="grid min-[1440px]:grid-cols-3 max-w-[1000px] gap-x-3 gap-y-4 mt-6">
 
         <GroupInput>
           <Label>Full Name</Label>
@@ -19,9 +20,22 @@ const PatientRegisteration = () => {
           <Input placeholder="Enter father/guardian name" />
         </GroupInput>
 
-        <GroupInput>
+         <GroupInput>
           <Label>Gender</Label>
-          <Input placeholder="Male / Female / Other" />
+          <div className="flex items-center gap-2">
+            {['Male', 'Female', 'Other'].map((g) => (
+              <label key={g} className="flex items-center gap-1">
+                <input
+                  type="radio"
+                  name="gender"
+                  // checked={form.gender === g}
+                  // onChange={() => setForm((p) => ({ ...p, gender: g }))}
+                  className="accent-dark"
+                />
+                <span className="text-sm font-normal">{g}</span>
+              </label>
+            ))}
+          </div>
         </GroupInput>
 
         <GroupInput>
@@ -57,59 +71,7 @@ const PatientRegisteration = () => {
 
         <GroupInput className="col-span-2">
           <Label>Address</Label>
-          <Input placeholder="Enter full address" />
-        </GroupInput>
-
-        <GroupInput>
-          <Label>Emergency Contact Name</Label>
-          <Input placeholder="Enter name" />
-        </GroupInput>
-
-        <GroupInput>
-          <Label>Emergency Contact Number</Label>
-          <Input placeholder="03XX-XXXXXXX" />
-        </GroupInput>
-
-        {/* OPD Info */}
-        <GroupInput>
-          <Label>Department</Label>
-          <Input placeholder="Select Department" />
-        </GroupInput>
-
-        <GroupInput>
-          <Label>Doctor</Label>
-          <Input placeholder="Select Doctor" />
-        </GroupInput>
-
-        <GroupInput>
-          <Label>Visit Type</Label>
-          <Input placeholder="New / Follow-up" />
-        </GroupInput>
-
-        <GroupInput>
-          <Label>Visit Date</Label>
-          <Input type="date" />
-        </GroupInput>
-
-        <GroupInput>
-          <Label>Registration Fee</Label>
-          <Input type="number" placeholder="Enter Fee" />
-        </GroupInput>
-
-        <GroupInput>
-          <Label>Payment Method</Label>
-          <Input placeholder="Cash / Card / Other" />
-        </GroupInput>
-
-        {/* Medical Info */}
-        <GroupInput className="col-span-2">
-          <Label>Allergies</Label>
-          <Input placeholder="e.g. Penicillin, Dust, etc." />
-        </GroupInput>
-
-        <GroupInput className="col-span-2">
-          <Label>Medical History</Label>
-          <Input placeholder="Enter existing conditions if any" />
+          <TextArea placeholder="Enter full address" />
         </GroupInput>
       </div>
     </>
