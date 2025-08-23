@@ -1,75 +1,131 @@
-import { useState, useEffect } from "react";
-import Button from "../../components/button/Button";
-import { GroupInput } from "../../components/input/GroupInput";
-import { Input } from "../../components/input/Input";
-import { Label } from "../../components/input/Label";
-import TextArea from "../../components/input/TextArea";
-import Dropdown from "../../components/input/dropdown";
+import { useState, useEffect } from 'react'
+import Button from '../../components/button/Button'
+import { GroupInput } from '../../components/input/GroupInput'
+import { Input } from '../../components/input/Input'
+import { Label } from '../../components/input/Label'
+import TextArea from '../../components/input/TextArea'
+import Dropdown from '../../components/input/dropdown'
+import { useParams, useNavigate } from 'react-router-dom'
 
-type Department = { id: number; name: string };
+type Department = { id: number; name: string }
 type Procedure = {
-  status: boolean;
-  procedureName: string;
-  shortCode: string;
-  department: Department | null;
-  description: string;
-};
+  status: boolean
+  procedureName: string
+  shortCode: string
+  department: Department | null
+  description: string
+}
 
 const EditProcedure = () => {
-  const existingProcedure: Procedure = {
-    status: true,
-    procedureName: "Tooth Extraction",
-    shortCode: "TX01",
-    department: { id: 1, name: "Dental" },
-    description: "Procedure for removing a tooth.",
-  };
+  const { id } = useParams()
+  const navigate = useNavigate()
+
+  const API_BASE = import.meta.env.VITE_API_BASE_URL
 
   const [form, setForm] = useState<Procedure>({
     status: false,
-    procedureName: "",
-    shortCode: "",
+    procedureName: '',
+    shortCode: '',
     department: null,
-    description: "",
-  });
+    description: '',
+  })
+
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
 
   const departments: Department[] = [
-    { id: 1, name: "Dental" },
-    { id: 2, name: "Ortho" },
-    { id: 3, name: "Eye" },
-  ];
-
-  useEffect(() => {
-    setForm(existingProcedure);
-  }, []);
+    { id: 1, name: 'Dental' },
+    { id: 2, name: 'Ortho' },
+    { id: 3, name: 'Eye' },
+  ]
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    const { id, type, value, checked } = e.target;
+    const { id, type, value, checked } = e.target
     setForm((prev) => ({
       ...prev,
-      [id]: type === "checkbox" ? checked : value,
-    }));
-  };
+      [id]: type === 'checkbox' ? checked : value,
+    }))
+  }
 
   const handleSelectDepartment = (dept: Department) => {
     setForm((prev) => ({
       ...prev,
       department: dept,
-    }));
-  };
+    }))
+  }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Updated Procedure Data:", form);
-    // Here you would call your API -> updateProcedure(form)
-  };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError(null)
+    setSuccess(null)
+    setLoading(true)
+
+    try {
+      const res = await fetch(`${API_BASE}/api/procedures/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          status: form.status,
+          name: form.procedureName,
+          shortCode: form.shortCode,
+          description: form.description,
+          departmentId: form.department?.id ?? null,
+        }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data?.message || 'Failed to update procedure')
+      }
+
+      setSuccess('Procedure updated successfully ✅')
+      // Optionally redirect after success
+      // setTimeout(() => navigate('/procedures'), 2000)
+
+    } catch (err: any) {
+      setError(err.message || 'Something went wrong ❌')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    const fetchProcedure = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/procedures/${id}`)
+        const data = await res.json()
+
+        if (res.ok && data?.data) {
+          setForm({
+            status: data.data.status ?? false,
+            procedureName: data.data.name ?? '',
+            shortCode: data.data.shortCode ?? '',
+            department: data.data.department ?? null,
+            description: data.data.description ?? '',
+          })
+        } else {
+          setError(data?.message || 'Failed to load procedure')
+        }
+      } catch (error: any) {
+        setError(error.message)
+      }
+    }
+    fetchProcedure()
+  }, [id])
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-10">
       <p className="text-xl font-semibold w-full border-b pb-3">
         Edit Procedure
       </p>
+
+      {/* Success & Error Messages */}
+      {error && <p className="text-red-500 font-medium">{error}</p>}
+      {success && <p className="text-green-600 font-medium">{success}</p>}
 
       <div className="grid grid-cols-3 gap-3 max-w-[1000px]">
         {/* Status */}
@@ -132,11 +188,13 @@ const EditProcedure = () => {
 
         {/* Submit */}
         <div className="col-span-full mx-auto mt-5">
-          <Button type="submit">Update Procedure</Button>
+          <Button type="submit" disabled={loading}>
+            {loading ? 'Updating...' : 'Update Procedure'}
+          </Button>
         </div>
       </div>
     </form>
-  );
-};
+  )
+}
 
-export default EditProcedure;
+export default EditProcedure

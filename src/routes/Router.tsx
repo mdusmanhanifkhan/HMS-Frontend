@@ -35,7 +35,7 @@ export const router = createBrowserRouter([
       // Procedure
       { path: routePaths.PROCEDURE, element: <Procedures/> },
       { path: routePaths.ADD_PROCEDURE, element: <AddProcedure/> },
-      { path: routePaths.EDIT_PROCEDURE, element: <EditProcedure/> },
+      { path: `${routePaths.EDIT_PROCEDURE}/:id`, element: <EditProcedure/> },
       { path: routePaths.VIEW_PROCEDURE, element: <ViewProcedure/> },
       // Doctors
       { path: routePaths.DOCTORS, element: <Doctors /> },

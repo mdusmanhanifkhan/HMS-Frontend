@@ -1,47 +1,49 @@
-import { useEffect, useState } from "react";
-import Button from "../../components/button/Button";
-import { GroupInput } from "../../components/input/GroupInput";
-import { Input } from "../../components/input/Input";
-import { Label } from "../../components/input/Label";
-import TextArea from "../../components/input/TextArea";
-import { useParams } from "react-router-dom";
+import { useEffect, useState } from 'react'
+import Button from '../../components/button/Button'
+import { GroupInput } from '../../components/input/GroupInput'
+import { Input } from '../../components/input/Input'
+import { Label } from '../../components/input/Label'
+import TextArea from '../../components/input/TextArea'
+import { useParams } from 'react-router-dom'
 
 const EditDepartments = () => {
-  const { id } = useParams();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
+  const { id } = useParams()
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
+
+    const API_BASE = import.meta.env.VITE_API_BASE_URL
 
   const [form, setForm] = useState({
     status: false,
-    departmentName: "",
-    shortCode: "",
-    timeFrom: "",
-    timeTo: "",
-    location: "",
-    description: "",
-  });
+    departmentName: '',
+    shortCode: '',
+    timeFrom: '',
+    timeTo: '',
+    location: '',
+    description: '',
+  })
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    const { id, type, value, checked } = e.target;
+    const { id, type, value, checked } = e.target
     setForm((prev) => ({
       ...prev,
-      [id]: type === "checkbox" ? checked : value,
-    }));
-  };
+      [id]: type === 'checkbox' ? checked : value,
+    }))
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    setSuccess(null);
+    e.preventDefault()
+    setLoading(true)
+    setError(null)
+    setSuccess(null)
 
     try {
-      const res = await fetch(`http://localhost:3000/api/department/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch(`${API_BASE}/api/department/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: form.departmentName,
           shortCode: form.shortCode,
@@ -51,53 +53,53 @@ const EditDepartments = () => {
           timeFrom: form.timeFrom,
           timeTo: form.timeTo,
         }),
-      });
+      })
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Update failed");
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message || 'Update failed')
 
-      setSuccess("Department updated successfully ✅");
+      setSuccess('Department updated successfully ✅')
     } catch (err: any) {
-      setError(err.message || "Something went wrong");
+      setError(err.message || 'Something went wrong')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   // Fetch department data once
   useEffect(() => {
-    const controller = new AbortController();
+    const controller = new AbortController()
     const fetchDepartments = async () => {
-      setLoading(true);
+      setLoading(true)
       try {
-        const res = await fetch(`http://localhost:3000/api/department/${id}`, {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
+        const res = await fetch(`${API_BASE}/api/department/${id}`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
           signal: controller.signal,
-        });
+        })
 
-        if (!res.ok) throw new Error(`Error: ${res.status}`);
-        const data = await res.json();
+        if (!res.ok) throw new Error(`Error: ${res.status}`)
+        const data = await res.json()
 
-        const dept = data.data;
+        const dept = data.data
         setForm({
           status: dept.status,
           departmentName: dept.name,
           shortCode: dept.shortCode,
-          timeFrom: dept.timeFrom || "",
-          timeTo: dept.timeTo || "",
+          timeFrom: dept.timeFrom || '',
+          timeTo: dept.timeTo || '',
           location: dept.location,
           description: dept.description,
-        });
+        })
       } catch (err: any) {
-        if (err.name !== "AbortError") setError(err.message);
+        if (err.name !== 'AbortError') setError(err.message)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
-    fetchDepartments();
-    return () => controller.abort();
-  }, [id]);
+    }
+    fetchDepartments()
+    return () => controller.abort()
+  }, [id])
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-10">
@@ -107,7 +109,11 @@ const EditDepartments = () => {
 
       {loading && <p className="text-blue-500">Loading...</p>}
       {error && <p className="text-red-500">{error}</p>}
-      {success && <p className="text-green-500">{success}</p>}
+      {success && (
+        <p className="text-white py-2 px-4 rounded-md mx-auto w-fit font-medium bg-green ">
+          {success}
+        </p>
+      )}
 
       <div className="grid grid-cols-3 gap-3 max-w-[1000px]">
         {/* Checkbox */}
@@ -147,31 +153,30 @@ const EditDepartments = () => {
         </GroupInput>
 
         {/* Time Inputs */}
-        <div className="flex w-full items-end gap-3">
+
+        {/* Time Inputs */}
+        <div className="flex w-full items-start gap-3">
           <GroupInput>
             <Label htmlFor="timeFrom">Select Time</Label>
-            <input
-              id="timeFrom"
-              type="time"
-              value={form.timeFrom}
-              onChange={handleChange}
-              className="bg-gray-50 border text-sm rounded-md block w-full px-2.5 py-[10px]"
-              min="09:00"
-              max="18:00"
-            />
-          </GroupInput>
-          <p className="text-base">To</p>
-          <GroupInput>
-            <Label htmlFor="timeTo" className="invisible">To</Label>
-            <input
-              id="timeTo"
-              type="time"
-              value={form.timeTo}
-              onChange={handleChange}
-              className="bg-gray-50 border text-sm rounded-md block w-full px-2.5 py-[11px]"
-              min="09:00"
-              max="18:00"
-            />
+
+            <div className="flex items-center gap-2">
+              <Input
+                id="timeFrom"
+                type="time"
+                value={form.timeFrom}
+                onChange={handleChange}
+                variant="type_time"
+              />
+
+              <p className="text-base">To</p>
+              <Input
+                id="timeTo"
+                type="time"
+                value={form.timeTo}
+                onChange={handleChange}
+                variant="type_time"
+              />
+            </div>
           </GroupInput>
         </div>
 
@@ -200,12 +205,12 @@ const EditDepartments = () => {
         {/* Submit Button */}
         <div className="col-span-full mx-auto mt-5">
           <Button type="submit" disabled={loading}>
-            {loading ? "Saving..." : "Save Department"}
+            {loading ? 'Saving...' : 'Save Department'}
           </Button>
         </div>
       </div>
     </form>
-  );
-};
+  )
+}
 
-export default EditDepartments;
+export default EditDepartments

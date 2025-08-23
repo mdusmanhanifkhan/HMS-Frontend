@@ -20,6 +20,8 @@ const AddDepartments = () => {
   const [error, setError] = useState<null | string>(null)
   const [success, setSuccess] = useState<null | string>(null)
 
+   const API_BASE = import.meta.env.VITE_API_BASE_URL
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -42,7 +44,7 @@ const AddDepartments = () => {
     setError(null)
 
     try {
-      const res = await fetch(`http://localhost:3000/api/department`, {
+      const res = await fetch(`${API_BASE}/api/department`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -74,8 +76,16 @@ const AddDepartments = () => {
 
   return (
     <>
-      {error && <p className="text-white py-2 px-4 rounded-md mx-auto w-fit font-medium bg-red ">{error}</p>}
-      {success && <p className="text-white py-2 px-4 rounded-md mx-auto w-fit font-medium bg-[#5cb85c] ">{success}</p>}
+      {error && (
+        <p className="text-white py-2 px-4 rounded-md mx-auto w-fit font-medium bg-red ">
+          {error}
+        </p>
+      )}
+      {success && (
+        <p className="text-white py-2 px-4 rounded-md mx-auto w-fit font-medium bg-green ">
+          {success}
+        </p>
+      )}
       <form onSubmit={handleSubmit} className="flex flex-col gap-10">
         <p className="text-xl font-semibold w-full border-b pb-3">
           Add Department
@@ -116,29 +126,28 @@ const AddDepartments = () => {
           </GroupInput>
 
           {/* Time Inputs */}
-          <div className="flex w-full items-end gap-3">
+          <div className="flex w-full items-start gap-3">
             <GroupInput>
               <Label htmlFor="timeFrom">Select Time</Label>
-              <Input
-                id="timeFrom"
-                type="time"
-                value={form.timeFrom}
-                onChange={handleChange}
-                variant="type_time"
-              />
-            </GroupInput>
-            <p className="text-base">To</p>
-            <GroupInput>
-              <Label htmlFor="timeTo" className="invisible">
-                To
-              </Label>
-              <Input
-                id="timeTo"
-                type="time"
-                value={form.timeTo}
-                onChange={handleChange}
-                variant="type_time"
-              />
+
+              <div className="flex items-center gap-2">
+                <Input
+                  id="timeFrom"
+                  type="time"
+                  value={form.timeFrom}
+                  onChange={handleChange}
+                  variant="type_time"
+                />
+
+                <p className="text-base">To</p>
+                <Input
+                  id="timeTo"
+                  type="time"
+                  value={form.timeTo}
+                  onChange={handleChange}
+                  variant="type_time"
+                />
+              </div>
             </GroupInput>
           </div>
 

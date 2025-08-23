@@ -1,26 +1,26 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "../../components/button/Button";
 import { GroupInput } from "../../components/input/GroupInput";
 import { Input } from "../../components/input/Input";
 import { Label } from "../../components/input/Label";
 import TextArea from "../../components/input/TextArea";
-import Dropdown from "../../components/input/dropdown";
+import Dropdown from "../../components/input/Dropdown";
 
 const AddProcedure = () => {
+  const [departments, setDepartments] = useState<any[]>([]);
+
   const [form, setForm] = useState({
     status: false,
-    procedureName: "",
+    name: "",
     shortCode: "",
     department: null as { id: number; name: string } | null,
     description: "",
   });
 
-  const departments = [
-    { id: 1, name: "Dental" },
-    { id: 2, name: "Ortho" },
-    { id: 3, name: "Eye" },
-  ];
 
+   const API_BASE = import.meta.env.VITE_API_BASE_URL
+
+  // ✅ Handle input/checkbox change
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -31,6 +31,7 @@ const AddProcedure = () => {
     }));
   };
 
+  // ✅ Handle dropdown selection
   const handleSelectDepartment = (dept: { id: number; name: string }) => {
     setForm((prev) => ({
       ...prev,
@@ -38,10 +39,70 @@ const AddProcedure = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // ✅ Submit form to API
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Procedure Data:", form);
+
+    if (!form.department) {
+      alert("Please select a department!");
+      return;
+    }
+
+    const payload = {
+      status: form.status,
+      name: form.name,
+      shortCode: form.shortCode,
+      description: form.description,
+      departmentId: form.department.id,
+    };
+
+    try {
+      const res = await fetch(`${API_BASE}/api/procedures`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to add procedure");
+      }
+
+      alert("Procedure added successfully!");
+      console.log("✅ Procedure created:", data);
+
+      // reset form after success
+      setForm({
+        status: false,
+        name: "",
+        shortCode: "",
+        department: null,
+        description: "",
+      });
+    } catch (error: any) {
+      console.error("❌ Error adding procedure:", error.message);
+      alert("Failed to add procedure: " + error.message);
+    }
   };
+
+  // ✅ Fetch departments
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/department`);
+        const resData = await res.json();
+        setDepartments(resData.data);
+      } catch (error) {
+        console.log("❌ Error fetching departments:", error);
+      }
+    };
+    fetchDepartments();
+  }, []);
+
+  console.log(departments)
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-10">
@@ -66,11 +127,11 @@ const AddProcedure = () => {
 
         {/* Procedure Name */}
         <GroupInput>
-          <Label htmlFor="procedureName">Procedure Name</Label>
+          <Label htmlFor="name">Procedure Name</Label>
           <Input
-            id="procedureName"
+            id="name"
             placeholder="Enter Procedure Name"
-            value={form.procedureName}
+            value={form.name}
             onChange={handleChange}
           />
         </GroupInput>
