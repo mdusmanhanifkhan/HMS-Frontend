@@ -31,7 +31,7 @@ export const router = createBrowserRouter([
       // Department
       { path: routePaths.DEPARTMENTS, element: <Departments/> },
       { path: routePaths.ADD_DEPARTMENT, element: <AddDepartments/> },
-      { path: routePaths.EDIT_DEPARTMENT, element: <EditDepartments/> },
+      { path: `${routePaths.EDIT_DEPARTMENT}/:id`, element: <EditDepartments/> },
       // Procedure
       { path: routePaths.PROCEDURE, element: <Procedures/> },
       { path: routePaths.ADD_PROCEDURE, element: <AddProcedure/> },

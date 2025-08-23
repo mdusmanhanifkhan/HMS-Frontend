@@ -1,11 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "../../components/button/Button";
 import { GroupInput } from "../../components/input/GroupInput";
 import { Input } from "../../components/input/Input";
 import { Label } from "../../components/input/Label";
 import TextArea from "../../components/input/TextArea";
+import { useParams } from "react-router-dom";
 
 const EditDepartments = () => {
+  const { id } = useParams();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
   const [form, setForm] = useState({
     status: false,
     departmentName: "",
@@ -26,16 +32,82 @@ const EditDepartments = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Department Data:", form);
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const res = await fetch(`http://localhost:3000/api/department/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.departmentName,
+          shortCode: form.shortCode,
+          location: form.location,
+          description: form.description,
+          status: form.status,
+          timeFrom: form.timeFrom,
+          timeTo: form.timeTo,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Update failed");
+
+      setSuccess("Department updated successfully ✅");
+    } catch (err: any) {
+      setError(err.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  // Fetch department data once
+  useEffect(() => {
+    const controller = new AbortController();
+    const fetchDepartments = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`http://localhost:3000/api/department/${id}`, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          signal: controller.signal,
+        });
+
+        if (!res.ok) throw new Error(`Error: ${res.status}`);
+        const data = await res.json();
+
+        const dept = data.data;
+        setForm({
+          status: dept.status,
+          departmentName: dept.name,
+          shortCode: dept.shortCode,
+          timeFrom: dept.timeFrom || "",
+          timeTo: dept.timeTo || "",
+          location: dept.location,
+          description: dept.description,
+        });
+      } catch (err: any) {
+        if (err.name !== "AbortError") setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDepartments();
+    return () => controller.abort();
+  }, [id]);
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-10">
       <p className="text-xl font-semibold w-full border-b pb-3">
         Edit Department
       </p>
+
+      {loading && <p className="text-blue-500">Loading...</p>}
+      {error && <p className="text-red-500">{error}</p>}
+      {success && <p className="text-green-500">{success}</p>}
 
       <div className="grid grid-cols-3 gap-3 max-w-[1000px]">
         {/* Checkbox */}
@@ -47,7 +119,6 @@ const EditDepartments = () => {
               type="checkbox"
               checked={form.status}
               onChange={handleChange}
-              className="yep"
             />
             <label htmlFor="status"></label>
           </div>
@@ -82,12 +153,11 @@ const EditDepartments = () => {
             <input
               id="timeFrom"
               type="time"
-              className="bg-gray-50 border leading-none border-gray text-dark text-sm rounded-md block w-full px-2.5 py-[10px]"
-              min="09:00"
-              max="18:00"
               value={form.timeFrom}
               onChange={handleChange}
-              required
+              className="bg-gray-50 border text-sm rounded-md block w-full px-2.5 py-[10px]"
+              min="09:00"
+              max="18:00"
             />
           </GroupInput>
           <p className="text-base">To</p>
@@ -96,12 +166,11 @@ const EditDepartments = () => {
             <input
               id="timeTo"
               type="time"
-              className="bg-gray-50 border leading-none border-gray text-dark text-sm rounded-md block w-full px-2.5 py-[11px]"
-              min="09:00"
-              max="18:00"
               value={form.timeTo}
               onChange={handleChange}
-              required
+              className="bg-gray-50 border text-sm rounded-md block w-full px-2.5 py-[11px]"
+              min="09:00"
+              max="18:00"
             />
           </GroupInput>
         </div>
@@ -130,7 +199,9 @@ const EditDepartments = () => {
 
         {/* Submit Button */}
         <div className="col-span-full mx-auto mt-5">
-          <Button type="submit">Save Department</Button>
+          <Button type="submit" disabled={loading}>
+            {loading ? "Saving..." : "Save Department"}
+          </Button>
         </div>
       </div>
     </form>
