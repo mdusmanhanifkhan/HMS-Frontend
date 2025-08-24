@@ -7,7 +7,7 @@ import Container from "./layout/Container";
 function App() {
   return (
     <div className="flex">
-      <div className="bg-[#060505] max-w-[250px] h-screen w-full">
+      <div className="bg-[#060505] max-w-[250px] h-screen w-full overflow-y-auto">
 
         <p className="text-white text-xl font-light mx-auto py-5 w-fit">
           HMS Enjin X

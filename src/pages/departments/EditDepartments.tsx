@@ -5,6 +5,8 @@ import { Input } from '../../components/input/Input'
 import { Label } from '../../components/input/Label'
 import TextArea from '../../components/input/TextArea'
 import { useParams } from 'react-router-dom'
+import SuccessMessage from '../../components/error-handling/SuccessMessage'
+import ErrorMessage from '../../components/error-handling/ErrorMessage'
 
 const EditDepartments = () => {
   const { id } = useParams()
@@ -12,7 +14,9 @@ const EditDepartments = () => {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
 
-    const API_BASE = import.meta.env.VITE_API_BASE_URL
+  console.log(loading, 'loading..')
+
+  const API_BASE = import.meta.env.VITE_API_BASE_URL
 
   const [form, setForm] = useState({
     status: false,
@@ -59,10 +63,9 @@ const EditDepartments = () => {
       if (!res.ok) throw new Error(data.message || 'Update failed')
 
       setSuccess('Department updated successfully ✅')
+      setLoading(false)
     } catch (err: any) {
       setError(err.message || 'Something went wrong')
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -82,6 +85,7 @@ const EditDepartments = () => {
         const data = await res.json()
 
         const dept = data.data
+        setLoading(false)
         setForm({
           status: dept.status,
           departmentName: dept.name,
@@ -93,8 +97,6 @@ const EditDepartments = () => {
         })
       } catch (err: any) {
         if (err.name !== 'AbortError') setError(err.message)
-      } finally {
-        setLoading(false)
       }
     }
     fetchDepartments()
@@ -102,114 +104,110 @@ const EditDepartments = () => {
   }, [id])
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-10">
-      <p className="text-xl font-semibold w-full border-b pb-3">
-        Edit Department
-      </p>
-
-      {loading && <p className="text-blue-500">Loading...</p>}
-      {error && <p className="text-red-500">{error}</p>}
-      {success && (
-        <p className="text-white py-2 px-4 rounded-md mx-auto w-fit font-medium bg-green ">
-          {success}
+    <>
+      {error && <ErrorMessage error={error} />}
+      {success && <SuccessMessage success={success} />}
+      <form onSubmit={handleSubmit} className="flex flex-col gap-10">
+        <p className="text-xl font-semibold w-full border-b pb-3">
+          Edit Department
         </p>
-      )}
 
-      <div className="grid grid-cols-3 gap-3 max-w-[1000px]">
-        {/* Checkbox */}
-        <GroupInput className="col-span-full">
-          <Label htmlFor="status">Status</Label>
-          <div className="checkbox-apple">
-            <input
-              id="status"
-              type="checkbox"
-              checked={form.status}
-              onChange={handleChange}
-            />
-            <label htmlFor="status"></label>
-          </div>
-        </GroupInput>
-
-        {/* Department Name */}
-        <GroupInput>
-          <Label htmlFor="departmentName">Department Name</Label>
-          <Input
-            id="departmentName"
-            placeholder="Enter Department Name"
-            value={form.departmentName}
-            onChange={handleChange}
-          />
-        </GroupInput>
-
-        {/* Short Code */}
-        <GroupInput>
-          <Label htmlFor="shortCode">Short Code</Label>
-          <Input
-            id="shortCode"
-            placeholder="Enter Department Short Code"
-            value={form.shortCode}
-            onChange={handleChange}
-          />
-        </GroupInput>
-
-        {/* Time Inputs */}
-
-        {/* Time Inputs */}
-        <div className="flex w-full items-start gap-3">
-          <GroupInput>
-            <Label htmlFor="timeFrom">Select Time</Label>
-
-            <div className="flex items-center gap-2">
-              <Input
-                id="timeFrom"
-                type="time"
-                value={form.timeFrom}
+        <div className="grid grid-cols-3 gap-3 max-w-[1000px]">
+          {/* Checkbox */}
+          <GroupInput className="col-span-full">
+            <Label htmlFor="status">Status</Label>
+            <div className="checkbox-apple">
+              <input
+                id="status"
+                type="checkbox"
+                checked={form.status}
                 onChange={handleChange}
-                variant="type_time"
               />
-
-              <p className="text-base">To</p>
-              <Input
-                id="timeTo"
-                type="time"
-                value={form.timeTo}
-                onChange={handleChange}
-                variant="type_time"
-              />
+              <label htmlFor="status"></label>
             </div>
           </GroupInput>
+
+          {/* Department Name */}
+          <GroupInput>
+            <Label htmlFor="departmentName">Department Name</Label>
+            <Input
+              id="departmentName"
+              placeholder="Enter Department Name"
+              value={form.departmentName}
+              onChange={handleChange}
+            />
+          </GroupInput>
+
+          {/* Short Code */}
+          <GroupInput>
+            <Label htmlFor="shortCode">Short Code</Label>
+            <Input
+              id="shortCode"
+              placeholder="Enter Department Short Code"
+              value={form.shortCode}
+              onChange={handleChange}
+            />
+          </GroupInput>
+
+          {/* Time Inputs */}
+
+          {/* Time Inputs */}
+          <div className="flex w-full items-start gap-3">
+            <GroupInput>
+              <Label htmlFor="timeFrom">Select Time</Label>
+
+              <div className="flex items-center gap-2">
+                <Input
+                  id="timeFrom"
+                  type="time"
+                  value={form.timeFrom}
+                  onChange={handleChange}
+                  variant="type_time"
+                />
+
+                <p className="text-base">To</p>
+                <Input
+                  id="timeTo"
+                  type="time"
+                  value={form.timeTo}
+                  onChange={handleChange}
+                  variant="type_time"
+                />
+              </div>
+            </GroupInput>
+          </div>
+
+          {/* Location */}
+          <GroupInput>
+            <Label htmlFor="location">Location</Label>
+            <Input
+              id="location"
+              placeholder="Enter Department Location"
+              value={form.location}
+              onChange={handleChange}
+            />
+          </GroupInput>
+
+          {/* Description */}
+          <GroupInput>
+            <Label htmlFor="description">Description</Label>
+            <TextArea
+              id="description"
+              placeholder="Enter Department Description"
+              value={form.description}
+              onChange={handleChange}
+            />
+          </GroupInput>
+
+          {/* Submit Button */}
+          <div className="col-span-full mx-auto mt-5">
+            <Button type="submit" disabled={loading}>
+              {loading ? 'Saving...' : 'Save Department'}
+            </Button>
+          </div>
         </div>
-
-        {/* Location */}
-        <GroupInput>
-          <Label htmlFor="location">Location</Label>
-          <Input
-            id="location"
-            placeholder="Enter Department Location"
-            value={form.location}
-            onChange={handleChange}
-          />
-        </GroupInput>
-
-        {/* Description */}
-        <GroupInput>
-          <Label htmlFor="description">Description</Label>
-          <TextArea
-            id="description"
-            placeholder="Enter Department Description"
-            value={form.description}
-            onChange={handleChange}
-          />
-        </GroupInput>
-
-        {/* Submit Button */}
-        <div className="col-span-full mx-auto mt-5">
-          <Button type="submit" disabled={loading}>
-            {loading ? 'Saving...' : 'Save Department'}
-          </Button>
-        </div>
-      </div>
-    </form>
+      </form>
+    </>
   )
 }
 

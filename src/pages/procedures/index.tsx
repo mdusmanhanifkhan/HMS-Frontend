@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Button from "../../components/button/Button";
 import { routePaths } from "../../constants/routePaths";
+import Loading from "../../components/loading/Loading";
 
 interface Department {
   id: number;
@@ -14,23 +15,23 @@ interface Procedure {
   shortCode: string;
   description: string;
   status: boolean;
-  department: Department;
+  department?: Department;
 }
 
 const Procedures = () => {
   const [procedures, setProcedures] = useState<Procedure[]>([]);
   const [loading, setLoading] = useState(true);
-
- const API_BASE = import.meta.env.VITE_API_BASE_URL
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProcedures = async () => {
       try {
-        const res = await fetch(`${API_BASE}/api/procedures`);
+        const res = await fetch("http://localhost:3000/api/procedures");
+        if (!res.ok) throw new Error("Failed to fetch procedures");
         const data = await res.json();
-        setProcedures(data.data || []); // assuming API returns { success, data }
-      } catch (error) {
-        console.error("Error fetching procedures:", error);
+        setProcedures(data.data || []); // assuming { success, data }
+      } catch (err: any) {
+        setError(err.message || "Error fetching procedures");
         setProcedures([]);
       } finally {
         setLoading(false);
@@ -42,6 +43,7 @@ const Procedures = () => {
 
   return (
     <div className="flex flex-col gap-10">
+      {/* Header */}
       <div className="flex justify-between items-center w-full border-b pb-3">
         <p className="text-xl font-semibold">Procedure Management</p>
         <Link to={routePaths.ADD_PROCEDURE}>
@@ -49,6 +51,7 @@ const Procedures = () => {
         </Link>
       </div>
 
+      {/* Table */}
       <div className="relative overflow-x-auto shadow-lg rounded-lg">
         <table className="w-full text-sm text-left rtl:text-right">
           <thead className="text-xs text-white uppercase bg-dark">
@@ -65,13 +68,21 @@ const Procedures = () => {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={7} className="px-6 py-4 text-center">
-                  Loading procedures...
+                <td colSpan={7} className="px-6 py-6 text-center">
+               <div className="flex justify-center items-center">
+                <Loading/>
+               </div>
+                </td>
+              </tr>
+            ) : error ? (
+              <tr>
+                <td colSpan={7} className="px-6 py-6 text-center text-red-500">
+                  {error}
                 </td>
               </tr>
             ) : procedures.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-6 py-4 text-center text-gray-500">
+                <td colSpan={7} className="px-6 py-6 text-center text-gray-500">
                   No procedures found.
                 </td>
               </tr>
@@ -85,9 +96,13 @@ const Procedures = () => {
                     {proc.id}
                   </td>
                   <td className="px-6 py-4">{proc.name}</td>
-                  <td className="px-6 py-4">{proc.shortCode}</td>
-                  <td className="px-6 py-4">{proc.department?.name}</td>
-                  <td className="px-6 py-4">{proc.description}</td>
+                  <td className="px-6 py-4">{proc.shortCode || "-"}</td>
+                  <td className="px-6 py-4">{proc.department?.name || "-"}</td>
+                  <td className="px-6 py-4">
+                    {proc.description?.length > 45
+                      ? `${proc.description.substring(0, 45)}...`
+                      : proc.description || "-"}
+                  </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-1">
                       <span
@@ -100,7 +115,10 @@ const Procedures = () => {
                   </td>
                   <td className="px-6 py-4 flex items-center gap-2">
                     {/* Edit */}
-                    <Link to={`${routePaths.EDIT_PROCEDURE}/${proc.id}`} className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200">
+                    <Link
+                      to={`${routePaths.EDIT_PROCEDURE}/${proc.id}`}
+                      className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200"
+                    >
                       <svg
                         className="w-[18px] h-[18px] text-white group-hover:text-dark"
                         viewBox="0 0 12 12"
@@ -145,6 +163,3 @@ const Procedures = () => {
 };
 
 export default Procedures;
-
-
-
