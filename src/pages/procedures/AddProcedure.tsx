@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import * as Yup from "yup"; // ✅ only Yup for validation
+import * as Yup from "yup"; 
 import Button from "../../components/button/Button";
 import { GroupInput } from "../../components/input/GroupInput";
 import { Input } from "../../components/input/Input";
@@ -125,7 +125,6 @@ const AddProcedure = () => {
     }
   };
 
-  // ✅ Fetch departments
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
@@ -137,7 +136,7 @@ const AddProcedure = () => {
       }
     };
     fetchDepartments();
-  }, []);
+  }, [API_BASE]);
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-10">

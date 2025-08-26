@@ -42,12 +42,22 @@ const AddDepartments = () => {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    const { id, type, value, checked } = e.target
+    const { id, type, value } = e.target
+
+    const newValue =
+      type === 'checkbox' && e.target instanceof HTMLInputElement
+        ? e.target.checked
+        : value
+
     setForm((prev) => ({
       ...prev,
-      [id]: type === 'checkbox' ? checked : value,
+      [id]: newValue,
     }))
-    setFieldErrors((prev) => ({ ...prev, [id]: '' }))
+
+    setFieldErrors((prev) => ({
+      ...prev,
+      [id]: '',
+    }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -69,22 +79,30 @@ const AddDepartments = () => {
       const resData = await res.json()
 
       if (!res.ok) {
-        setError(resData?.errors?.general || resData?.message || 'Something went wrong')
+        setError(
+          resData?.errors?.general || resData?.message || 'Something went wrong'
+        )
         return
       }
 
       setSuccess(resData?.message)
       setForm(initialForm)
-    } catch (err: any) {
-      if (err.name === 'ValidationError') {
-        // ✅ Collect validation errors
+    } catch (err: unknown) {
+      if (err instanceof yup.ValidationError) {
         const newErrors: { [key: string]: string } = {}
-        err.inner.forEach((e: any) => {
-          if (e.path) newErrors[e.path] = e.message
+
+        err.inner.forEach((e) => {
+          if (e.path) {
+            newErrors[e.path] = e.message
+          }
         })
+
         setFieldErrors(newErrors)
-      } else {
+      } else if (err instanceof Error) {
         setError(err.message || 'Something went wrong')
+        console.error(err)
+      } else {
+        setError('An unknown error occurred')
         console.error(err)
       }
     } finally {
@@ -100,8 +118,12 @@ const AddDepartments = () => {
       <form onSubmit={handleSubmit} className="flex flex-col gap-10">
         <div className="flex justify-between items-center border-b pb-3">
           <p className="text-xl font-semibold w-full">Add Department</p>
-          <Button to={routePaths.DEPARTMENTS} asLink={true} >
-            <svg className='w-3.5 h-3.5 -scale-x-100' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+          <Button to={routePaths.DEPARTMENTS} asLink={true}>
+            <svg
+              className="w-3.5 h-3.5 -scale-x-100"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 640 640"
+            >
               <use href="/assets/svg/arrow-icon.svg#arrow-icon" />
             </svg>
             Back
@@ -112,21 +134,43 @@ const AddDepartments = () => {
           {/* Checkbox */}
           <GroupInput className="col-span-full">
             <Label htmlFor="status">Status</Label>
-            <ToggleButton id="status" checked={form.status} onChange={handleChange} />
+            <ToggleButton
+              id="status"
+              checked={form.status}
+              onChange={handleChange}
+            />
           </GroupInput>
 
           {/* Department Name */}
           <GroupInput>
-            <Label required="required" htmlFor="name">Department Name</Label>
-            <Input id="name" placeholder="Enter Department Name" value={form.name} onChange={handleChange} />
-            {fieldErrors.name && <p className="text-red text-xs">{fieldErrors.name}</p>}
+            <Label required="required" htmlFor="name">
+              Department Name
+            </Label>
+            <Input
+              id="name"
+              placeholder="Enter Department Name"
+              value={form.name}
+              onChange={handleChange}
+            />
+            {fieldErrors.name && (
+              <p className="text-red text-xs">{fieldErrors.name}</p>
+            )}
           </GroupInput>
 
           {/* Short Code */}
           <GroupInput>
-            <Label htmlFor="shortCode" required="required">Short Code</Label>
-            <Input id="shortCode" placeholder="Enter Department Short Code" value={form.shortCode} onChange={handleChange} />
-            {fieldErrors.shortCode && <p className="text-red text-xs">{fieldErrors.shortCode}</p>}
+            <Label htmlFor="shortCode" required="required">
+              Short Code
+            </Label>
+            <Input
+              id="shortCode"
+              placeholder="Enter Department Short Code"
+              value={form.shortCode}
+              onChange={handleChange}
+            />
+            {fieldErrors.shortCode && (
+              <p className="text-red text-xs">{fieldErrors.shortCode}</p>
+            )}
           </GroupInput>
 
           {/* Time Inputs */}
@@ -134,9 +178,21 @@ const AddDepartments = () => {
             <GroupInput>
               <Label htmlFor="timeFrom">Select Time</Label>
               <div className="flex items-center gap-2">
-                <Input id="timeFrom" type="time" value={form.timeFrom} onChange={handleChange} variant="type_time" />
+                <Input
+                  id="timeFrom"
+                  type="time"
+                  value={form.timeFrom}
+                  onChange={handleChange}
+                  variant="type_time"
+                />
                 <p className="text-base">To</p>
-                <Input id="timeTo" type="time" value={form.timeTo} onChange={handleChange} variant="type_time" />
+                <Input
+                  id="timeTo"
+                  type="time"
+                  value={form.timeTo}
+                  onChange={handleChange}
+                  variant="type_time"
+                />
               </div>
             </GroupInput>
           </div>
@@ -144,21 +200,37 @@ const AddDepartments = () => {
           {/* Location */}
           <GroupInput>
             <Label htmlFor="location">Location</Label>
-            <Input id="location" placeholder="Enter Department Location" value={form.location} onChange={handleChange} />
+            <Input
+              id="location"
+              placeholder="Enter Department Location"
+              value={form.location}
+              onChange={handleChange}
+            />
           </GroupInput>
 
           {/* Description */}
           <GroupInput>
             <Label htmlFor="description">Description</Label>
-            <TextArea id="description" placeholder="Enter Department Description" value={form.description} onChange={handleChange} />
+            <TextArea
+              id="description"
+              placeholder="Enter Department Description"
+              value={form.description}
+              onChange={handleChange}
+            />
           </GroupInput>
 
           {/* Submit Button */}
           <div className="col-span-full mx-auto mt-5">
             <Button type="submit">
-              {isLoading ? 'Loading...' : (
+              {isLoading ? (
+                'Loading...'
+              ) : (
                 <>
-                  <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                  <svg
+                    className="w-4 h-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 640 640"
+                  >
                     <use href="/assets/svg/plus-icon.svg#plus-icon" />
                   </svg>
                   Add Department
