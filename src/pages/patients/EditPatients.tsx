@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useParams } from 'react-router-dom'
 import * as Yup from 'yup'
 import Button from '../../components/button/Button'
 import { GroupInput } from '../../components/input/GroupInput'
@@ -6,7 +7,6 @@ import { Input } from '../../components/input/Input'
 import { Label } from '../../components/input/Label'
 import TextArea from '../../components/input/TextArea'
 import Dropdown from '../../components/input/Dropdown'
-import { routePaths } from '../../constants/routePaths'
 
 // ✅ Dropdown options
 const maritalStatusOptions = [
@@ -27,7 +27,7 @@ const bloodGroupOptions = [
   { id: 'AB-', name: 'AB-' },
 ]
 
-// ✅ Yup schema
+// ✅ Validation schema
 const patientSchema = Yup.object().shape({
   name: Yup.string().required('Name is required'),
   gender: Yup.string().required('Gender is required'),
@@ -39,18 +39,14 @@ const patientSchema = Yup.object().shape({
   guardianName: Yup.string(),
   maritalStatus: Yup.string(),
   bloodGroup: Yup.string(),
-  phoneNumber: Yup.string().matches(
-    /^\d{11}$/,
-    'Phone number must be 11 digits'
-  ),
+  phoneNumber: Yup.string().matches(/^\d{11}$/, 'Phone number must be 11 digits'),
   cnicNumber: Yup.string().matches(/^\d{13}$/, 'CNIC must be 13 digits'),
   address: Yup.string(),
 })
 
-const AddPatients = () => {
+const EditPatients = () => {
   const API_BASE = import.meta.env.VITE_API_BASE_URL
-  const token = localStorage.getItem('token')
-  if (!token) console.error('No token found. Users must login first.')
+  const { id } = useParams()
 
   const [form, setForm] = useState({
     name: '',
@@ -66,29 +62,25 @@ const AddPatients = () => {
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
   const [loading, setLoading] = useState(false)
+  const [fetching, setFetching] = useState(true)
   const [generalError, setGeneralError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
 
-  // ✅ Format phone like 0304-3763110 (for display only)
+  // ✅ Formatters
   const formatPhoneNumber = (value: string): string => {
     const digits = value.replace(/\D/g, '').slice(0, 11)
-    if (digits.length > 4) return `${digits.slice(0, 4)}-${digits.slice(4)}`
-    return digits
+    return digits.length > 4 ? `${digits.slice(0, 4)}-${digits.slice(4)}` : digits
   }
 
-  // ✅ Format CNIC like 12345-1234567-1 (for display only)
   const formatCnicNumber = (value: string): string => {
     const digits = value.replace(/\D/g, '').slice(0, 13)
-    if (digits.length > 12)
-      return `${digits.slice(0, 5)}-${digits.slice(5, 12)}-${digits.slice(12)}`
+    if (digits.length > 12) return `${digits.slice(0, 5)}-${digits.slice(5, 12)}-${digits.slice(12)}`
     if (digits.length > 5) return `${digits.slice(0, 5)}-${digits.slice(5)}`
     return digits
   }
 
-  // ✅ Handle input changes
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  // ✅ Handle input change
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     let formattedValue = value
 
@@ -100,17 +92,44 @@ const AddPatients = () => {
     setGeneralError(null)
   }
 
-  // ✅ Handle dropdown select
-  const handleDropdownSelect = (
-    name: string,
-    option: { id: string | number; name: string }
-  ) => {
+  // ✅ Dropdown selection
+  const handleDropdownSelect = (name: string, option: { id: string | number; name: string }) => {
     setForm((prev) => ({ ...prev, [name]: option.name }))
     setErrors((prev) => ({ ...prev, [name]: '' }))
     setGeneralError(null)
   }
 
-  // ✅ Handle submit
+  // ✅ Fetch existing patient data
+  useEffect(() => {
+    const fetchPatient = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/patient/${id}`)
+        const data = await res.json()
+
+        if (!res.ok) throw new Error(data?.general_error || 'Failed to load patient data')
+
+        setForm({
+          name: data?.data?.name || '',
+          guardianName: data?.data?.guardianName || '',
+          gender: data?.data?.gender || '',
+          age: data?.data?.age?.toString() || '',
+          maritalStatus: data?.data?.maritalStatus || '',
+          bloodGroup: data?.data?.bloodGroup || '',
+          phoneNumber: formatPhoneNumber(data?.data?.phoneNumber || ''),
+          cnicNumber: formatCnicNumber(data?.data?.cnicNumber || ''),
+          address: data?.data?.address || '',
+        })
+      } catch (err) {
+        if (err instanceof Error) setGeneralError(err.message)
+      } finally {
+        setFetching(false)
+      }
+    }
+
+    fetchPatient()
+  }, [id])
+
+  // ✅ Submit updated data
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSuccess(null)
@@ -127,37 +146,22 @@ const AddPatients = () => {
       setErrors({})
       setLoading(true)
 
-      const res = await fetch(`${API_BASE}/api/patient`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+      const res = await fetch(`${API_BASE}/api/patient/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(cleanForm),
       })
 
       const data = await res.json()
-
       if (!res.ok) {
         if (data?.errors) setErrors(data.errors)
         if (data?.general_error) setGeneralError(data.general_error)
         if (!data?.errors && !data?.general_error)
-          setGeneralError('Failed to add patient')
+          setGeneralError('Failed to update patient')
         return
       }
 
-      setSuccess('Patient added successfully ✅')
-      setForm({
-        name: '',
-        guardianName: '',
-        gender: '',
-        age: '',
-        maritalStatus: '',
-        bloodGroup: '',
-        phoneNumber: '',
-        cnicNumber: '',
-        address: '',
-      })
+      setSuccess('Patient updated successfully ✅')
     } catch (err) {
       if (err instanceof Yup.ValidationError) {
         const newErrors: { [key: string]: string } = {}
@@ -173,28 +177,16 @@ const AddPatients = () => {
     }
   }
 
+  if (fetching) {
+    return <p className="text-center text-gray-600 mt-10">Loading patient details...</p>
+  }
+
   return (
     <>
-      {generalError && (
-        <p className="text-red text-center col-span-full">{generalError}</p>
-      )}
-      {success && (
-        <p className="text-green-600 text-center col-span-full">{success}</p>
-      )}
+      <p className="text-3xl font-semibold mb-2">Edit Patient</p>
 
-      <div className="flex justify-between items-center border-b pb-3">
-        <p className="text-xl font-semibold w-full">Add Patient</p>
-        <Button to={routePaths.PATIENTS} asLink={true}>
-          <svg
-            className="w-3.5 h-3.5 -scale-x-100"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 640 640"
-          >
-            <use href="/assets/svg/arrow-icon.svg#arrow-icon" />
-          </svg>
-          Back
-        </Button>
-      </div>
+      {generalError && <p className="text-red text-center col-span-full">{generalError}</p>}
+      {success && <p className="text-green-600 text-center col-span-full">{success}</p>}
 
       <form
         onSubmit={handleSubmit}
@@ -203,24 +195,14 @@ const AddPatients = () => {
         {/* Name */}
         <GroupInput>
           <Label>Full Name</Label>
-          <Input
-            name="name"
-            placeholder="Enter patient name"
-            value={form.name}
-            onChange={handleChange}
-          />
+          <Input name="name" value={form.name} onChange={handleChange} placeholder="Enter patient name" />
           {errors.name && <p className="text-red text-sm">{errors.name}</p>}
         </GroupInput>
 
         {/* Guardian Name */}
         <GroupInput>
           <Label>Father / Guardian Name</Label>
-          <Input
-            name="guardianName"
-            placeholder="Enter father/guardian name"
-            value={form.guardianName}
-            onChange={handleChange}
-          />
+          <Input name="guardianName" value={form.guardianName} onChange={handleChange} placeholder="Enter guardian name" />
         </GroupInput>
 
         {/* Gender */}
@@ -247,49 +229,30 @@ const AddPatients = () => {
         {/* Age */}
         <GroupInput>
           <Label>Age</Label>
-          <Input
-            name="age"
-            placeholder="Years"
-            value={form.age}
-            onChange={handleChange}
-          />
+          <Input name="age" value={form.age} onChange={handleChange} placeholder="Years" />
           {errors.age && <p className="text-red text-sm">{errors.age}</p>}
         </GroupInput>
 
-        {/* ✅ Marital Status (Dropdown) */}
+        {/* Marital Status */}
         <GroupInput>
           <Label>Marital Status</Label>
           <Dropdown
             options={maritalStatusOptions}
-            selected={
-              form.maritalStatus
-                ? { id: form.maritalStatus, name: form.maritalStatus }
-                : null
-            }
+            selected={form.maritalStatus ? { id: form.maritalStatus, name: form.maritalStatus } : null}
             onSelect={(opt) => handleDropdownSelect('maritalStatus', opt)}
             placeholder="Select status"
           />
-          {errors.maritalStatus && (
-            <p className="text-red text-sm">{errors.maritalStatus}</p>
-          )}
         </GroupInput>
 
-        {/* ✅ Blood Group (Dropdown) */}
+        {/* Blood Group */}
         <GroupInput>
           <Label>Blood Group</Label>
           <Dropdown
             options={bloodGroupOptions}
-            selected={
-              form.bloodGroup
-                ? { id: form.bloodGroup, name: form.bloodGroup }
-                : null
-            }
+            selected={form.bloodGroup ? { id: form.bloodGroup, name: form.bloodGroup } : null}
             onSelect={(opt) => handleDropdownSelect('bloodGroup', opt)}
             placeholder="Select blood group"
           />
-          {errors.bloodGroup && (
-            <p className="text-red text-sm">{errors.bloodGroup}</p>
-          )}
         </GroupInput>
 
         {/* Phone Number */}
@@ -297,13 +260,11 @@ const AddPatients = () => {
           <Label>Phone Number</Label>
           <Input
             name="phoneNumber"
-            placeholder="0304-3763110"
             value={form.phoneNumber}
             onChange={handleChange}
+            placeholder="0304-3763110"
           />
-          {errors.phoneNumber && (
-            <p className="text-red text-sm">{errors.phoneNumber}</p>
-          )}
+          {errors.phoneNumber && <p className="text-red text-sm">{errors.phoneNumber}</p>}
         </GroupInput>
 
         {/* CNIC */}
@@ -311,13 +272,11 @@ const AddPatients = () => {
           <Label>CNIC / ID Card No.</Label>
           <Input
             name="cnicNumber"
-            placeholder="12345-1234567-1"
             value={form.cnicNumber}
             onChange={handleChange}
+            placeholder="12345-1234567-1"
           />
-          {errors.cnicNumber && (
-            <p className="text-red text-sm">{errors.cnicNumber}</p>
-          )}
+          {errors.cnicNumber && <p className="text-red text-sm">{errors.cnicNumber}</p>}
         </GroupInput>
 
         {/* Address */}
@@ -325,19 +284,16 @@ const AddPatients = () => {
           <Label>Address</Label>
           <TextArea
             name="address"
-            placeholder="Enter full address"
             value={form.address}
             onChange={handleChange}
+            placeholder="Enter full address"
           />
-          {errors.address && (
-            <p className="text-red text-sm">{errors.address}</p>
-          )}
         </GroupInput>
 
         {/* Submit */}
         <div className="col-span-full mx-auto">
           <Button type="submit" disabled={loading}>
-            {loading ? 'Adding...' : 'Add patient'}
+            {loading ? 'Updating...' : 'Update Patient'}
           </Button>
         </div>
       </form>
@@ -345,4 +301,4 @@ const AddPatients = () => {
   )
 }
 
-export default AddPatients
+export default EditPatients

@@ -1,4 +1,15 @@
+import { useEffect, useState } from "react";
+
 export const Topbar = () => {
+  const [user, setUser] = useState<{ name: string; email: string; role: string } | null>(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
   return (
     <div className="bg-dark h-16 w-full flex items-center justify-end gap-5 pe-5">
       <div className="h-full flex justify-end items-center">
@@ -6,10 +17,9 @@ export const Topbar = () => {
           type="text"
           className="bg-white border-none outline-none rounded-full py-1.5 px-2 text-sm w-full placeholder:text-gray-100 min-w-[250px]"
           placeholder="Search here..."
-          name=""
-          id=""
         />
       </div>
+
       <div className="relative cursor-pointer">
         <svg
           className="text-white w-8 h-8"
@@ -23,17 +33,22 @@ export const Topbar = () => {
           1
         </p>
       </div>
+
       <div className="flex items-center gap-2">
         <div className="bg-white rounded-full w-10 h-10 flex justify-center items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" className="w-10 h-10 mt-2 text-dark" >
-          <use href="/assets/svg/profile-icon.svg#profile-icon" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 640 640"
+            className="w-10 h-10 mt-2 text-dark"
+          >
+            <use href="/assets/svg/profile-icon.svg#profile-icon" />
           </svg>
         </div>
         <div className="text-white leading-5">
-          <p>Usman</p>
-          <p>admin@mail.com</p>
+          <p>{user?.name || "Guest"}</p>
+          <p>{user?.email || "guest@example.com"}</p>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

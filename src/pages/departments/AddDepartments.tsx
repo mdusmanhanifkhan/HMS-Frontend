@@ -38,6 +38,8 @@ const AddDepartments = () => {
   const [success, setSuccess] = useState<null | string>(null)
 
   const API_BASE = import.meta.env.VITE_API_BASE_URL
+   const token = localStorage.getItem('token')
+  
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -72,7 +74,7 @@ const AddDepartments = () => {
 
       const res = await fetch(`${API_BASE}/api/department`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' ,   Authorization: `Bearer ${token}`,},
         body: JSON.stringify(form),
       })
 

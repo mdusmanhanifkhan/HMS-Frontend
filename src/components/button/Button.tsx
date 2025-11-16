@@ -22,7 +22,7 @@ export default function Button({
   return (
     <ElemType
       {...(asLink ? { to } : props)}
-      className={`flex items-center gap-1 bg-dark text-white text-xs rounded-lg px-2 py-1.5 border border-dark hover:bg-white hover:text-dark transition-all ease-linear duration-200 cursor-pointer ${className}`}
+      className={`flex items-center gap-1 bg-dark text-white whitespace-nowrap text-xs rounded-lg px-2 py-1.5 border border-dark hover:bg-white hover:text-dark transition-all ease-linear duration-200 cursor-pointer ${className}`}
     >
       {children}
     </ElemType>

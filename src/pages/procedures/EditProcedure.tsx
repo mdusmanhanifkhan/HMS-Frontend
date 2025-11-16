@@ -21,6 +21,7 @@ const EditProcedure = () => {
   const navigate = useNavigate()
 
   const API_BASE = import.meta.env.VITE_API_BASE_URL
+  const token = localStorage.getItem('token')
 
   const [form, setForm] = useState<Procedure>({
     status: false,
@@ -57,65 +58,80 @@ const EditProcedure = () => {
     }))
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError(null)
-    setSuccess(null)
-    setLoading(true)
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
+  setError(null)
+  setSuccess(null)
+  setLoading(true)
 
-    try {
-      const res = await fetch(`${API_BASE}/api/procedures/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          status: form.status,
-          name: form.procedureName,
-          shortCode: form.shortCode,
-          description: form.description,
-          departmentId: form.department?.id ?? null,
-        }),
-      })
-
-      const data = await res.json()
-
-      if (!res.ok) {
-        throw new Error(data?.message || 'Failed to update procedure')
-      }
-
-      setSuccess('Procedure updated successfully ✅')
-      // Optionally redirect after success
-      // setTimeout(() => navigate('/procedures'), 2000)
-
-    } catch (err: any) {
-      setError(err.message || 'Something went wrong ❌')
-    } finally {
-      setLoading(false)
-    }
+  if (!token) {
+    setError('No token found. Please login first.')
+    setLoading(false)
+    return
   }
 
-  useEffect(() => {
-    const fetchProcedure = async () => {
-      try {
-        const res = await fetch(`${API_BASE}/api/procedures/${id}`)
-        const data = await res.json()
+  try {
+    const res = await fetch(`${API_BASE}/api/procedures/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        status: form.status,
+        name: form.procedureName,
+        shortCode: form.shortCode,
+        description: form.description,
+        departmentId: form.department?.id ?? null,
+      }),
+    })
 
-        if (res.ok && data?.data) {
-          setForm({
-            status: data.data.status ?? false,
-            procedureName: data.data.name ?? '',
-            shortCode: data.data.shortCode ?? '',
-            department: data.data.department ?? null,
-            description: data.data.description ?? '',
-          })
-        } else {
-          setError(data?.message || 'Failed to load procedure')
-        }
-      } catch (error: any) {
-        setError(error.message)
-      }
+    const data = await res.json()
+
+    if (!res.ok) {
+      throw new Error(data?.message || 'Failed to update procedure')
     }
-    fetchProcedure()
-  }, [id])
+
+    setSuccess('Procedure updated successfully ✅')
+  } catch (err: any) {
+    setError(err.message || 'Something went wrong ❌')
+  } finally {
+    setLoading(false)
+  }
+}
+
+ useEffect(() => {
+  if (!token) {
+    setError('No token found. Please login first.')
+    return
+  }
+
+  const fetchProcedure = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/procedures/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      const data = await res.json()
+
+      if (res.ok && data?.data) {
+        setForm({
+          status: data.data.status ?? false,
+          procedureName: data.data.name ?? '',
+          shortCode: data.data.shortCode ?? '',
+          department: data.data.department ?? null,
+          description: data.data.description ?? '',
+        })
+      } else {
+        setError(data?.message || 'Failed to load procedure')
+      }
+    } catch (error: any) {
+      setError(error.message)
+    }
+  }
+  fetchProcedure()
+}, [id, token])
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-10">

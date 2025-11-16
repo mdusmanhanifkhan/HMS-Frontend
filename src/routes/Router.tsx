@@ -16,32 +16,66 @@ import ViewDoctor from '../pages/doctors/ViewDoctor.tsx'
 import Patients from '../pages/patients/index.tsx'
 import AddPatients from '../pages/patients/AddPatients.tsx'
 import PatientReceiptGenerator from '../pages/patients/PatientReceiptGenerator.tsx'
+import DoctorFee from '../pages/doctor-fee/index.tsx'
+import AddDoctorFee from '../pages/doctor-fee/AddDoctorFee.tsx'
+import Welfare from '../pages/welfare/index.tsx'
+import AddWelfarePatient from '../pages/welfare/AddWelfarePatient.tsx'
+import EditPatients from '../pages/patients/EditPatients.tsx'
+import Login from '../pages/login/Login.tsx'
+import ProtectedRoute from './ProtectedRoute.tsx'
+import Dashboard from '../pages/dashboard/index.tsx'
 
 export const router = createBrowserRouter([
   {
+    path: '/login',
+    element: <Login />,
+  },
+  {
     path: '/',
-    element: <App />,
+    element: (
+      <ProtectedRoute>
+        <App />,
+      </ProtectedRoute>
+    ),
     children: [
-      { path: '/', element: <p>Dashboard</p> },
+      { path: '/', element: <Dashboard/> },
+
+      // Patient
       { path: routePaths.PATIENTS, element: <Patients /> },
       { path: routePaths.ADD_PATIENTS, element: <AddPatients /> },
-      { path: routePaths.PATIENTS_RECEIPT_GENERATE, element: <PatientReceiptGenerator /> },
+      { path: `${routePaths.PATIENTS}/:id`, element: <EditPatients /> },
+      {
+        path: `${routePaths.PATIENTS_RECEIPT_GENERATE}/:id`,
+        element: <PatientReceiptGenerator />,
+      },
       { path: routePaths.FIND_PATIENT, element: <ComingSoon /> },
       { path: routePaths.APPOINTMENTS, element: <ComingSoon /> },
       // Department
-      { path: routePaths.DEPARTMENTS, element: <Departments/> },
-      { path: routePaths.ADD_DEPARTMENT, element: <AddDepartments/> },
-      { path: `${routePaths.EDIT_DEPARTMENT}/:id`, element: <EditDepartments/> },
+      { path: routePaths.DEPARTMENTS, element: <Departments /> },
+      { path: routePaths.ADD_DEPARTMENT, element: <AddDepartments /> },
+      {
+        path: `${routePaths.EDIT_DEPARTMENT}/:id`,
+        element: <EditDepartments />,
+      },
       // Procedure
-      { path: routePaths.PROCEDURE, element: <Procedures/> },
-      { path: routePaths.ADD_PROCEDURE, element: <AddProcedure/> },
-      { path: `${routePaths.EDIT_PROCEDURE}/:id`, element: <EditProcedure/> },
-      { path: routePaths.VIEW_PROCEDURE, element: <ViewProcedure/> },
+      { path: routePaths.PROCEDURE, element: <Procedures /> },
+      { path: routePaths.ADD_PROCEDURE, element: <AddProcedure /> },
+      { path: `${routePaths.EDIT_PROCEDURE}/:id`, element: <EditProcedure /> },
+      { path: routePaths.VIEW_PROCEDURE, element: <ViewProcedure /> },
       // Doctors
       { path: routePaths.DOCTORS, element: <Doctors /> },
       { path: routePaths.ADD_DOCTOR, element: <AddDoctor /> },
       { path: routePaths.EDIT_DOCTOR, element: <EditDoctor /> },
       { path: routePaths.VIEW_DOCTOR, element: <ViewDoctor /> },
+      // Doctor Fee
+      { path: routePaths.DOCTOR_FEE, element: <DoctorFee /> },
+      { path: routePaths.ADD_DOCTOR_FEE, element: <AddDoctorFee /> },
+      // WELFARE MANAGEMENT
+      { path: routePaths.WELFARE_MANAGEMENT, element: <Welfare /> },
+      {
+        path: `${routePaths.ADD_WELFARE_MANAGEMENT}/:id`,
+        element: <AddWelfarePatient />,
+      },
       // Coming soon
       { path: routePaths.BILLING, element: <ComingSoon /> },
       { path: routePaths.VITALS, element: <ComingSoon /> },
