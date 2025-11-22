@@ -14,10 +14,8 @@ const EditDepartments = () => {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
 
-  console.log(loading, 'loading..')
-
   const API_BASE = import.meta.env.VITE_API_BASE_URL
-     const token = localStorage.getItem('token')
+  const token = localStorage.getItem('token')
 
   const [form, setForm] = useState({
     status: false,
@@ -48,7 +46,10 @@ const EditDepartments = () => {
     try {
       const res = await fetch(`${API_BASE}/api/department/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' , Authorization: `Bearer ${token}`},
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({
           name: form.departmentName,
           shortCode: form.shortCode,
@@ -78,7 +79,10 @@ const EditDepartments = () => {
       try {
         const res = await fetch(`${API_BASE}/api/department/${id}`, {
           method: 'GET',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
           signal: controller.signal,
         })
 
@@ -102,7 +106,7 @@ const EditDepartments = () => {
     }
     fetchDepartments()
     return () => controller.abort()
-  }, [id])
+  }, [id , API_BASE , token])
 
   return (
     <>

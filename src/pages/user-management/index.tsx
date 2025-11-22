@@ -1,3 +1,5 @@
+
+
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Button from '../../components/button/Button'
@@ -19,7 +21,7 @@ interface Procedure {
   department?: Department
 }
 
-const Procedures = () => {
+const UserManagement = () => {
   const [procedures, setProcedures] = useState<Procedure[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
@@ -123,7 +125,7 @@ const Procedures = () => {
     <div className="flex flex-col gap-10 relative">
       {/* Header */}
       <div className="flex justify-between items-center w-full border-b pb-3">
-        <p className="text-xl font-semibold">Procedure Management</p>
+        <p className="text-xl font-semibold">User Management</p>
         <div className="flex items-center gap-5 min-w-100">
           {/* Search Input */}
           <div className="flex items-center gap-2 py-1.5 w-full rounded-lg border px-2 border-gray placeholder:text-gray-100 placeholder:font-light">
@@ -154,7 +156,7 @@ const Procedures = () => {
             </svg>
             <Input
               type="text"
-              placeholder="Search procedures..."
+              placeholder="Search User..."
               variant="none"
               className="outline-none "
               value={searchTerm}
@@ -163,8 +165,8 @@ const Procedures = () => {
           </div>
 
           {/* Add Procedure Button */}
-          <Link to={routePaths.ADD_PROCEDURE}>
-            <Button>+ Add Procedure</Button>
+          <Link to={routePaths.CREATE_USER}>
+            <Button>+ Create User</Button>
           </Link>
         </div>
       </div>
@@ -175,11 +177,8 @@ const Procedures = () => {
           <thead className="text-xs text-white uppercase bg-dark">
             <tr>
               <th className="px-6 py-3">ID</th>
-              <th className="px-6 py-3">Procedure Name</th>
-              <th className="px-6 py-3">Procedure Code</th>
-              <th className="px-6 py-3">Department</th>
-              <th className="px-6 py-3">Description</th>
-              <th className="px-6 py-3">Status</th>
+              <th className="px-6 py-3">User Name</th>
+              <th className="px-6 py-3">User Email</th>
               <th className="px-6 py-3">Action</th>
             </tr>
           </thead>
@@ -218,13 +217,8 @@ const Procedures = () => {
                     {proc.id}
                   </td>
                   <td className="px-6 py-4">{proc.name}</td>
-                  <td className="px-6 py-4">{proc.shortCode || '-'}</td>
-                  <td className="px-6 py-4">{proc.department?.name || '-'}</td>
-                  <td className="px-6 py-4">
-                    {proc.description?.length && proc.description.length > 45
-                      ? `${proc.description.substring(0, 45)}...`
-                      : proc.description || '-'}
-                  </td>
+                
+                  
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-1">
                       <span
@@ -295,4 +289,4 @@ const Procedures = () => {
   )
 }
 
-export default Procedures
+export default UserManagement

@@ -7,6 +7,7 @@ import { Label } from '../../components/input/Label'
 import TextArea from '../../components/input/TextArea'
 import Dropdown from '../../components/input/Dropdown'
 import { routePaths } from '../../constants/routePaths'
+import ToggleButton from '../../components/button/ToggleButton'
 
 // ✅ Type definitions
 interface Department {
@@ -194,20 +195,17 @@ useEffect(() => {
         {/* Status */}
         <GroupInput className="col-span-full">
           <Label htmlFor="status">Status</Label>
-          <div className="checkbox-apple">
-            <input
-              id="status"
-              type="checkbox"
-              checked={form.status}
-              onChange={handleChange}
-            />
-            <label htmlFor="status"></label>
-          </div>
+
+          <ToggleButton
+                        id="status"
+                        checked={form.status}
+                        onChange={handleChange}
+                      />
         </GroupInput>
 
         {/* Procedure Name */}
         <GroupInput>
-          <Label htmlFor="name">Procedure Name</Label>
+          <Label required='true' htmlFor="name">Procedure Name</Label>
           <Input
             id="name"
             placeholder="Enter Procedure Name"
@@ -219,7 +217,7 @@ useEffect(() => {
 
         {/* Short Code */}
         <GroupInput>
-          <Label htmlFor="shortCode">Short Code</Label>
+          <Label htmlFor="shortCode" required='true'>Short Code</Label>
           <Input
             id="shortCode"
             placeholder="Enter Procedure Short Code"
@@ -233,7 +231,7 @@ useEffect(() => {
 
         {/* Department */}
         <GroupInput>
-          <Label>Department</Label>
+          <Label required='true'>Department</Label>
           <Dropdown
             options={departments.map((d) => ({ id: d.id, name: d.name }))} 
             selected={

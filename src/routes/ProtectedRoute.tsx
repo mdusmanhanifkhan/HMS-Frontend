@@ -12,22 +12,52 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const [isAuthorized, setIsAuthorized] = useState(false);
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    const user = localStorage.getItem("user");
+
+    if (!token) {
+      setIsAuthorized(false);
+      setLoading(false);
+      return;
+    }
+
+    if (user) {
+      // User info exists → allow access instantly
+      setIsAuthorized(true);
+      setLoading(false);
+
+      // Optional: Validate token in background
+      fetch(`${API_BASE}/api/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => {
+          if (!res.ok) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            setIsAuthorized(false);
+          } else {
+            res.json().then((data) => {
+              localStorage.setItem("user", JSON.stringify(data));
+            });
+          }
+        })
+        .catch(() => {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          setIsAuthorized(false);
+        });
+
+      return;
+    }
+
+    // If token exists but user info missing → validate immediately
     const checkAuth = async () => {
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        setIsAuthorized(false);
-        setLoading(false);
-        return;
-      }
-
       try {
         const res = await fetch(`${API_BASE}/api/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
         if (!res.ok) {
-          // Token invalid or expired
           localStorage.removeItem("token");
           localStorage.removeItem("user");
           setIsAuthorized(false);
@@ -36,7 +66,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
           localStorage.setItem("user", JSON.stringify(data));
           setIsAuthorized(true);
         }
-      } catch (err) {
+      } catch {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         setIsAuthorized(false);

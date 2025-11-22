@@ -1,9 +1,10 @@
 import { useNavigate } from "react-router-dom"
 import { routePaths } from "../../constants/routePaths"
+import type { ReactNode } from "react"
 
 interface DashboardCard {
   title: string
-  icon: JSX.Element
+  icon: ReactNode
   path: string
 }
 
@@ -138,7 +139,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen ">
       <h1
-        className="text-3xl font-bold mb-8 tracking-wide"
+        className="text-xl font-semibold mb-8 tracking-wide underline"
         style={{ color: "var(--color-dark)" }}
       >
         Dashboard

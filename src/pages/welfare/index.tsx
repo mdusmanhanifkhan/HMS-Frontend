@@ -1,18 +1,28 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import Button from '../../components/button/Button'
 import { routePaths } from '../../constants/routePaths'
 import { Input } from '../../components/input/Input'
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL
 
+interface Patient {
+  id: number
+  patientId: string
+  name: string
+  gender: string
+  age: number
+  cnicNumber?: string
+  phoneNumber?: string
+}
+
+
 const Welfare = () => {
-  const [patients, setPatients] = useState<any[]>([])
+  const [patients, setPatients] = useState<Patient[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
 
-  const [searchTerm, setSearchTerm] = useState<string>('') 
-  const [debouncedSearch, setDebouncedSearch] = useState<string>('') 
+  const [searchTerm, setSearchTerm] = useState<string>('')
+  const [debouncedSearch, setDebouncedSearch] = useState<string>('')
 
   const token = localStorage.getItem('token')
 
@@ -51,9 +61,13 @@ const Welfare = () => {
 
         const data = await res.json()
         console.log(data)
-      } catch (err: any) {
-        if (err.name !== 'AbortError') {
-          setError(err.message || 'Something went wrong')
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          if (err.name !== 'AbortError') {
+            setError(err.message || 'Something went wrong')
+          }
+        } else {
+          setError('Something went wrong')
         }
       } finally {
         setLoading(false)
@@ -63,7 +77,7 @@ const Welfare = () => {
     fetchDepartments()
 
     return () => controller.abort()
-  }, [API_BASE, debouncedSearch, token])
+  }, [ debouncedSearch, token])
 
   useEffect(() => {
     const fetchPatients = async () => {
@@ -78,10 +92,12 @@ const Welfare = () => {
           throw new Error('Failed to fetch patients')
         }
         const data = await res.json()
-        setPatients(data.data || []) // backend returns { status, message, data }
-      } catch (err: any) {
+        setPatients(data.data || []) 
+      } catch (err: unknown) {
+        if (err instanceof Error) {
         setError(err.message || 'Something went wrong')
-      } finally {
+      }
+    } finally {
         setLoading(false)
       }
     }
@@ -102,11 +118,9 @@ const Welfare = () => {
               placeholder="Search Patient..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              className="min-w-72"
             />
           </div>
-          <Link to={routePaths.ADD_WELFARE_MANAGEMENT}>
-            <Button>+ Add Welfare Patient</Button>
-          </Link>
         </div>
       </div>
 

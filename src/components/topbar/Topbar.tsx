@@ -11,15 +11,15 @@ export const Topbar = () => {
   }, []);
 
   return (
-    <div className="bg-dark h-16 w-full flex items-center justify-end gap-5 pe-5">
-      <div className="h-full flex justify-end items-center">
+    <div className="bg-dark h-16 w-full flex items-center justify-between gap-5 pe-5">
+     <div className="flex items-center gap-3">
+       <div className="h-full flex justify-end items-center">
         <input
           type="text"
-          className="bg-white border-none outline-none rounded-full py-1.5 px-2 text-sm w-full placeholder:text-gray-100 min-w-[250px]"
+          className="bg-white border-none outline-none rounded-full py-1.5 px-2 text-sm w-full placeholder:text-gray-100 min-w-[300px]"
           placeholder="Search here..."
         />
       </div>
-
       <div className="relative cursor-pointer">
         <svg
           className="text-white w-8 h-8"
@@ -33,20 +33,22 @@ export const Topbar = () => {
           1
         </p>
       </div>
+     </div>
+
 
       <div className="flex items-center gap-2">
-        <div className="bg-white rounded-full w-10 h-10 flex justify-center items-center">
+        <div className="bg-white rounded-full w-9 h-9 flex justify-center items-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 640 640"
-            className="w-10 h-10 mt-2 text-dark"
+            className="w-8 h-8 mt-3 text-dark"
           >
             <use href="/assets/svg/profile-icon.svg#profile-icon" />
           </svg>
         </div>
         <div className="text-white leading-5">
-          <p>{user?.name || "Guest"}</p>
-          <p>{user?.email || "guest@example.com"}</p>
+          <p className="text-sm">{user?.name || "Guest"}</p>
+          <p className="text-xs">{user?.email || "guest@example.com"}</p>
         </div>
       </div>
     </div>

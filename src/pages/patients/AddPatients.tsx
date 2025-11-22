@@ -202,7 +202,9 @@ const AddPatients = () => {
       >
         {/* Name */}
         <GroupInput>
-          <Label>Full Name</Label>
+          <Label required="required" htmlFor="name">
+            Full Name
+          </Label>
           <Input
             name="name"
             placeholder="Enter patient name"
@@ -225,7 +227,9 @@ const AddPatients = () => {
 
         {/* Gender */}
         <GroupInput>
-          <Label>Gender</Label>
+          <Label required="required" htmlFor="gender">
+            Gender
+          </Label>
           <div className="flex items-center gap-2">
             {['Male', 'Female', 'Other'].map((g) => (
               <label key={g} className="flex items-center gap-1">
@@ -246,12 +250,15 @@ const AddPatients = () => {
 
         {/* Age */}
         <GroupInput>
-          <Label>Age</Label>
+          <Label required="required" htmlFor="age">
+            Age
+          </Label>
           <Input
             name="age"
             placeholder="Years"
             value={form.age}
             onChange={handleChange}
+            type="number"
           />
           {errors.age && <p className="text-red text-sm">{errors.age}</p>}
         </GroupInput>
@@ -294,7 +301,9 @@ const AddPatients = () => {
 
         {/* Phone Number */}
         <GroupInput>
-          <Label>Phone Number</Label>
+          <Label required="required" htmlFor="phoneNumber">
+            Phone Number
+          </Label>
           <Input
             name="phoneNumber"
             placeholder="0304-3763110"
@@ -308,7 +317,9 @@ const AddPatients = () => {
 
         {/* CNIC */}
         <GroupInput>
-          <Label>CNIC / ID Card No.</Label>
+          <Label required="required" htmlFor="cnicNumber">
+            CNIC / ID Card No.
+          </Label>
           <Input
             name="cnicNumber"
             placeholder="12345-1234567-1"

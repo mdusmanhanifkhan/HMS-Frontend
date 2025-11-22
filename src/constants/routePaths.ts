@@ -33,6 +33,7 @@ export const routePaths = {
   REPORTS_DEPARTMENT_WISE: '/reports/department-wise',
   REPORTS_PHARMACY: '/reports/pharmacy',
   REPORTS_LAB: '/reports/lab',
-  USERS: '/users',
+  USERS_MANAGEMENT: '/user-management',
+  CREATE_USER: '/user-management/create',
   SETTINGS: '/settings',
 } as const

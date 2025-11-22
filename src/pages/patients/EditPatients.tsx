@@ -7,6 +7,7 @@ import { Input } from '../../components/input/Input'
 import { Label } from '../../components/input/Label'
 import TextArea from '../../components/input/TextArea'
 import Dropdown from '../../components/input/Dropdown'
+import Loading from '../../components/loading/Loading'
 
 // ✅ Dropdown options
 const maritalStatusOptions = [
@@ -46,6 +47,8 @@ const patientSchema = Yup.object().shape({
 
 const EditPatients = () => {
   const API_BASE = import.meta.env.VITE_API_BASE_URL
+   const token = localStorage.getItem('token')
+  if (!token) console.error('No token found. Users must login first.')
   const { id } = useParams()
 
   const [form, setForm] = useState({
@@ -103,7 +106,11 @@ const EditPatients = () => {
   useEffect(() => {
     const fetchPatient = async () => {
       try {
-        const res = await fetch(`${API_BASE}/api/patient/${id}`)
+        const res = await fetch(`${API_BASE}/api/patient/${id}` , {
+           headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        })
         const data = await res.json()
 
         if (!res.ok) throw new Error(data?.general_error || 'Failed to load patient data')
@@ -178,7 +185,7 @@ const EditPatients = () => {
   }
 
   if (fetching) {
-    return <p className="text-center text-gray-600 mt-10">Loading patient details...</p>
+    return <p className="text-center text-gray-600 mt-10 flex justify-center items-center"><Loading/></p>
   }
 
   return (

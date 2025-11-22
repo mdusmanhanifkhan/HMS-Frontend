@@ -24,6 +24,8 @@ import EditPatients from '../pages/patients/EditPatients.tsx'
 import Login from '../pages/login/Login.tsx'
 import ProtectedRoute from './ProtectedRoute.tsx'
 import Dashboard from '../pages/dashboard/index.tsx'
+import UserManagement from '../pages/user-management/index.tsx'
+import CreateUser from '../pages/user-management/CreateUser.tsx'
 
 export const router = createBrowserRouter([
   {
@@ -84,7 +86,8 @@ export const router = createBrowserRouter([
       { path: routePaths.LABORATORY, element: <ComingSoon /> },
       { path: routePaths.INVENTORY, element: <ComingSoon /> },
       { path: routePaths.REPORTS, element: <ComingSoon /> },
-      { path: routePaths.USERS, element: <ComingSoon /> },
+      { path: routePaths.USERS_MANAGEMENT, element: <UserManagement /> },
+      { path: routePaths.CREATE_USER, element: <CreateUser /> },
       { path: routePaths.SETTINGS, element: <ComingSoon /> },
     ],
   },

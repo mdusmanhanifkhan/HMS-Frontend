@@ -9,7 +9,7 @@ interface RouteItem {
 export const Sidebar = () => {
   return (
     <aside>
-      <ul className="px-3 space-y-3">
+      <ul className=" space-y-3">
         {SidebarRoutes.map((elem: RouteItem, index: number) => (
           <NavLink
             key={index}

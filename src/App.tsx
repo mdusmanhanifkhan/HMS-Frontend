@@ -1,30 +1,82 @@
-import { Outlet } from "react-router-dom";
-import "./App.css";
-import { Sidebar } from "./components/sidebar/Sidebar";
-import { Topbar } from "./components/topbar/Topbar";
-import Container from "./layout/Container";
+import { Outlet, useNavigate } from 'react-router-dom'
+import './App.css'
+import { Sidebar } from './components/sidebar/Sidebar'
+import { Topbar } from './components/topbar/Topbar'
+import Container from './layout/Container'
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 function App() {
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    const token = localStorage.getItem('token');
+
+    try {
+      if (token) {
+        // Call logout API
+        await fetch(`${API_BASE}/api/logout`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+      }
+    } catch (err) {
+      console.error('Logout API failed', err);
+    } finally {
+      // Remove localStorage data
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+
+      // Navigate to login
+      navigate('/login', { replace: true });
+    }
+  };
+
   return (
-    <div className="flex">
-      <div className="bg-[#060505] max-w-[250px] h-screen w-full overflow-y-auto">
+    <div className="flex h-screen">
+      {/* SIDEBAR */}
+      <aside className="bg-[#060505] w-[250px] h-full flex-shrink-0 overflow-y-auto flex justify-between flex-col px-3">
+        <div>
+          <p className="text-white text-xl font-light py-5 w-fit ">
+            HMS Enjin X
+          </p>
+          <Sidebar />
+        </div>
 
-        <p className="text-white text-xl font-light mx-auto py-5 w-fit">
-          HMS Enjin X
+        {/* Logout */}
+        <p
+          onClick={handleLogout}
+          className="border border-gray-100 text-white rounded-xl px-2 py-2 cursor-pointer hover:bg-white hover:text-dark flex w-full items-center justify-between relative group"
+        >
+          Logout{' '}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 52 52"
+            className="w-4 text-white fill-white group-hover:fill-dark"
+          >
+            <g>
+              <path d="M21,48.5v-3c0-0.8-0.7-1.5-1.5-1.5h-10C8.7,44,8,43.3,8,42.5v-33C8,8.7,8.7,8,9.5,8h10 C20.3,8,21,7.3,21,6.5v-3C21,2.7,20.3,2,19.5,2H6C3.8,2,2,3.8,2,6v40c0,2.2,1.8,4,4,4h13.5C20.3,50,21,49.3,21,48.5z" />
+              <path d="M49.6,27c0.6-0.6,0.6-1.5,0-2.1L36.1,11.4c-0.6-0.6-1.5-0.6-2.1,0l-2.1,2.1c-0.6,0.6-0.6,1.5,0,2.1l5.6,5.6 c0.6,0.6,0.2,1.7-0.7,1.7H15.5c-0.8,0-1.5,0.6-1.5,1.4v3c0,0.8,0.7,1.6,1.5,1.6h21.2c0.9,0,1.3,1.1,0.7,1.7l-5.6,5.6 c-0.6,0.6-0.6,1.5,0,2.1l2.1,2.1c0.6,0.6,1.5,0.6,2.1,0L49.6,27z" />
+            </g>
+          </svg>
         </p>
+      </aside>
 
-        <Sidebar />
-      </div>
-      <div className="flex flex-col w-full">
+      {/* RIGHT SIDE */}
+      <div className="flex flex-col flex-1 h-full min-h-0">
+        {/* TOPBAR */}
         <Topbar />
 
-        <Container className="w-full h-[93vh] overflow-y-auto">
+        {/* SCROLLABLE PAGE CONTENT */}
+        <Container className="flex-1 min-h-0 overflow-y-auto p-4 rounded-tl-2xl bg-white">
           <Outlet />
         </Container>
-
       </div>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

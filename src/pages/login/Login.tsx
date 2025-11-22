@@ -9,6 +9,8 @@ const Login = () => {
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
 
+    const API_BASE = import.meta.env.VITE_API_BASE_URL
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
@@ -26,7 +28,7 @@ const Login = () => {
     setLoading(true)
 
     try {
-      const response = await fetch("http://localhost:3000/api/login", {
+      const response = await fetch(`${API_BASE}/api/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
@@ -58,52 +60,51 @@ const Login = () => {
 
   return (
     <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "var(--color-dark)" }}
+      className="min-h-screen flex items-center justify-center px-4"
+      style={{ backgroundColor: "var(--color-gray)" }}
     >
-      {/* Card */}
+      {/* Login Card */}
       <div
         className="
-          w-full max-w-md 
-          rounded-2xl 
-          p-10 
-          shadow-xl 
-          backdrop-blur-xl 
-          border border-gray-700 
+          w-full max-w-md bg-white 
+          rounded-xl p-10 shadow-lg
         "
-        style={{
-          background: "rgba(255,255,255,0.05)",
-        }}
       >
-        {/* Title */}
+        {/* Header */}
         <h2
-          className="text-3xl font-extrabold text-center mb-8 tracking-wide"
-          style={{ color: "var(--color-white)" }}
+          className="text-3xl font-bold text-center mb-6"
+          style={{ color: "var(--color-dark)" }}
         >
           Hospital Management
-          <span style={{ color: "var(--color-red)" }}> Login</span>
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <h3
+          className="text-lg font-semibold text-center mb-6"
+          style={{ color: "var(--color-red)" }}
+        >
+          Login to Continue
+        </h3>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-5">
           {/* Email */}
           <div>
             <Label
               htmlFor="email"
-              className="font-medium"
-              style={{ color: "var(--color-gray)" }}
+              className="font-medium text-sm"
+              style={{ color: "var(--color-dark)" }}
             >
-              Email Address
+              Email
             </Label>
 
             <Input
               id="email"
               name="email"
               type="email"
-              placeholder="Enter your email"
+              placeholder="Enter email"
               value={form.email}
               onChange={handleChange}
               variant="input"
-              className="text-white"
             />
           </div>
 
@@ -111,8 +112,8 @@ const Login = () => {
           <div>
             <Label
               htmlFor="password"
-              className="font-medium"
-              style={{ color: "var(--color-gray)" }}
+              className="font-medium text-sm"
+              style={{ color: "var(--color-dark)" }}
             >
               Password
             </Label>
@@ -121,43 +122,40 @@ const Login = () => {
               id="password"
               name="password"
               type="password"
-              placeholder="Enter your password"
+              placeholder="Enter password"
               value={form.password}
               onChange={handleChange}
               variant="input"
-              className="text-white"
             />
           </div>
 
           {/* Alerts */}
           {error && (
-            <p className="text-red text-sm text-center">{error}</p>
+            <p className="text-red-600 text-sm text-center">{error}</p>
           )}
           {success && (
-            <p className="text-green text-sm text-center">{success}</p>
+            <p className="text-green-600 text-sm text-center">{success}</p>
           )}
 
-          {/* Button */}
+          {/* Submit Button */}
           <Button
             type="submit"
             disabled={loading}
-            className="
-              mx-auto px-7
-            "
+            className="w-full py-2 text-center font-semibold"
             style={{
               background: "var(--color-red)",
               color: "var(--color-white)",
-              opacity: loading ? 0.7 : 1,
+              opacity: loading ? 0.8 : 1,
             }}
           >
-            {loading ? "Logging in..." : "Login"}
+            {loading ? "Please wait..." : "Login"}
           </Button>
         </form>
 
         {/* Footer */}
         <p
-          className="text-center text-xs mt-6 tracking-wide"
-          style={{ color: "var(--color-gray)" }}
+          className="text-center text-xs mt-6"
+          style={{ color: "var(--color-dark)" }}
         >
           © {new Date().getFullYear()} Hospital Management System
         </p>

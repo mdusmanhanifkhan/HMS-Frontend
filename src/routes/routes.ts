@@ -2,7 +2,7 @@ import { routePaths } from "../constants/routePaths";
 
 export const SidebarRoutes = [
   { name: "Dashboard", link: routePaths.DASHBOARD },
-  { name: "Patient", link: routePaths.PATIENTS },
+  { name: "Patient", link: routePaths.PATIENTS , permission: "canManagePatients"},
   { name: "Departments", link: routePaths.DEPARTMENTS },
   { name: "Procedure", link: routePaths.PROCEDURE },
   { name: "Doctors", link: routePaths.DOCTORS },
@@ -27,6 +27,6 @@ export const SidebarRoutes = [
   //     { name: "Lab Summary", link: routePaths.REPORTS_LAB },
   //   ],
   // },
-  { name: "User Management", link: routePaths.USERS },
+  { name: "User Management", link: routePaths.USERS_MANAGEMENT },
   { name: "Settings", link: routePaths.SETTINGS },
 ];

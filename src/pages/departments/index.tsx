@@ -28,7 +28,7 @@ const Departments: React.FC = () => {
   const [debouncedSearch, setDebouncedSearch] = useState('')
 
   const API_BASE = import.meta.env.VITE_API_BASE_URL
-   const token = localStorage.getItem('token')
+  const token = localStorage.getItem('token')
 
   // 🔹 Debounce search input
   useEffect(() => {
@@ -49,7 +49,10 @@ const Departments: React.FC = () => {
           : `${API_BASE}/api/department`
 
         const res = await fetch(url, {
-          headers: { 'Content-Type': 'application/json' , Authorization: `Bearer ${token}`},
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
           signal: controller.signal,
         })
 
@@ -68,54 +71,72 @@ const Departments: React.FC = () => {
 
     fetchDepartments()
     return () => controller.abort()
-  }, [API_BASE, debouncedSearch])
+  }, [API_BASE, debouncedSearch , token])
 
   // 🔹 Delete department
   const handleDelete = async () => {
     if (!selectedDept) return
 
     try {
+      setError(null)
+
       const res = await fetch(`${API_BASE}/api/department/${selectedDept.id}`, {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' , Authorization: `Bearer ${token}`},
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
       })
 
-      if (!res.ok) throw new Error('Failed to delete department')
+      const data = await res.json()
 
+      if (!res.ok) {
+        setError(data.general_error || 'Something went wrong while deleting')
+        return
+      }
+
+      // success
       setDepartments((prev) => prev.filter((d) => d.id !== selectedDept.id))
       setIsModalOpen(false)
       setSelectedDept(null)
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        alert(err.message || 'Something went wrong while deleting')
-      }
+    } catch (err) {
+      if (err instanceof Error) setError(err.message)
     }
   }
 
   return (
     <>
       {/* Delete Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-[400px]">
-            <h2 className="text-lg font-semibold mb-4">Confirm Delete</h2>
-            <p>Are you sure you want to delete this department?</p>
-            <div className="flex justify-end gap-3 mt-6">
-              <Button
-                type="button"
-                className="bg-gray-400 hover:bg-gray-500"
-                onClick={() => setIsModalOpen(false)}
-              >
-                Cancel
-              </Button>
+      {isModalOpen && selectedDept && (
+        <div className="fixed inset-0 flex items-center justify-center bg-[#0000008a] z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-80">
+            <p className="text-gray-200 text-center">
+              Are you sure you want to delete <b>{selectedDept.name}</b>?
+            </p>
+
+
+            <div className="flex justify-center gap-3 mt-6">
               <Button
                 type="button"
                 className="bg-red-600 hover:bg-red-700"
                 onClick={handleDelete}
-              >
-                Delete
+                >
+                Yes, Delete
+              </Button>
+              <Button
+                type="button"
+                className="bg-gray-400 hover:bg-gray-500"
+                onClick={() => {
+                  setIsModalOpen(false)
+                  setSelectedDept(null)
+                  setError(null)
+                }}
+                >
+                Cancel
               </Button>
             </div>
+                {/* 🔥 Error message inside modal */}
+                {error && <p className="text-red mt-3 text-sm text-center">{error}</p>}
           </div>
         </div>
       )}
@@ -231,7 +252,7 @@ const Departments: React.FC = () => {
                       <div className="flex items-center gap-1">
                         <span
                           className={`w-[10px] h-[10px] rounded-full ${
-                            dept.status ? 'bg-green-500' : 'bg-red-500'
+                            dept.status ? 'bg-green' : 'bg-red'
                           } block`}
                         ></span>
                         {dept.status ? 'Active' : 'Inactive'}
@@ -256,10 +277,10 @@ const Departments: React.FC = () => {
                           setIsModalOpen(true)
                           setSelectedDept(dept)
                         }}
-                        className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all"
+                        className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all cursor-pointer"
                       >
                         <svg
-                          className="w-[18px] h-[18px] text-white group-hover:text-red-600"
+                          className="w-[18px] h-[18px] text-white group-hover:text-red"
                           viewBox="0 0 12 12"
                           fill="none"
                         >

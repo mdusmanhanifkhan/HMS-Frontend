@@ -6,6 +6,8 @@ import { Input } from '../../components/input/Input'
 import { Label } from '../../components/input/Label'
 import TextArea from '../../components/input/TextArea'
 import Dropdown from '../../components/input/Dropdown'
+import ToggleButton from '../../components/button/ToggleButton'
+import { routePaths } from '../../constants/routePaths'
 
 // ✅ Validation schema
 const procedureSchema = Yup.object().shape({
@@ -60,7 +62,9 @@ const AddDoctorFee = () => {
   const token = localStorage.getItem('token') // ✅ Get token
 
   // ✅ handle input and dropdown changes
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const target = e.target as HTMLInputElement
     const { id, type, value, checked } = target
     setForm((prev) => ({
@@ -69,7 +73,10 @@ const AddDoctorFee = () => {
     }))
   }
 
-  const handleSelect = (field: keyof FormType, value: OptionType | string | null) => {
+  const handleSelect = (
+    field: keyof FormType,
+    value: OptionType | string | null | number
+  ) => {
     setForm((prev) => ({ ...prev, [field]: value }))
   }
 
@@ -113,7 +120,8 @@ const AddDoctorFee = () => {
       })
 
       const data = await response.json()
-      if (!response.ok) throw new Error(data.message || 'Failed to add doctor fee')
+      if (!response.ok)
+        throw new Error(data.message || 'Failed to add doctor fee')
 
       setSuccessMsg('✅ Doctor fee added successfully!')
       setForm({
@@ -183,7 +191,19 @@ const AddDoctorFee = () => {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-10">
-      <p className="text-xl font-semibold w-full border-b pb-3">Add Doctor Fee</p>
+      <div className="flex justify-between items-center border-b pb-3">
+        <p className="text-xl font-semibold w-full">Add Doctor Fee</p>
+        <Button to={routePaths.DOCTOR_FEE} asLink={true}>
+          <svg
+            className="w-3.5 h-3.5 -scale-x-100"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 640 640"
+          >
+            <use href="/assets/svg/arrow-icon.svg#arrow-icon" />
+          </svg>
+          Back
+        </Button>
+      </div>
 
       {successMsg && <p className="text-green-600">{successMsg}</p>}
       {errorMsg && <p className="text-red-600">{errorMsg}</p>}
@@ -192,20 +212,16 @@ const AddDoctorFee = () => {
         {/* Status */}
         <GroupInput className="col-span-full">
           <Label htmlFor="status">Status</Label>
-          <div className="checkbox-apple">
-            <input
-              id="status"
-              type="checkbox"
-              checked={form.status}
-              onChange={handleChange}
-            />
-            <label htmlFor="status"></label>
-          </div>
+          <ToggleButton
+            id="status"
+            checked={form.status}
+            onChange={handleChange}
+          />
         </GroupInput>
 
         {/* Doctor */}
         <GroupInput>
-          <Label>Doctor</Label>
+          <Label required="true">Doctor</Label>
           <Dropdown
             options={doctors}
             selected={form.doctor}
@@ -217,31 +233,37 @@ const AddDoctorFee = () => {
 
         {/* Department */}
         <GroupInput>
-          <Label>Department</Label>
+          <Label required="true">Department</Label>
           <Dropdown
             options={departments}
             selected={form.department}
             onSelect={(val) => handleSelect('department', val)}
             placeholder="Select Department"
           />
-          {errors.department && <p className="text-red text-sm">{errors.department}</p>}
+          {errors.department && (
+            <p className="text-red text-sm">{errors.department}</p>
+          )}
         </GroupInput>
 
         {/* Procedure */}
         <GroupInput>
-          <Label>Procedure</Label>
+          <Label required="true">Procedure</Label>
           <Dropdown
             options={procedures}
             selected={form.procedure}
             onSelect={(val) => handleSelect('procedure', val)}
             placeholder="Select Procedure"
           />
-          {errors.procedure && <p className="text-red text-sm">{errors.procedure}</p>}
+          {errors.procedure && (
+            <p className="text-red text-sm">{errors.procedure}</p>
+          )}
         </GroupInput>
 
         {/* Procedure Price */}
         <GroupInput>
-          <Label htmlFor="procedurePrice">Procedure Price (Rs)</Label>
+          <Label required="true" htmlFor="procedurePrice">
+            Procedure Price (Rs)
+          </Label>
           <Input
             id="procedurePrice"
             type="number"
@@ -255,7 +277,7 @@ const AddDoctorFee = () => {
 
         {/* Payment Type */}
         <GroupInput>
-          <Label>Payment Type</Label>
+          <Label required="true">Payment Type</Label>
           <Dropdown
             options={[
               { id: 'Share', name: 'Share' },
@@ -263,7 +285,9 @@ const AddDoctorFee = () => {
               { id: 'Share + Fixed', name: 'Share + Fixed' },
             ]}
             selected={
-              form.paymentType ? { id: form.paymentType, name: form.paymentType } : null
+              form.paymentType
+                ? { id: form.paymentType, name: form.paymentType }
+                : null
             }
             onSelect={(val) => handleSelect('paymentType', val.id)}
             placeholder="Select Payment Type"
@@ -274,7 +298,8 @@ const AddDoctorFee = () => {
         </GroupInput>
 
         {/* Doctor/Hospital Share */}
-        {(form.paymentType === 'Share' || form.paymentType === 'Share + Fixed') && (
+        {(form.paymentType === 'Share' ||
+          form.paymentType === 'Share + Fixed') && (
           <>
             <GroupInput>
               <Label htmlFor="doctorShare">Doctor Share (%)</Label>
@@ -299,7 +324,8 @@ const AddDoctorFee = () => {
         )}
 
         {/* Fixed Price */}
-        {(form.paymentType === 'Fixed' || form.paymentType === 'Share + Fixed') && (
+        {(form.paymentType === 'Fixed' ||
+          form.paymentType === 'Share + Fixed') && (
           <GroupInput>
             <Label htmlFor="fixedPrice">Fixed Price</Label>
             <Input
@@ -312,7 +338,7 @@ const AddDoctorFee = () => {
         )}
 
         {/* Description */}
-        <GroupInput className="col-span-full">
+        <GroupInput className="col-span-2">
           <Label htmlFor="description">Description</Label>
           <TextArea
             id="description"
