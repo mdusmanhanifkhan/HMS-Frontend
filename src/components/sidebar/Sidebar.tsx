@@ -1,22 +1,32 @@
 import { SidebarRoutes } from '../../routes/routes'
 import { NavLink } from 'react-router-dom'
 
+interface RouteItem {
+  name: string
+  link: string
+  permission?: string
+}
+
 export const Sidebar = () => {
+  const storedUser = localStorage.getItem("user")
 
-const user = localStorage.getItem("user")
-const parsed = JSON.parse(user)
+  // Safe parse: handles null
+  let role: Record<string, boolean> = {}
 
-const role = parsed?.user?.role
+  if (storedUser) {
+    const parsed = JSON.parse(storedUser)
+    role = parsed?.user?.role || {}
+  }
 
-  const filteredRoutes = SidebarRoutes.filter(route => {
-    if (!route.permission) return true; // if no permission required → show
-    return role[route.permission] === true;
-  });
+  const filteredRoutes = SidebarRoutes.filter((route: RouteItem) => {
+    if (!route.permission) return true
+    return role[route.permission] === true
+  })
 
   return (
     <aside>
       <ul className="space-y-3">
-        {filteredRoutes.map((elem, index) => (
+        {filteredRoutes.map((elem: RouteItem, index: number) => (
           <NavLink
             key={index}
             to={elem.link}

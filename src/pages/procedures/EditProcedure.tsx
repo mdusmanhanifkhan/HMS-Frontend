@@ -4,8 +4,8 @@ import { GroupInput } from '../../components/input/GroupInput'
 import { Input } from '../../components/input/Input'
 import { Label } from '../../components/input/Label'
 import TextArea from '../../components/input/TextArea'
-import Dropdown from '../../components/input/dropdown'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
+import Dropdown from '../../components/input/Dropdown'
 
 type Department = { id: number; name: string }
 type Procedure = {
@@ -18,7 +18,6 @@ type Procedure = {
 
 const EditProcedure = () => {
   const { id } = useParams()
-  const navigate = useNavigate()
 
   const API_BASE = import.meta.env.VITE_API_BASE_URL
   const token = localStorage.getItem('token')

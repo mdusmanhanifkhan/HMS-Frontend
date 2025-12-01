@@ -1,4 +1,5 @@
-import { useEffect, useState, ReactNode } from "react";
+import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 
 interface ProtectedRouteProps {
@@ -22,11 +23,9 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     }
 
     if (user) {
-      // User info exists → allow access instantly
       setIsAuthorized(true);
       setLoading(false);
 
-      // Optional: Validate token in background
       fetch(`${API_BASE}/api/me`, {
         headers: { Authorization: `Bearer ${token}` },
       })
@@ -50,7 +49,6 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
       return;
     }
 
-    // If token exists but user info missing → validate immediately
     const checkAuth = async () => {
       try {
         const res = await fetch(`${API_BASE}/api/me`, {
