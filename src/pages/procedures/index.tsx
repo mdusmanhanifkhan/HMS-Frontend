@@ -200,12 +200,7 @@ const Procedures = () => {
               <tr>
                 <td colSpan={7} className="px-6 py-6 text-center text-gray-500">
                   No procedures found.{' '}
-                  <Link
-                    to={routePaths.ADD_PROCEDURE}
-                    className="text-blue-600 underline"
-                  >
-                    Add a procedure
-                  </Link>
+               
                 </td>
               </tr>
             ) : (
@@ -271,6 +266,7 @@ const Procedures = () => {
           </tbody>
         </table>
       </div>
+      
 
       {/* Delete Confirmation Modal */}
       {deleteModalOpen && procedureToDelete && (

@@ -30,7 +30,7 @@ const Departments: React.FC = () => {
   const API_BASE = import.meta.env.VITE_API_BASE_URL
   const token = localStorage.getItem('token')
 
-  // 🔹 Debounce search input
+  // 🔹 Debounce search
   useEffect(() => {
     const handler = setTimeout(() => setDebouncedSearch(searchTerm), 500)
     return () => clearTimeout(handler)
@@ -39,11 +39,11 @@ const Departments: React.FC = () => {
   // 🔹 Fetch departments
   useEffect(() => {
     const controller = new AbortController()
-
     const fetchDepartments = async () => {
       try {
         setLoading(true)
         setError(null)
+
         const url = debouncedSearch
           ? `${API_BASE}/api/department?search=${debouncedSearch}`
           : `${API_BASE}/api/department`
@@ -56,7 +56,7 @@ const Departments: React.FC = () => {
           signal: controller.signal,
         })
 
-        if (!res.ok) throw new Error(res.statusText)
+        if (!res.ok) throw new Error('Failed to fetch departments')
 
         const data = await res.json()
         setDepartments(data.data || [])
@@ -65,13 +65,15 @@ const Departments: React.FC = () => {
           setError(err.message)
         }
       } finally {
-        setLoading(false)
+        if (!controller.signal.aborted) {
+          setLoading(false)
+        }
       }
     }
 
     fetchDepartments()
     return () => controller.abort()
-  }, [API_BASE, debouncedSearch , token])
+  }, [API_BASE, debouncedSearch, token])
 
   // 🔹 Delete department
   const handleDelete = async () => {
@@ -95,7 +97,6 @@ const Departments: React.FC = () => {
         return
       }
 
-      // success
       setDepartments((prev) => prev.filter((d) => d.id !== selectedDept.id))
       setIsModalOpen(false)
       setSelectedDept(null)
@@ -110,17 +111,16 @@ const Departments: React.FC = () => {
       {isModalOpen && selectedDept && (
         <div className="fixed inset-0 flex items-center justify-center bg-[#0000008a] z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-80">
-            <p className="text-gray-200 text-center">
+            <p className="text-gray-700 text-center">
               Are you sure you want to delete <b>{selectedDept.name}</b>?
             </p>
-
 
             <div className="flex justify-center gap-3 mt-6">
               <Button
                 type="button"
                 className="bg-red-600 hover:bg-red-700"
                 onClick={handleDelete}
-                >
+              >
                 Yes, Delete
               </Button>
               <Button
@@ -131,12 +131,12 @@ const Departments: React.FC = () => {
                   setSelectedDept(null)
                   setError(null)
                 }}
-                >
+              >
                 Cancel
               </Button>
             </div>
-                {/* 🔥 Error message inside modal */}
-                {error && <p className="text-red mt-3 text-sm text-center">{error}</p>}
+
+            {error && <p className="text-red mt-3 text-sm text-center">{error}</p>}
           </div>
         </div>
       )}
@@ -147,29 +147,7 @@ const Departments: React.FC = () => {
         <div className="flex justify-between items-center w-full border-b pb-3">
           <p className="text-xl font-semibold">Department Management</p>
           <div className="flex items-center gap-5">
-            {/* Search Input */}
-            <div className="flex items-center gap-2 py-1.5 w-full rounded-lg outline-none border px-2 border-gray placeholder:text-gray-100 placeholder:font-light min-w-64">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 20 20"
-                fill="none"
-              >
-                <circle
-                  cx="7.5"
-                  cy="7.5"
-                  r="7.5"
-                  stroke="#000"
-                  strokeWidth="2"
-                />
-                <path
-                  d="M18 18l-5.2-5.2"
-                  stroke="#000"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
-              </svg>
+            <div className="flex items-center gap-2 py-1.5 w-full rounded-lg outline-none border px-2 min-w-64">
               <Input
                 type="text"
                 placeholder="Search departments..."
@@ -201,22 +179,32 @@ const Departments: React.FC = () => {
                 <th className="px-6 py-3">Action</th>
               </tr>
             </thead>
+
             <tbody>
-              {loading ? (
+              {/* Loading */}
+              {loading && (
                 <tr>
-                  <td colSpan={8} className="py-4 text-center">
-                    <Loading />
+                  <td colSpan={8}>
+                    <div className="flex justify-center py-4">
+                      <Loading />
+                    </div>
                   </td>
                 </tr>
-              ) : error ? (
+              )}
+
+              {/* Error */}
+              {!loading && error && (
                 <tr>
                   <td colSpan={8} className="py-4 text-center text-red-500">
                     {error}
                   </td>
                 </tr>
-              ) : departments.length === 0 ? (
+              )}
+
+              {/* Empty */}
+              {!loading && !error && departments.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="py-4 text-center">
+                  <td colSpan={8} className="py-8 text-center">
                     No departments found.{' '}
                     <Link
                       to={routePaths.ADD_DEPARTMENT}
@@ -226,7 +214,12 @@ const Departments: React.FC = () => {
                     </Link>
                   </td>
                 </tr>
-              ) : (
+              )}
+
+              {/* Data Rows */}
+              {!loading &&
+                !error &&
+                departments.length > 0 &&
                 departments.map((dept) => (
                   <tr
                     key={dept.id}
@@ -258,6 +251,7 @@ const Departments: React.FC = () => {
                         {dept.status ? 'Active' : 'Inactive'}
                       </div>
                     </td>
+
                     <td className="px-6 py-4 flex items-center gap-2">
                       <Link
                         to={`${routePaths.EDIT_DEPARTMENT}/${dept.id}`}
@@ -289,8 +283,7 @@ const Departments: React.FC = () => {
                       </button>
                     </td>
                   </tr>
-                ))
-              )}
+                ))}
             </tbody>
           </table>
         </div>
