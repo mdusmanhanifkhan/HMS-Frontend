@@ -1,12 +1,37 @@
+type Procedure = {
+  id: number;
+  name: string;
+  fee: number;
+};
+
+type Department = {
+  id: number;
+  name: string;
+};
+
+type WelfareRecord = {
+  discountPercentage?: number;
+};
+
+type Patient = {
+  id: number;
+  name: string;
+  age: number | string;
+  phoneNumber?: string;
+  procedure?: Procedure;
+  department?: Department;
+  welfareRecord?: WelfareRecord;
+};
+
 type ReceiptTemplateProps = {
-  patient: any;
+  patient: Patient;
 };
 
 const ReceiptTemplate = ({ patient }: ReceiptTemplateProps) => {
   const today = new Date();
   const invoiceNo = `INV/${today.getFullYear()}/${patient.id || "0000"}`;
-  const discount = patient?.welfareRecord?.discountPercentage || 0;
-  const originalFee = patient.procedure?.fee || 0;
+  const discount = patient.welfareRecord?.discountPercentage ?? 0;
+  const originalFee = patient.procedure?.fee ?? 0;
   const discounted = originalFee - (originalFee * discount) / 100;
 
   return `

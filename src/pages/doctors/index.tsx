@@ -3,11 +3,31 @@ import Button from '../../components/button/Button'
 import { routePaths } from '../../constants/routePaths'
 import { useEffect, useState } from 'react'
 
+// Define the types for doctor and departments
+interface DepartmentLink {
+  department: {
+    name: string
+  }
+}
+
+interface Doctor {
+  id: number
+  name: string
+  age: number
+  departmentLinks: DepartmentLink[]
+  idCard: string
+  employmentType: string
+  timingFrom: string
+  timingTo: string
+  status: boolean
+}
+
 const Doctors = () => {
   const API_URL = import.meta.env.VITE_API_BASE_URL
-  const token = localStorage.getItem('token') // ✅ Get token from localStorage
+  const token = localStorage.getItem('token')
 
-  const [doctors, setDoctor] = useState<[]>([])
+  // Use the Doctor type in the state
+  const [doctors, setDoctor] = useState<Doctor[]>([])
 
   useEffect(() => {
     const fetchDoctors = async () => {
@@ -19,10 +39,11 @@ const Doctors = () => {
       try {
         const res = await fetch(`${API_URL}/api/doctors`, {
           headers: {
-            Authorization: `Bearer ${token}`, // ✅ Add token here
+            Authorization: `Bearer ${token}`,
           },
         })
         const resData = await res.json()
+        // Ensure data matches Doctor[]
         setDoctor(resData.data)
       } catch (error) {
         console.log(error)
@@ -30,8 +51,6 @@ const Doctors = () => {
     }
     fetchDoctors()
   }, [API_URL, token])
-
-  console.log(doctors)
 
   return (
     <div className="flex flex-col gap-10">
@@ -58,8 +77,8 @@ const Doctors = () => {
             </tr>
           </thead>
           <tbody>
-            {doctors?.length > 0 ? (
-              doctors.map((doctor: any) => (
+            {doctors.length > 0 ? (
+              doctors.map((doctor) => (
                 <tr key={doctor.id} className="bg-[#DFDEDE] border-b border-gray-200">
                   <th className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                     {doctor.id}
@@ -68,7 +87,7 @@ const Doctors = () => {
                   <td className="px-6 py-4">{doctor.age}</td>
                   <td className="px-6 py-4">
                     {doctor.departmentLinks.length > 0
-                      ? doctor.departmentLinks.map((d: any) => d.department?.name).join(', ')
+                      ? doctor.departmentLinks.map(d => d.department.name).join(', ')
                       : '—'}
                   </td>
                   <td className="px-6 py-4">{doctor.idCard}</td>
@@ -81,7 +100,6 @@ const Doctors = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 flex items-center gap-2">
-                    {/* Action buttons */}
                     <a href="#" className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200">
                       <svg className="w-[18px] h-[18px] text-white group-hover:text-dark" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <use href="/assets/svg/edit-icon.svg#edit-icon" />

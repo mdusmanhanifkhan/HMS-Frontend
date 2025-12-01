@@ -5,27 +5,8 @@ import { Input } from '../../components/input/Input'
 import { Label } from '../../components/input/Label'
 import { useParams } from 'react-router-dom'
 
-type Procedure = {
-  id: number
-  name: string
-  fee: number
-}
-
-type Doctor = {
-  id: number
-  name: string
-  procedures: Procedure[]
-}
-
-type Department = {
-  id: number
-  name: string
-  doctors: Doctor[]
-}
-
 const AddWelfarePatient = () => {
   const { id: patientId } = useParams()
-  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [showPatientInfo, setShowPatientInfo] = useState(false)
 
@@ -71,27 +52,8 @@ const AddWelfarePatient = () => {
   const API_BASE = import.meta.env.VITE_API_BASE_URL
   const token = localStorage.getItem('token')
 
-  // Example hierarchy (static for now)
-  const departments: Department[] = [
-    {
-      id: 1,
-      name: 'Dental',
-      doctors: [
-        {
-          id: 1,
-          name: 'Dr. Ahmed',
-          procedures: [
-            { id: 1, name: 'Tooth Extraction', fee: 2000 },
-            { id: 2, name: 'Root Canal', fee: 5000 },
-          ],
-        },
-      ],
-    },
-  ]
-
   useEffect(() => {
     const fetchPatient = async () => {
-      setLoading(true)
       setError(null)
       try {
         const res = await fetch(`${API_BASE}/api/patient/${patientId}`, {
@@ -108,22 +70,24 @@ const AddWelfarePatient = () => {
           setForm((prev) => ({ ...prev, ...data.data }))
           setShowPatientInfo(true)
         }
-      } catch (err: any) {
-        setError(err.message || 'Error fetching patient')
-      } finally {
-        setLoading(false)
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message)
+        } else {
+          setError('Error fetching patient')
+        }
       }
     }
     fetchPatient()
   }, [patientId, token])
 
-  const handleChange = (key: string, value: any) => {
+  const handleChange = (key: keyof typeof form, value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
+
     setError(null)
 
     try {
@@ -146,11 +110,12 @@ const AddWelfarePatient = () => {
       }
 
       console.log('Server response:', data)
-    } catch (err: any) {
-      console.error('Error:', err)
-      setError(err.message || 'Something went wrong while saving record')
-    } finally {
-      setLoading(false)
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message)
+      } else {
+        setError('Something went wrong while saving record')
+      }
     }
   }
 
