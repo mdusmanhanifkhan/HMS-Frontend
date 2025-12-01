@@ -77,14 +77,7 @@ const Login = () => {
         >
           Hospital Management
         </h2>
-
-        <h3
-          className="text-lg font-semibold text-center mb-6"
-          style={{ color: "var(--color-red)" }}
-        >
-          Login to Continue
-        </h3>
-
+        
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Email */}
@@ -131,17 +124,17 @@ const Login = () => {
 
           {/* Alerts */}
           {error && (
-            <p className="text-red-600 text-sm text-center">{error}</p>
+            <p className="text-red text-sm text-center">{error}</p>
           )}
           {success && (
-            <p className="text-green-600 text-sm text-center">{success}</p>
+            <p className="text-green text-sm text-center">{success}</p>
           )}
 
           {/* Submit Button */}
           <Button
             type="submit"
             disabled={loading}
-            className="w-full py-2 text-center font-semibold"
+            className="w-full py-2 flex justify-center font-semibold"
             style={{
               background: "var(--color-red)",
               color: "var(--color-white)",
