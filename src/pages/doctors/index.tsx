@@ -77,7 +77,7 @@ const Doctors = () => {
             </tr>
           </thead>
           <tbody>
-            {doctors.length > 0 ? (
+            {doctors?.length > 0 ? (
               doctors.map((doctor) => (
                 <tr key={doctor.id} className="bg-[#DFDEDE] border-b border-gray-200">
                   <th className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">

@@ -3,6 +3,7 @@ import './App.css'
 import { Sidebar } from './components/sidebar/Sidebar'
 import { Topbar } from './components/topbar/Topbar'
 import Container from './layout/Container'
+import logo from "./assets/images/logo.jpg"
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
@@ -40,9 +41,10 @@ function App() {
       {/* SIDEBAR */}
       <aside className="bg-[#060505] w-[250px] h-full flex-shrink-0 overflow-y-auto flex justify-between flex-col px-3">
         <div>
-          <p className="text-white text-xl font-light py-5 w-fit ">
+          {/* <p className="text-white text-xl font-light py-5 w-fit ">
             HMS Enjin X
-          </p>
+          </p> */}
+          <img src={logo} alt="logo of HMS" className='w-full' />
           <Sidebar />
         </div>
 

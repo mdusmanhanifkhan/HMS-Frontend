@@ -31,7 +31,7 @@ import { routePaths } from "../constants/routePaths";
 //   { name: "Settings", link: routePaths.SETTINGS },
 // ];
 export const SidebarRoutes = [
-  { name: "Dashboard", link: routePaths.DASHBOARD, permission: "canViewDashboard" },
+  { name: "Dashboard", link: routePaths.DASHBOARD},
   { name: "Patient", link: routePaths.PATIENTS, permission: "canManagePatients" },
   { name: "Departments", link: routePaths.DEPARTMENTS, permission: "canManageDepartments" },
   { name: "Procedure", link: routePaths.PROCEDURE, permission: "canManageProcedures" },
@@ -40,5 +40,5 @@ export const SidebarRoutes = [
   { name: "Welfare Management", link: routePaths.WELFARE_MANAGEMENT, permission: "canManageWelfare" },
   { name: "Billing & Receipts", link: routePaths.BILLING, permission: "canViewBilling" },
   { name: "User Management", link: routePaths.USERS_MANAGEMENT, permission: "canManageUsers" },
-  { name: "Settings", link: routePaths.SETTINGS, permission: "canAccessSettings" }
+  { name: "Settings", link: routePaths.SETTINGS }
 ];

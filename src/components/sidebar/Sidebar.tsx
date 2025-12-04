@@ -1,27 +1,22 @@
+import { usePermissions } from '../../context/PermissionsContext'
 import { SidebarRoutes } from '../../routes/routes'
 import { NavLink } from 'react-router-dom'
 
 interface RouteItem {
-  name: string
-  link: string
-  permission?: string
+  name: string;
+  link: string;
+  permission?: string;
 }
 
 export const Sidebar = () => {
-  const storedUser = localStorage.getItem("user")
+  const { user} = usePermissions();
 
-  // Safe parse: handles null
-  let role: Record<string, boolean> = {}
-
-  if (storedUser) {
-    const parsed = JSON.parse(storedUser)
-    role = parsed?.user?.role || {}
-  }
+  console.log(user, 'permissions')
 
   const filteredRoutes = SidebarRoutes.filter((route: RouteItem) => {
-    if (!route.permission) return true
-    return role[route.permission] === true
-  })
+    if (!route.permission) return true;
+    return user?.role[route.permission] === true;
+  });
 
   return (
     <aside>
@@ -31,7 +26,10 @@ export const Sidebar = () => {
             key={index}
             to={elem.link}
             className={({ isActive }) =>
-              `${isActive ? 'text-red' : 'text-white'} px-3 border-[#353635] py-2 cursor-pointer hover:text-red transition-all duration-300 flex items-center gap-2 border-b`
+              `${isActive ? 'text-red' : 'text-white'} 
+               px-3 border-[#353635] py-2 cursor-pointer 
+               hover:text-red transition-all duration-300 
+               flex items-center gap-2 border-b`
             }
           >
             <svg className="w-[15px] h-[15px]" viewBox="0 0 12 12" fill="none">
@@ -42,5 +40,5 @@ export const Sidebar = () => {
         ))}
       </ul>
     </aside>
-  )
-}
+  );
+};
