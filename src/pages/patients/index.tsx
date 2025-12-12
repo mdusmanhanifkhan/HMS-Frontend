@@ -4,6 +4,7 @@ import Button from '../../components/button/Button'
 import { routePaths } from '../../constants/routePaths'
 import { Input } from '../../components/input/Input'
 import Loading from '../../components/loading/Loading'
+import { usePermissions } from '../../context/PermissionsContext'
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL
 
@@ -42,6 +43,7 @@ const Patients = () => {
   const token = localStorage.getItem('token')
 
   if (!token) console.error('No token found. Please login.')
+  const {role} = usePermissions()
 
   // Fetch Patients
   const fetchPatients = async (filters?: {
@@ -261,6 +263,7 @@ const Patients = () => {
                         <use href="/assets/svg/edit-icon.svg#edit-icon" />
                       </svg>
                       </Link>
+                      {role == "superadmin" ? 
                       <button
                         onClick={() => confirmDelete(p.patientId)}
                         className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200 cursor-pointer"
@@ -274,6 +277,8 @@ const Patients = () => {
                         <use href="/assets/svg/delete-icon.svg#delete-icon" />
                       </svg>
                       </button>
+                      : ""
+                    }
                       <Link
                         to={`${routePaths.PATIENTS_RECEIPT_GENERATE}/${p.patientId}`}
                         className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200"

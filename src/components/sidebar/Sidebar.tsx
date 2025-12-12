@@ -2,6 +2,7 @@ import { usePermissions } from '../../context/PermissionsContext'
 import { SidebarRoutes } from '../../routes/routes'
 import { NavLink } from 'react-router-dom'
 
+
 interface RouteItem {
   name: string;
   link: string;
@@ -11,7 +12,6 @@ interface RouteItem {
 export const Sidebar = () => {
   const { user} = usePermissions();
 
-  console.log(user, 'permissions')
 
   const filteredRoutes = SidebarRoutes.filter((route: RouteItem) => {
     if (!route.permission) return true;

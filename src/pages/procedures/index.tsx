@@ -4,6 +4,7 @@ import Button from '../../components/button/Button'
 import { routePaths } from '../../constants/routePaths'
 import Loading from '../../components/loading/Loading'
 import { Input } from '../../components/input/Input'
+import { usePermissions } from '../../context/PermissionsContext'
 
 interface Department {
   id: number
@@ -30,6 +31,7 @@ const Procedures = () => {
 
   const API_BASE = import.meta.env.VITE_API_BASE_URL
   const token = localStorage.getItem('token')
+  const {role} = usePermissions()
 
   if (!token) console.error('No token found. Users must login first.')
 
@@ -246,6 +248,8 @@ const Procedures = () => {
                       </svg>
                     </Link>
                     {/* Delete */}
+                    {
+                      role == "superadmin" ? 
                     <button
                       onClick={() => handleDeleteClick(proc)}
                       className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200"
@@ -259,6 +263,8 @@ const Procedures = () => {
                         <use href="/assets/svg/delete-icon.svg#delete-icon" />
                       </svg>
                     </button>
+: ""
+                    }
                   </td>
                 </tr>
               ))

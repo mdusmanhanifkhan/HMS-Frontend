@@ -12,7 +12,9 @@ type Permissions = {
 type User = {
   id: number;
   name: string;
-  role: string;
+  role: {
+     [key: string]: boolean;
+  };
   permissions: Permissions;
 };
 
@@ -20,12 +22,14 @@ type PermissionContextType = {
   user: User | null;
   permissions: Permissions;
   loading: boolean;
+  role: string | null;
 };
 
 const PermissionContext = createContext<PermissionContextType>({
   user: null,
   permissions: {},
   loading: true,
+  role: null,
 });
 
 export const usePermissions = () => useContext(PermissionContext);
@@ -38,6 +42,7 @@ export const PermissionProvider = ({
   children: React.ReactNode;
 }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [role, setRole] = useState<string | null>(null);
   const [permissions, setPermissions] = useState<Permissions>({});
   const [loading, setLoading] = useState(true);
 
@@ -51,18 +56,16 @@ export const PermissionProvider = ({
       }
 
       try {
-        const res = await fetch(
-          `${API_BASE}/api/me`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        const res = await fetch(`${API_BASE}/api/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
         const data = await res.json();
 
         if (res.ok && data.user) {
           setUser(data.user);
           setPermissions(data.user.permissions || {});
+          setRole(data.user.role.name); 
         }
       } catch (error) {
         console.error("Failed to load permissions", error);
@@ -75,7 +78,7 @@ export const PermissionProvider = ({
   }, [token]);
 
   return (
-    <PermissionContext.Provider value={{ user, permissions, loading }}>
+    <PermissionContext.Provider value={{ user, permissions, loading, role }}>
       {children}
     </PermissionContext.Provider>
   );

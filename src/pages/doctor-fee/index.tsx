@@ -2,12 +2,26 @@ import { Link } from 'react-router-dom'
 import Button from '../../components/button/Button'
 import { routePaths } from '../../constants/routePaths'
 import { useEffect, useState } from 'react'
+import { usePermissions } from '../../context/PermissionsContext'
+interface DoctorFeeType {
+  id: number
+  doctor?: { id: number; name: string }
+  department?: { id: number; name: string }
+  procedure?: { id: number; name: string }
+  paymentType: string
+  doctorShare?: number
+  hospitalShare?: number
+  fixedPrice?: number
+  description?: string
+  status: boolean
+}
 
 const DoctorFee = () => {
   const API_URL = import.meta.env.VITE_API_BASE_URL
-  const token = localStorage.getItem('token') // ✅ Get token
+  const token = localStorage.getItem('token')
+  const { role } = usePermissions()
 
-  const [doctorFees, setDoctorFees] = useState<any[]>([])
+  const [doctorFees, setDoctorFees] = useState<DoctorFeeType[]>([])
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
   useEffect(() => {
@@ -30,9 +44,14 @@ const DoctorFee = () => {
         }
 
         setDoctorFees(resData.data)
-      } catch (error: any) {
-        console.log('Error fetching doctor fees:', error)
-        setErrorMsg(error.message || 'Something went wrong')
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          setErrorMsg(error.message)
+        } else if (typeof error === 'string') {
+          setErrorMsg(error)
+        } else {
+          setErrorMsg('Something went wrong')
+        }
       }
     }
     fetchDoctorFees()
@@ -69,7 +88,10 @@ const DoctorFee = () => {
           <tbody>
             {doctorFees.length > 0 ? (
               doctorFees.map((fee) => (
-                <tr key={fee.id} className="bg-[#DFDEDE] border-b border-gray-200">
+                <tr
+                  key={fee.id}
+                  className="bg-[#DFDEDE] border-b border-gray-200"
+                >
                   <td className="px-6 py-4">{fee.id}</td>
                   <td className="px-6 py-4">{fee.doctor?.name || '—'}</td>
                   <td className="px-6 py-4">{fee.department?.name || '—'}</td>
@@ -92,22 +114,46 @@ const DoctorFee = () => {
                   <td className="px-6 py-4 flex items-center gap-2">
                     <a
                       href="#"
-                      className="bg-dark p-1 rounded-md group text-white hover:text-dark hover:bg-white border border-dark transition-all ease-linear duration-200"
+                      className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200"
                     >
-                      Edit
+                      <svg
+                        className="w-[18px] h-[18px] text-white group-hover:text-dark"
+                        viewBox="0 0 12 12"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <use href="/assets/svg/edit-icon.svg#edit-icon" />
+                      </svg>
                     </a>
                     <a
                       href="#"
-                      className="bg-dark p-1 rounded-md group text-white hover:text-dark hover:bg-white border border-dark transition-all ease-linear duration-200"
+                      className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200"
                     >
-                      View
+                      <svg
+                        className="w-[18px] h-[18px] text-white group-hover:text-dark"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 8 8"
+                      >
+                        <use href="/assets/svg/eye-icon.svg#eye-icon" />
+                      </svg>
                     </a>
-                    <a
-                      href="#"
-                      className="bg-dark p-1 rounded-md group text-white hover:text-dark hover:bg-white border border-dark transition-all ease-linear duration-200"
-                    >
-                      Delete
-                    </a>
+                    {role == 'superadmin' ? (
+                      <a
+                        href="#"
+                        className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200"
+                      >
+                        <svg
+                          className="w-[18px] h-[18px] text-white group-hover:text-[#cc0000]"
+                          viewBox="0 0 12 12"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <use href="/assets/svg/delete-icon.svg#delete-icon" />
+                        </svg>
+                      </a>
+                    ) : (
+                      ''
+                    )}
                   </td>
                 </tr>
               ))

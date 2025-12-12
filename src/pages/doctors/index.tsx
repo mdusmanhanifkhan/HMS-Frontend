@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import Button from '../../components/button/Button'
 import { routePaths } from '../../constants/routePaths'
 import { useEffect, useState } from 'react'
+import { usePermissions } from '../../context/PermissionsContext'
 
 // Define the types for doctor and departments
 interface DepartmentLink {
@@ -25,6 +26,7 @@ interface Doctor {
 const Doctors = () => {
   const API_URL = import.meta.env.VITE_API_BASE_URL
   const token = localStorage.getItem('token')
+  const {role} = usePermissions()
 
   // Use the Doctor type in the state
   const [doctors, setDoctor] = useState<Doctor[]>([])
@@ -110,11 +112,15 @@ const Doctors = () => {
                         <use href="/assets/svg/eye-icon.svg#eye-icon" />
                       </svg>
                     </a>
+                    {
+                      role == "superadmin" ? 
                     <a href="#" className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200">
                       <svg className="w-[18px] h-[18px] text-white group-hover:text-[#cc0000]" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <use href="/assets/svg/delete-icon.svg#delete-icon" />
                       </svg>
                     </a>
+: ""
+                    }
                   </td>
                 </tr>
               ))

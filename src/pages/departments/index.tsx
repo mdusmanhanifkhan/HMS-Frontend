@@ -4,6 +4,7 @@ import Button from '../../components/button/Button'
 import { routePaths } from '../../constants/routePaths'
 import Loading from '../../components/loading/Loading'
 import { Input } from '../../components/input/Input'
+import { usePermissions } from '../../context/PermissionsContext'
 
 interface Department {
   id: number
@@ -29,6 +30,7 @@ const Departments: React.FC = () => {
 
   const API_BASE = import.meta.env.VITE_API_BASE_URL
   const token = localStorage.getItem('token')
+  const { role } = usePermissions()
 
   // 🔹 Debounce search
   useEffect(() => {
@@ -244,9 +246,8 @@ const Departments: React.FC = () => {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-1">
                         <span
-                          className={`w-[10px] h-[10px] rounded-full ${
-                            dept.status ? 'bg-green' : 'bg-red'
-                          } block`}
+                          className={`w-[10px] h-[10px] rounded-full ${dept.status ? 'bg-green' : 'bg-red'
+                            } block`}
                         ></span>
                         {dept.status ? 'Active' : 'Inactive'}
                       </div>
@@ -265,22 +266,25 @@ const Departments: React.FC = () => {
                           <use href="/assets/svg/edit-icon.svg#edit-icon" />
                         </svg>
                       </Link>
-
-                      <button
-                        onClick={() => {
-                          setIsModalOpen(true)
-                          setSelectedDept(dept)
-                        }}
-                        className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all cursor-pointer"
-                      >
-                        <svg
-                          className="w-[18px] h-[18px] text-white group-hover:text-red"
-                          viewBox="0 0 12 12"
-                          fill="none"
-                        >
-                          <use href="/assets/svg/delete-icon.svg#delete-icon" />
-                        </svg>
-                      </button>
+                      {
+                        role === "superadmin" ?
+                          <button
+                            onClick={() => {
+                              setIsModalOpen(true)
+                              setSelectedDept(dept)
+                            }}
+                            className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all cursor-pointer"
+                          >
+                            <svg
+                              className="w-[18px] h-[18px] text-white group-hover:text-red"
+                              viewBox="0 0 12 12"
+                              fill="none"
+                            >
+                              <use href="/assets/svg/delete-icon.svg#delete-icon" />
+                            </svg>
+                          </button>
+                          : ""
+}
                     </td>
                   </tr>
                 ))}
