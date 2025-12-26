@@ -300,6 +300,7 @@
 // }
 
 // export default PatientReceiptGenerator
+
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Button from '../../components/button/Button';
@@ -484,7 +485,6 @@ const PatientReceiptGenerator = () => {
       return;
     }
 
-    // ✅ Ensure no null or undefined fields that ReceiptTemplate expects
     const patientData = {
       ...form,
       procedure: form.procedure!,
@@ -498,6 +498,7 @@ const PatientReceiptGenerator = () => {
     window.print();
     document.body.innerHTML = originalContent;
   };
+  
 
   // Dropdown options
   const departmentOptions = departments.map((dep) => ({ id: dep.id, name: dep.name }));
