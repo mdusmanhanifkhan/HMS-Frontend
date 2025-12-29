@@ -46,7 +46,7 @@ const initialFormState = {
   guardianName: '',
   gender: '',
   dateOfBirth: '',
-  age: '',
+  age: 0,
   idCard: '',
   phoneNumber: '',
   email: '',
@@ -83,6 +83,7 @@ const AddDoctor = () => {
     { id: 2, name: 'Visiting' },
     { id: 3, name: 'Consultant' },
     { id: 4, name: 'On Call' },
+    { id: 5, name: 'Part Time' },
   ]
 
   const shiftTypes = [
@@ -126,7 +127,7 @@ const AddDoctor = () => {
       const m = today.getMonth() - birthDate.getMonth()
       if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--
       // setForm((prev) => ({ ...prev, age })) // update age
-      setForm((prev) => ({ ...prev, age: age.toString() }))
+      setForm((prev) => ({ ...prev, age: Number(age) }))
     }
 
     setForm((prev) => ({ ...prev, [id]: newValue }))
@@ -151,7 +152,7 @@ const AddDoctor = () => {
   const handleDaySelect = (day: string) => {
     setForm((prev) => {
       const selected = prev.availableDays.includes(day)
-        ? prev.availableDays.filter((d) => d !== day)
+        ? prev.availableDays?.filter((d) => d !== day)
         : [...prev.availableDays, day]
       return { ...prev, availableDays: selected }
     })
@@ -410,7 +411,7 @@ const AddDoctor = () => {
               <Label required="true">Department</Label>
               <Dropdown
                 options={departments}
-                selected={departments.filter((d) =>
+                selected={departments?.filter((d) =>
                   form.departmentIds.includes(Number(d.id))
                 )}
                 // onSelect={opt => setForm(prev => {
@@ -425,7 +426,7 @@ const AddDoctor = () => {
                     return {
                       ...prev,
                       departmentIds: exists
-                        ? prev.departmentIds.filter((d) => d !== id)
+                        ? prev.departmentIds?.filter((d) => d !== id)
                         : [...prev.departmentIds, id],
                     }
                   })

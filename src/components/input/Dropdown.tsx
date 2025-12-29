@@ -25,7 +25,7 @@ export default function Dropdown({
   const [highlightedIndex, setHighlightedIndex] = useState<number>(-1)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  const filteredOptions = options.filter((opt) =>
+  const filteredOptions = options?.filter((opt) =>
     opt.name.toLowerCase().includes(search.toLowerCase())
   )
 
@@ -122,7 +122,7 @@ export default function Dropdown({
             : 'max-h-0 opacity-0 pointer-events-none'
         }`}
       >
-        {filteredOptions.map((opt, index) => {
+        {filteredOptions?.map((opt, index) => {
           const isSelected = multiple
             ? Array.isArray(selected) &&
               selected.some((s) => String(s.id) === String(opt.id))
