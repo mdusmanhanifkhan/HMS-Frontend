@@ -27,11 +27,13 @@ const Procedures = () => {
   const [searchTerm, setSearchTerm] = useState<string>('')
   const [debouncedSearch, setDebouncedSearch] = useState<string>('')
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false)
-  const [procedureToDelete, setProcedureToDelete] = useState<Procedure | null>(null)
+  const [procedureToDelete, setProcedureToDelete] = useState<Procedure | null>(
+    null
+  )
 
   const API_BASE = import.meta.env.VITE_API_BASE_URL
   const token = localStorage.getItem('token')
-  const {role} = usePermissions()
+  const { role } = usePermissions()
 
   if (!token) console.error('No token found. Users must login first.')
 
@@ -43,7 +45,6 @@ const Procedures = () => {
     return () => clearTimeout(handler)
   }, [searchTerm])
 
-  // Fetch procedures
   useEffect(() => {
     const controller = new AbortController()
     const fetchProcedures = async () => {
@@ -63,14 +64,15 @@ const Procedures = () => {
 
         const res = await fetch(url, {
           signal: controller.signal,
-          headers: { Authorization: `Bearer ${token}` }, // ✅ add token here
+          headers: { Authorization: `Bearer ${token}` },
         })
+        setLoading(false)
         if (!res.ok) {
           const errData = await res.json()
           throw new Error(errData.message || 'Failed to fetch procedures')
         }
-
-        const data: { status: number; message: string; data: Procedure[] } = await res.json()
+        const data: { status: number; message: string; data: Procedure[] } =
+          await res.json()
         setProcedures(data.data || [])
       } catch (err: unknown) {
         if (err instanceof Error) {
@@ -82,8 +84,6 @@ const Procedures = () => {
           setError('Something went wrong')
           setProcedures([])
         }
-      } finally {
-        setLoading(false)
       }
     }
 
@@ -103,15 +103,18 @@ const Procedures = () => {
 
     try {
       setLoading(true)
-      const res = await fetch(`${API_BASE}/api/procedures/${procedureToDelete.id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` }, // ✅ add token here
-      })
+      const res = await fetch(
+        `${API_BASE}/api/procedures/${procedureToDelete.id}`,
+        {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
       if (!res.ok) {
         const errData = await res.json()
         throw new Error(errData.message || 'Failed to delete procedure')
       }
-      setProcedures(prev => prev.filter(p => p.id !== procedureToDelete.id))
+      setProcedures((prev) => prev.filter((p) => p.id !== procedureToDelete.id))
       setDeleteModalOpen(false)
       setProcedureToDelete(null)
     } catch (err: unknown) {
@@ -186,26 +189,34 @@ const Procedures = () => {
             </tr>
           </thead>
           <tbody>
-            {loading ? (
+            {loading && (
               <tr>
-                <td colSpan={7} className="px-6 py-6 text-center">
-                  <Loading />
+                <td colSpan={8}>
+                  <div className="flex justify-center py-4">
+                    <Loading />
+                  </div>
                 </td>
               </tr>
-            ) : error ? (
+            )}
+            {!loading && error && (
               <tr>
-                <td colSpan={7} className="px-6 py-6 text-center text-red-500">
+                <td colSpan={8} className="py-4 text-center text-red-500">
                   {error}
                 </td>
               </tr>
-            ) : procedures.length === 0 ? (
+            )}
+
+            {!loading && !error && procedures.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-6 py-6 text-center text-gray-500">
-                  No procedures found.{' '}
-               
+                <td colSpan={8} className="py-8 text-center">
+                  No procedures found.
                 </td>
               </tr>
-            ) : (
+            )}
+
+            {!loading &&
+              !error &&
+              procedures.length > 0 &&
               procedures.map((proc) => (
                 <tr
                   key={proc.id}
@@ -248,38 +259,37 @@ const Procedures = () => {
                       </svg>
                     </Link>
                     {/* Delete */}
-                    {
-                      role == "superadmin" ? 
-                    <button
-                      onClick={() => handleDeleteClick(proc)}
-                      className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200"
-                    >
-                      <svg
-                        className="w-[18px] h-[18px] text-white group-hover:text-[#cc0000]"
-                        viewBox="0 0 12 12"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
+                    {role == 'superadmin' ? (
+                      <button
+                        onClick={() => handleDeleteClick(proc)}
+                        className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200"
                       >
-                        <use href="/assets/svg/delete-icon.svg#delete-icon" />
-                      </svg>
-                    </button>
-: ""
-                    }
+                        <svg
+                          className="w-[18px] h-[18px] text-white group-hover:text-[#cc0000]"
+                          viewBox="0 0 12 12"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <use href="/assets/svg/delete-icon.svg#delete-icon" />
+                        </svg>
+                      </button>
+                    ) : (
+                      ''
+                    )}
                   </td>
                 </tr>
-              ))
-            )}
+              ))}
           </tbody>
         </table>
       </div>
-      
 
       {/* Delete Confirmation Modal */}
       {deleteModalOpen && procedureToDelete && (
         <div className="fixed inset-0 flex items-center justify-center bg-[#0000008a] z-50">
           <div className="bg-white p-6 rounded-md w-80 text-center">
             <p className="mb-4">
-              Are you sure you want to delete <strong>{procedureToDelete.name}</strong>?
+              Are you sure you want to delete{' '}
+              <strong>{procedureToDelete.name}</strong>?
             </p>
             <div className="flex justify-center gap-4">
               <Button onClick={confirmDelete}>Yes, Delete</Button>

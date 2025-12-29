@@ -67,7 +67,7 @@ export const router = createBrowserRouter([
       // Doctors
       { path: routePaths.DOCTORS, element: <Doctors /> },
       { path: routePaths.ADD_DOCTOR, element: <AddDoctor /> },
-      { path: routePaths.EDIT_DOCTOR, element: <EditDoctor /> },
+      { path: `${routePaths.EDIT_DOCTOR}/:id`, element: <EditDoctor /> },
       { path: routePaths.VIEW_DOCTOR, element: <ViewDoctor /> },
       // Doctor Fee
       { path: routePaths.DOCTOR_FEE, element: <DoctorFee /> },

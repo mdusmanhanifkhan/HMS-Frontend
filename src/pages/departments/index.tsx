@@ -138,7 +138,9 @@ const Departments: React.FC = () => {
               </Button>
             </div>
 
-            {error && <p className="text-red mt-3 text-sm text-center">{error}</p>}
+            {error && (
+              <p className="text-red mt-3 text-sm text-center">{error}</p>
+            )}
           </div>
         </div>
       )}
@@ -149,7 +151,32 @@ const Departments: React.FC = () => {
         <div className="flex justify-between items-center w-full border-b pb-3">
           <p className="text-xl font-semibold">Department Management</p>
           <div className="flex items-center gap-5">
-            <div className="flex items-center gap-2 py-1.5 w-full rounded-lg outline-none border px-2 min-w-64">
+            <div className="flex items-center gap-2 py-1.5 w-full min-w-64 rounded-lg border px-2 border-gray placeholder:text-gray-100 placeholder:font-light">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 20 20"
+                id="search"
+              >
+                <g
+                  stroke="none"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <g
+                    stroke="#000"
+                    strokeWidth="2"
+                    transform="translate(-1687 -1941)"
+                  >
+                    <g transform="translate(1688 1942)">
+                      <circle cx="7.5" cy="7.5" r="7.5"></circle>
+                      <path d="M18 18l-5.2-5.2"></path>
+                    </g>
+                  </g>
+                </g>
+              </svg>
               <Input
                 type="text"
                 placeholder="Search departments..."
@@ -207,13 +234,7 @@ const Departments: React.FC = () => {
               {!loading && !error && departments.length === 0 && (
                 <tr>
                   <td colSpan={8} className="py-8 text-center">
-                    No departments found.{' '}
-                    <Link
-                      to={routePaths.ADD_DEPARTMENT}
-                      className="text-blue-500 underline"
-                    >
-                      Go to add department
-                    </Link>
+                    No departments found.
                   </td>
                 </tr>
               )}
@@ -246,8 +267,9 @@ const Departments: React.FC = () => {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-1">
                         <span
-                          className={`w-[10px] h-[10px] rounded-full ${dept.status ? 'bg-green' : 'bg-red'
-                            } block`}
+                          className={`w-[10px] h-[10px] rounded-full ${
+                            dept.status ? 'bg-green' : 'bg-red'
+                          } block`}
                         ></span>
                         {dept.status ? 'Active' : 'Inactive'}
                       </div>
@@ -266,25 +288,25 @@ const Departments: React.FC = () => {
                           <use href="/assets/svg/edit-icon.svg#edit-icon" />
                         </svg>
                       </Link>
-                      {
-                        role === "superadmin" ?
-                          <button
-                            onClick={() => {
-                              setIsModalOpen(true)
-                              setSelectedDept(dept)
-                            }}
-                            className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all cursor-pointer"
+                      {role === 'superadmin' ? (
+                        <button
+                          onClick={() => {
+                            setIsModalOpen(true)
+                            setSelectedDept(dept)
+                          }}
+                          className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all cursor-pointer"
+                        >
+                          <svg
+                            className="w-[18px] h-[18px] text-white group-hover:text-red"
+                            viewBox="0 0 12 12"
+                            fill="none"
                           >
-                            <svg
-                              className="w-[18px] h-[18px] text-white group-hover:text-red"
-                              viewBox="0 0 12 12"
-                              fill="none"
-                            >
-                              <use href="/assets/svg/delete-icon.svg#delete-icon" />
-                            </svg>
-                          </button>
-                          : ""
-}
+                            <use href="/assets/svg/delete-icon.svg#delete-icon" />
+                          </svg>
+                        </button>
+                      ) : (
+                        ''
+                      )}
                     </td>
                   </tr>
                 ))}

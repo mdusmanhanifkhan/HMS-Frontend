@@ -1,219 +1,3 @@
-// import { useState, useEffect } from 'react'
-// import Button from '../../components/button/Button'
-// import { GroupInput } from '../../components/input/GroupInput'
-// import { Input } from '../../components/input/Input'
-// import { Label } from '../../components/input/Label'
-// import TextArea from '../../components/input/TextArea'
-// import { useParams } from 'react-router-dom'
-// import Dropdown from '../../components/input/Dropdown'
-
-// type Department = { id: number; name: string }
-// type Procedure = {
-//   status: boolean
-//   procedureName: string
-//   shortCode: string
-//   department: Department | null
-//   description: string
-// }
-
-// const EditProcedure = () => {
-//   const { id } = useParams()
-
-//   const API_BASE = import.meta.env.VITE_API_BASE_URL
-//   const token = localStorage.getItem('token')
-
-//   const [form, setForm] = useState<Procedure>({
-//     status: false,
-//     procedureName: '',
-//     shortCode: '',
-//     department: null,
-//     description: '',
-//   })
-
-//   const [loading, setLoading] = useState(false)
-//   const [error, setError] = useState<string | null>(null)
-//   const [success, setSuccess] = useState<string | null>(null)
-
-//   const departments: Department[] = [
-//     { id: 1, name: 'Dental' },
-//     { id: 2, name: 'Ortho' },
-//     { id: 3, name: 'Eye' },
-//   ]
-
-//   const handleChange = (
-//     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-//   ) => {
-//     const { id, type, value, checked } = e.target
-//     setForm((prev) => ({
-//       ...prev,
-//       [id]: type === 'checkbox' ? checked : value,
-//     }))
-//   }
-
-//   const handleSelectDepartment = (dept: Department) => {
-//     setForm((prev) => ({
-//       ...prev,
-//       department: dept,
-//     }))
-//   }
-
-// const handleSubmit = async (e: React.FormEvent) => {
-//   e.preventDefault()
-//   setError(null)
-//   setSuccess(null)
-//   setLoading(true)
-
-//   if (!token) {
-//     setError('No token found. Please login first.')
-//     setLoading(false)
-//     return
-//   }
-
-//   try {
-//     const res = await fetch(`${API_BASE}/api/procedures/${id}`, {
-//       method: 'PUT',
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: `Bearer ${token}`,
-//       },
-//       body: JSON.stringify({
-//         status: form.status,
-//         name: form.procedureName,
-//         shortCode: form.shortCode,
-//         description: form.description,
-//         departmentId: form.department?.id ?? null,
-//       }),
-//     })
-
-//     const data = await res.json()
-
-//     if (!res.ok) {
-//       throw new Error(data?.message || 'Failed to update procedure')
-//     }
-
-//     setSuccess('Procedure updated successfully ✅')
-//   } catch (err: any) {
-//     setError(err.message || 'Something went wrong ❌')
-//   } finally {
-//     setLoading(false)
-//   }
-// }
-
-//  useEffect(() => {
-//   if (!token) {
-//     setError('No token found. Please login first.')
-//     return
-//   }
-
-//   const fetchProcedure = async () => {
-//     try {
-//       const res = await fetch(`${API_BASE}/api/procedures/${id}`, {
-//         headers: {
-//           Authorization: `Bearer ${token}`,
-//         },
-//       })
-//       const data = await res.json()
-
-//       if (res.ok && data?.data) {
-//         setForm({
-//           status: data.data.status ?? false,
-//           procedureName: data.data.name ?? '',
-//           shortCode: data.data.shortCode ?? '',
-//           department: data.data.department ?? null,
-//           description: data.data.description ?? '',
-//         })
-//       } else {
-//         setError(data?.message || 'Failed to load procedure')
-//       }
-//     } catch (error: any) {
-//       setError(error.message)
-//     }
-//   }
-//   fetchProcedure()
-// }, [id, token])
-
-//   return (
-//     <form onSubmit={handleSubmit} className="flex flex-col gap-10">
-//       <p className="text-xl font-semibold w-full border-b pb-3">
-//         Edit Procedure
-//       </p>
-
-//       {/* Success & Error Messages */}
-//       {error && <p className="text-red-500 font-medium">{error}</p>}
-//       {success && <p className="text-green-600 font-medium">{success}</p>}
-
-//       <div className="grid grid-cols-3 gap-3 max-w-[1000px]">
-//         {/* Status */}
-//         <GroupInput className="col-span-full">
-//           <Label htmlFor="status">Status</Label>
-//           <div className="checkbox-apple">
-//             <input
-//               id="status"
-//               type="checkbox"
-//               checked={form.status}
-//               onChange={handleChange}
-//             />
-//             <label htmlFor="status"></label>
-//           </div>
-//         </GroupInput>
-
-//         {/* Procedure Name */}
-//         <GroupInput>
-//           <Label htmlFor="procedureName">Procedure Name</Label>
-//           <Input
-//             id="procedureName"
-//             placeholder="Enter Procedure Name"
-//             value={form.procedureName}
-//             onChange={handleChange}
-//           />
-//         </GroupInput>
-
-//         {/* Short Code */}
-//         <GroupInput>
-//           <Label htmlFor="shortCode">Short Code</Label>
-//           <Input
-//             id="shortCode"
-//             placeholder="Enter Procedure Short Code"
-//             value={form.shortCode}
-//             onChange={handleChange}
-//           />
-//         </GroupInput>
-
-//         {/* Department */}
-//         <GroupInput>
-//           <Label>Department</Label>
-//           <Dropdown
-//             options={departments}
-//             selected={form.department}
-//             onSelect={handleSelectDepartment}
-//             placeholder="Select Department"
-//           />
-//         </GroupInput>
-
-//         {/* Description */}
-//         <GroupInput>
-//           <Label htmlFor="description">Description</Label>
-//           <TextArea
-//             id="description"
-//             placeholder="Enter Procedure Description"
-//             value={form.description}
-//             onChange={handleChange}
-//           />
-//         </GroupInput>
-
-//         {/* Submit */}
-//         <div className="col-span-full mx-auto mt-5">
-//           <Button type="submit" disabled={loading}>
-//             {loading ? 'Updating...' : 'Update Procedure'}
-//           </Button>
-//         </div>
-//       </div>
-//     </form>
-//   )
-// }
-
-// export default EditProcedure
-
 import { useState, useEffect } from 'react'
 import Button from '../../components/button/Button'
 import { GroupInput } from '../../components/input/GroupInput'
@@ -223,7 +7,6 @@ import TextArea from '../../components/input/TextArea'
 import { useParams } from 'react-router-dom'
 import Dropdown from '../../components/input/Dropdown'
 
-// Types
 type Department = { id: number; name: string }
 type Procedure = {
   status: boolean
@@ -239,7 +22,7 @@ type Option = {
 }
 
 const EditProcedure = () => {
-  const { id } = useParams<{ id: string }>() // ✅ typed id
+  const { id } = useParams<{ id: string }>()
 
   const API_BASE = import.meta.env.VITE_API_BASE_URL
   const token = localStorage.getItem('token')
@@ -281,7 +64,6 @@ const EditProcedure = () => {
     }
   }
 
-  // ✅ Map Dropdown Option to Department safely
   const handleSelectDepartment = (option: Option) => {
     const dept = departments.find((d) => d.id === Number(option.id))
     if (dept) setForm((prev) => ({ ...prev, department: dept }))
@@ -328,7 +110,6 @@ const EditProcedure = () => {
     }
   }
 
-  // ✅ Fetch procedure on mount
   useEffect(() => {
     if (!token) {
       setError('No token found. Please login first.')
@@ -423,7 +204,6 @@ const EditProcedure = () => {
                 : null
             }
             onSelect={(option) => {
-              // Convert back to Department
               handleSelectDepartment({
                 id: option.id as number,
                 name: option.name,
