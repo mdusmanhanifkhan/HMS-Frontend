@@ -40,14 +40,17 @@ const patientSchema = Yup.object().shape({
   guardianName: Yup.string(),
   maritalStatus: Yup.string(),
   bloodGroup: Yup.string(),
-  phoneNumber: Yup.string().matches(/^\d{11}$/, 'Phone number must be 11 digits'),
+  phoneNumber: Yup.string().matches(
+    /^\d{11}$/,
+    'Phone number must be 11 digits'
+  ),
   cnicNumber: Yup.string().matches(/^\d{13}$/, 'CNIC must be 13 digits'),
   address: Yup.string(),
 })
 
 const EditPatients = () => {
   const API_BASE = import.meta.env.VITE_API_BASE_URL
-   const token = localStorage.getItem('token')
+  const token = localStorage.getItem('token')
   if (!token) console.error('No token found. Users must login first.')
   const { id } = useParams()
 
@@ -72,18 +75,23 @@ const EditPatients = () => {
   // ✅ Formatters
   const formatPhoneNumber = (value: string): string => {
     const digits = value.replace(/\D/g, '').slice(0, 11)
-    return digits.length > 4 ? `${digits.slice(0, 4)}-${digits.slice(4)}` : digits
+    return digits.length > 4
+      ? `${digits.slice(0, 4)}-${digits.slice(4)}`
+      : digits
   }
 
   const formatCnicNumber = (value: string): string => {
     const digits = value.replace(/\D/g, '').slice(0, 13)
-    if (digits.length > 12) return `${digits.slice(0, 5)}-${digits.slice(5, 12)}-${digits.slice(12)}`
+    if (digits.length > 12)
+      return `${digits.slice(0, 5)}-${digits.slice(5, 12)}-${digits.slice(12)}`
     if (digits.length > 5) return `${digits.slice(0, 5)}-${digits.slice(5)}`
     return digits
   }
 
   // ✅ Handle input change
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target
     let formattedValue = value
 
@@ -96,7 +104,10 @@ const EditPatients = () => {
   }
 
   // ✅ Dropdown selection
-  const handleDropdownSelect = (name: string, option: { id: string | number; name: string }) => {
+  const handleDropdownSelect = (
+    name: string,
+    option: { id: string | number; name: string }
+  ) => {
     setForm((prev) => ({ ...prev, [name]: option.name }))
     setErrors((prev) => ({ ...prev, [name]: '' }))
     setGeneralError(null)
@@ -106,14 +117,15 @@ const EditPatients = () => {
   useEffect(() => {
     const fetchPatient = async () => {
       try {
-        const res = await fetch(`${API_BASE}/api/patient/${id}` , {
-           headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        const res = await fetch(`${API_BASE}/api/patient/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         })
         const data = await res.json()
 
-        if (!res.ok) throw new Error(data?.general_error || 'Failed to load patient data')
+        if (!res.ok)
+          throw new Error(data?.general_error || 'Failed to load patient data')
 
         setForm({
           name: data?.data?.name || '',
@@ -155,7 +167,10 @@ const EditPatients = () => {
 
       const res = await fetch(`${API_BASE}/api/patient/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(cleanForm),
       })
 
@@ -185,15 +200,23 @@ const EditPatients = () => {
   }
 
   if (fetching) {
-    return <p className="text-center text-gray-600 mt-10 flex justify-center items-center"><Loading/></p>
+    return (
+      <p className="text-center text-gray-600 mt-10 flex justify-center items-center">
+        <Loading />
+      </p>
+    )
   }
 
   return (
     <>
       <p className="text-3xl font-semibold mb-2">Edit Patient</p>
 
-      {generalError && <p className="text-red text-center col-span-full">{generalError}</p>}
-      {success && <p className="text-green-600 text-center col-span-full">{success}</p>}
+      {generalError && (
+        <p className="text-red text-center col-span-full">{generalError}</p>
+      )}
+      {success && (
+        <p className="text-green-600 text-center col-span-full">{success}</p>
+      )}
 
       <form
         onSubmit={handleSubmit}
@@ -202,14 +225,24 @@ const EditPatients = () => {
         {/* Name */}
         <GroupInput>
           <Label>Full Name</Label>
-          <Input name="name" value={form.name} onChange={handleChange} placeholder="Enter patient name" />
+          <Input
+            name="name"
+            value={form.name}
+            onChange={handleChange}
+            placeholder="Enter patient name"
+          />
           {errors.name && <p className="text-red text-sm">{errors.name}</p>}
         </GroupInput>
 
         {/* Guardian Name */}
         <GroupInput>
           <Label>Father / Guardian Name</Label>
-          <Input name="guardianName" value={form.guardianName} onChange={handleChange} placeholder="Enter guardian name" />
+          <Input
+            name="guardianName"
+            value={form.guardianName}
+            onChange={handleChange}
+            placeholder="Enter guardian name"
+          />
         </GroupInput>
 
         {/* Gender */}
@@ -236,7 +269,12 @@ const EditPatients = () => {
         {/* Age */}
         <GroupInput>
           <Label>Age</Label>
-          <Input name="age" value={form.age} onChange={handleChange} placeholder="Years" />
+          <Input
+            name="age"
+            value={form.age}
+            onChange={handleChange}
+            placeholder="Years"
+          />
           {errors.age && <p className="text-red text-sm">{errors.age}</p>}
         </GroupInput>
 
@@ -245,7 +283,11 @@ const EditPatients = () => {
           <Label>Marital Status</Label>
           <Dropdown
             options={maritalStatusOptions}
-            selected={form.maritalStatus ? { id: form.maritalStatus, name: form.maritalStatus } : null}
+            selected={
+              form.maritalStatus
+                ? { id: form.maritalStatus, name: form.maritalStatus }
+                : null
+            }
             onSelect={(opt) => handleDropdownSelect('maritalStatus', opt)}
             placeholder="Select status"
           />
@@ -256,7 +298,11 @@ const EditPatients = () => {
           <Label>Blood Group</Label>
           <Dropdown
             options={bloodGroupOptions}
-            selected={form.bloodGroup ? { id: form.bloodGroup, name: form.bloodGroup } : null}
+            selected={
+              form.bloodGroup
+                ? { id: form.bloodGroup, name: form.bloodGroup }
+                : null
+            }
             onSelect={(opt) => handleDropdownSelect('bloodGroup', opt)}
             placeholder="Select blood group"
           />
@@ -271,7 +317,9 @@ const EditPatients = () => {
             onChange={handleChange}
             placeholder="0304-3763110"
           />
-          {errors.phoneNumber && <p className="text-red text-sm">{errors.phoneNumber}</p>}
+          {errors.phoneNumber && (
+            <p className="text-red text-sm">{errors.phoneNumber}</p>
+          )}
         </GroupInput>
 
         {/* CNIC */}
@@ -283,7 +331,9 @@ const EditPatients = () => {
             onChange={handleChange}
             placeholder="12345-1234567-1"
           />
-          {errors.cnicNumber && <p className="text-red text-sm">{errors.cnicNumber}</p>}
+          {errors.cnicNumber && (
+            <p className="text-red text-sm">{errors.cnicNumber}</p>
+          )}
         </GroupInput>
 
         {/* Address */}

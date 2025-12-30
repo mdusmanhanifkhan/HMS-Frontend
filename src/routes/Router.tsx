@@ -26,6 +26,7 @@ import ProtectedRoute from './ProtectedRoute.tsx'
 import Dashboard from '../pages/dashboard/index.tsx'
 import UserManagement from '../pages/user-management/index.tsx'
 import CreateUser from '../pages/user-management/CreateUser.tsx'
+import EditDoctorFee from '../pages/doctor-fee/EditDoctorFee.tsx'
 
 export const router = createBrowserRouter([
   {
@@ -72,6 +73,7 @@ export const router = createBrowserRouter([
       // Doctor Fee
       { path: routePaths.DOCTOR_FEE, element: <DoctorFee /> },
       { path: routePaths.ADD_DOCTOR_FEE, element: <AddDoctorFee /> },
+      { path: `${routePaths.EDIT_DOCTOR_FEE}/:id`, element: <EditDoctorFee /> },
       // WELFARE MANAGEMENT
       { path: routePaths.WELFARE_MANAGEMENT, element: <Welfare /> },
       {

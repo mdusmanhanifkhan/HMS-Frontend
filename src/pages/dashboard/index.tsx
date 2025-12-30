@@ -136,6 +136,16 @@ const Dashboard = () => {
     },
   ]
 
+
+  // read user from localStorage
+  const storedUser = localStorage.getItem("user")
+  const userRole = storedUser ? JSON.parse(storedUser)?.role?.name : null
+
+  const visibleCards =
+    userRole === "superadmin"
+      ? cards
+      : cards.filter(card => card.title === "Patients")
+
   return (
     <div className="min-h-screen ">
       <h1
@@ -147,7 +157,7 @@ const Dashboard = () => {
 
       {/* Small Boxes Grid */}
       <div className="grid grid-cols-4 gap-6">
-        {cards.map((card: DashboardCard, index: number) => (
+        {visibleCards.map((card: DashboardCard, index: number) => (
           <div
             key={index}
             onClick={() => navigate(card.path)}

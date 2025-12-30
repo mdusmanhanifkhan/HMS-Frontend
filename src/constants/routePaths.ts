@@ -18,6 +18,7 @@ export const routePaths = {
   VIEW_DOCTOR: '/view-doctor',
   DOCTOR_FEE: '/doctor-fee',
   ADD_DOCTOR_FEE: '/doctor-fee/add',
+  EDIT_DOCTOR_FEE: '/doctor-fee/edit',
   WELFARE_MANAGEMENT:'welfare-management',
   ADD_WELFARE_MANAGEMENT:'/welfare-management/add',
   BILLING: '/billing',

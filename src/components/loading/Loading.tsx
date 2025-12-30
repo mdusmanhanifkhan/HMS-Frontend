@@ -2,15 +2,8 @@ import '../../assets/css/loading.css'
 
 export default function Loading() {
   return (
-    <div className="dot-spinner">
-      <div className="dot-spinner__dot"></div>
-      <div className="dot-spinner__dot"></div>
-      <div className="dot-spinner__dot"></div>
-      <div className="dot-spinner__dot"></div>
-      <div className="dot-spinner__dot"></div>
-      <div className="dot-spinner__dot"></div>
-      <div className="dot-spinner__dot"></div>
-      <div className="dot-spinner__dot"></div>
-    </div>
+    <svg viewBox="25 25 50 50" className='loading'>
+      <circle r="20" cy="50" cx="50"></circle>
+    </svg>
   )
 }

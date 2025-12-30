@@ -5,6 +5,7 @@ import { routePaths } from '../../constants/routePaths'
 import Loading from '../../components/loading/Loading'
 import { Input } from '../../components/input/Input'
 import { usePermissions } from '../../context/PermissionsContext'
+import DeleteModal from '../../components/modal/DeleteModal'
 
 interface Department {
   id: number
@@ -26,7 +27,7 @@ const Procedures = () => {
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState<string>('')
   const [debouncedSearch, setDebouncedSearch] = useState<string>('')
-  const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false)
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
   const [procedureToDelete, setProcedureToDelete] = useState<Procedure | null>(
     null
   )
@@ -94,11 +95,11 @@ const Procedures = () => {
   // Open delete modal
   const handleDeleteClick = (proc: Procedure) => {
     setProcedureToDelete(proc)
-    setDeleteModalOpen(true)
+    setIsModalOpen(true)
   }
 
-  // Confirm delete
-  const confirmDelete = async () => {
+  // handle delete
+  const handleDelete = async () => {
     if (!procedureToDelete || !token) return
 
     try {
@@ -115,7 +116,7 @@ const Procedures = () => {
         throw new Error(errData.message || 'Failed to delete procedure')
       }
       setProcedures((prev) => prev.filter((p) => p.id !== procedureToDelete.id))
-      setDeleteModalOpen(false)
+      setIsModalOpen(false)
       setProcedureToDelete(null)
     } catch (err: unknown) {
       if (err instanceof Error) setError(err.message)
@@ -161,7 +162,7 @@ const Procedures = () => {
               type="text"
               placeholder="Search procedures..."
               variant="none"
-              className="outline-none "
+              className="outline-none"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -179,13 +180,13 @@ const Procedures = () => {
         <table className="w-full text-sm text-left rtl:text-right">
           <thead className="text-xs text-white uppercase bg-dark">
             <tr>
-              <th className="px-6 py-3">ID</th>
-              <th className="px-6 py-3">Procedure Name</th>
-              <th className="px-6 py-3">Procedure Code</th>
-              <th className="px-6 py-3">Department</th>
-              <th className="px-6 py-3">Description</th>
-              <th className="px-6 py-3">Status</th>
-              <th className="px-6 py-3">Action</th>
+              <th className="px-6 py-4">ID</th>
+              <th className="px-6 py-4">Procedure Name</th>
+              <th className="px-6 py-4">Procedure Code</th>
+              <th className="px-6 py-4">Department</th>
+              <th className="px-6 py-4">Description</th>
+              <th className="px-6 py-4">Status</th>
+              <th className="px-6 py-4">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -208,7 +209,7 @@ const Procedures = () => {
 
             {!loading && !error && procedures.length === 0 && (
               <tr>
-                <td colSpan={8} className="py-8 text-center">
+                <td colSpan={8} className="py-6 text-center">
                   No procedures found.
                 </td>
               </tr>
@@ -262,7 +263,7 @@ const Procedures = () => {
                     {role == 'superadmin' ? (
                       <button
                         onClick={() => handleDeleteClick(proc)}
-                        className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200"
+                        className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200 cursor-pointer"
                       >
                         <svg
                           className="w-[18px] h-[18px] text-white group-hover:text-[#cc0000]"
@@ -283,25 +284,13 @@ const Procedures = () => {
         </table>
       </div>
 
-      {/* Delete Confirmation Modal */}
-      {deleteModalOpen && procedureToDelete && (
-        <div className="fixed inset-0 flex items-center justify-center bg-[#0000008a] z-50">
-          <div className="bg-white p-6 rounded-md w-80 text-center">
-            <p className="mb-4">
-              Are you sure you want to delete{' '}
-              <strong>{procedureToDelete.name}</strong>?
-            </p>
-            <div className="flex justify-center gap-4">
-              <Button onClick={confirmDelete}>Yes, Delete</Button>
-              <Button
-                onClick={() => setDeleteModalOpen(false)}
-                className="bg-gray-300 text-black"
-              >
-                Cancel
-              </Button>
-            </div>
-          </div>
-        </div>
+      {isModalOpen && procedureToDelete && (
+        <DeleteModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onConfirm={handleDelete}
+          itemName={`${procedureToDelete.name || ''} Procedure`}
+        />
       )}
     </div>
   )

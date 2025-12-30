@@ -5,6 +5,7 @@ import { routePaths } from '../../constants/routePaths'
 import Loading from '../../components/loading/Loading'
 import { Input } from '../../components/input/Input'
 import { usePermissions } from '../../context/PermissionsContext'
+import DeleteModal from '../../components/modal/DeleteModal'
 
 interface Department {
   id: number
@@ -111,38 +112,13 @@ const Departments: React.FC = () => {
     <>
       {/* Delete Modal */}
       {isModalOpen && selectedDept && (
-        <div className="fixed inset-0 flex items-center justify-center bg-[#0000008a] z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-80">
-            <p className="text-gray-700 text-center">
-              Are you sure you want to delete <b>{selectedDept.name}</b>?
-            </p>
-
-            <div className="flex justify-center gap-3 mt-6">
-              <Button
-                type="button"
-                className="bg-red-600 hover:bg-red-700"
-                onClick={handleDelete}
-              >
-                Yes, Delete
-              </Button>
-              <Button
-                type="button"
-                className="bg-gray-400 hover:bg-gray-500"
-                onClick={() => {
-                  setIsModalOpen(false)
-                  setSelectedDept(null)
-                  setError(null)
-                }}
-              >
-                Cancel
-              </Button>
-            </div>
-
-            {error && (
-              <p className="text-red mt-3 text-sm text-center">{error}</p>
-            )}
-          </div>
-        </div>
+        <DeleteModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onConfirm={handleDelete}
+          itemName={`${selectedDept.name || ''} Department`}
+          errorMessage={error ?? undefined}
+        />
       )}
 
       {/* Main Content */}
@@ -198,14 +174,14 @@ const Departments: React.FC = () => {
           <table className="w-full text-sm text-left">
             <thead className="text-xs text-white uppercase bg-dark">
               <tr>
-                <th className="px-6 py-3">ID</th>
-                <th className="px-6 py-3">Department Name</th>
-                <th className="px-6 py-3">Short Code</th>
-                <th className="px-6 py-3">Description</th>
-                <th className="px-6 py-3">Location</th>
-                <th className="px-6 py-3">Timings</th>
-                <th className="px-6 py-3">Status</th>
-                <th className="px-6 py-3">Action</th>
+                <th className="px-6 py-4">ID</th>
+                <th className="px-6 py-4">Department Name</th>
+                <th className="px-6 py-4">Short Code</th>
+                <th className="px-6 py-4">Description</th>
+                <th className="px-6 py-4">Location</th>
+                <th className="px-6 py-4">Timings</th>
+                <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4">Action</th>
               </tr>
             </thead>
 

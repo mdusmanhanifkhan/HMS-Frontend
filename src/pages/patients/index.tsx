@@ -5,6 +5,7 @@ import { routePaths } from '../../constants/routePaths'
 import { Input } from '../../components/input/Input'
 import Loading from '../../components/loading/Loading'
 import { usePermissions } from '../../context/PermissionsContext'
+import DeleteModal from '../../components/modal/DeleteModal'
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL
 
@@ -40,10 +41,13 @@ const Patients = () => {
 
   const [showModal, setShowModal] = useState<boolean>(false)
   const [deleteId, setDeleteId] = useState<number | null>(null)
+  const [deletePatientName, setDeletePatientName] = useState<string | null>(
+    null
+  )
   const token = localStorage.getItem('token')
 
   if (!token) console.error('No token found. Please login.')
-  const {role} = usePermissions()
+  const { role } = usePermissions()
 
   // Fetch Patients
   const fetchPatients = async (filters?: {
@@ -181,10 +185,9 @@ const Patients = () => {
                 strokeLinejoin="round"
               >
                 <g
-                  
                   strokeWidth="2"
                   transform="translate(-1687 -1941)"
-                  className='stroke-[#fff] group-hover:stroke-[#000]'
+                  className="stroke-[#fff] group-hover:stroke-[#000]"
                 >
                   <g transform="translate(1688 1942)">
                     <circle cx="7.5" cy="7.5" r="7.5"></circle>
@@ -202,13 +205,13 @@ const Patients = () => {
           <table className="w-full text-sm text-left">
             <thead className="text-xs text-white uppercase bg-dark">
               <tr>
-                <th className="px-6 py-3">MR ID</th>
-                <th className="px-6 py-3">Full Name</th>
-                <th className="px-6 py-3">Gender</th>
-                <th className="px-6 py-3">Age</th>
-                <th className="px-6 py-3">CNIC / ID</th>
-                <th className="px-6 py-3">Contact No.</th>
-                <th className="px-6 py-3 w-[10%]">Action</th>
+                <th className="px-6 py-4">MR ID</th>
+                <th className="px-6 py-4">Full Name</th>
+                <th className="px-6 py-4">Gender</th>
+                <th className="px-6 py-4">Age</th>
+                <th className="px-6 py-4">CNIC / ID</th>
+                <th className="px-6 py-4">Contact No.</th>
+                <th className="px-6 py-4 w-[10%]">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -242,55 +245,58 @@ const Patients = () => {
                     key={p.id}
                     className="bg-[#DFDEDE] border-b hover:bg-gray-100"
                   >
-                    <td className="px-6 py-4">{p.patientId}</td>
-                    <td className="px-6 py-4">{p.name}</td>
-                    <td className="px-6 py-4">{p.gender}</td>
-                    <td className="px-6 py-4">{p.age}</td>
-                    <td className="px-6 py-4">{p.cnicNumber || '-'}</td>
-                    <td className="px-6 py-4">{p.phoneNumber || '-'}</td>
-                    <td className="px-6 py-4 flex items-center gap-2">
+                    <td className="px-6 py-2">{p.patientId}</td>
+                    <td className="px-6 py-2">{p.name}</td>
+                    <td className="px-6 py-2">{p.gender}</td>
+                    <td className="px-6 py-2">{p.age}</td>
+                    <td className="px-6 py-2">{p.cnicNumber || '-'}</td>
+                    <td className="px-6 py-2">{p.phoneNumber || '-'}</td>
+                    <td className="px-6 py-2 flex items-center gap-2">
                       <Link
                         to={`${routePaths.PATIENTS}/${p.patientId}`}
                         className="bg-dark p-1 cursor-pointer rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200"
                       >
-                       
-                         <svg
-                        className="w-[18px] h-[18px] text-white group-hover:text-dark"
-                        viewBox="0 0 12 12"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <use href="/assets/svg/edit-icon.svg#edit-icon" />
-                      </svg>
-                      </Link>
-                      {role == "superadmin" ? 
-                      <button
-                        onClick={() => confirmDelete(p.patientId)}
-                        className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200 cursor-pointer"
-                      >
                         <svg
-                        className="w-[18px] h-[18px] text-white group-hover:text-[#cc0000]"
-                        viewBox="0 0 12 12"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <use href="/assets/svg/delete-icon.svg#delete-icon" />
-                      </svg>
-                      </button>
-                      : ""
-                    }
+                          className="w-[18px] h-[18px] text-white group-hover:text-dark"
+                          viewBox="0 0 12 12"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <use href="/assets/svg/edit-icon.svg#edit-icon" />
+                        </svg>
+                      </Link>
+                      {role == 'superadmin' ? (
+                        <button
+                          onClick={() => {
+                            confirmDelete(p.patientId)
+                            setDeletePatientName(p.name)
+                          }}
+                          className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200 cursor-pointer"
+                        >
+                          <svg
+                            className="w-[18px] h-[18px] text-white group-hover:text-[#cc0000]"
+                            viewBox="0 0 12 12"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <use href="/assets/svg/delete-icon.svg#delete-icon" />
+                          </svg>
+                        </button>
+                      ) : (
+                        ''
+                      )}
                       <Link
                         to={`${routePaths.PATIENTS_RECEIPT_GENERATE}/${p.patientId}`}
                         className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200"
                       >
-                         <svg
-                        className="w-[18px] h-[18px] text-white group-hover:text-dark"
-                        viewBox="0 0 12 12"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <use href="/assets/svg/printer-icon.svg#printer-icon" />
-                      </svg>
+                        <svg
+                          className="w-[18px] h-[18px] text-white group-hover:text-dark"
+                          viewBox="0 0 12 12"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <use href="/assets/svg/printer-icon.svg#printer-icon" />
+                        </svg>
                       </Link>
                     </td>
                   </tr>
@@ -303,18 +309,12 @@ const Patients = () => {
 
       {/* Delete Modal */}
       {showModal && (
-        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-40 z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-[350px]">
-            <p className="text-lg font-semibold mb-4">Confirm Delete</p>
-            <p className="mb-6 text-gray-700">
-              Are you sure you want to delete this patient?
-            </p>
-            <div className="flex justify-end gap-3">
-              <Button onClick={() => setShowModal(false)}>Cancel</Button>
-              <Button onClick={handleDelete}>Delete</Button>
-            </div>
-          </div>
-        </div>
+        <DeleteModal
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          onConfirm={handleDelete}
+          itemName={deletePatientName || ''}
+        />
       )}
     </div>
   )

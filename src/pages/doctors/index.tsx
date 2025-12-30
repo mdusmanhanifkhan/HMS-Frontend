@@ -4,6 +4,7 @@ import { routePaths } from '../../constants/routePaths'
 import { useEffect, useState } from 'react'
 import { usePermissions } from '../../context/PermissionsContext'
 import Loading from '../../components/loading/Loading'
+import DeleteModal from '../../components/modal/DeleteModal'
 
 // Define the types
 interface DepartmentLink {
@@ -29,16 +30,19 @@ const Doctors = () => {
   const token = localStorage.getItem('token')
   const { role } = usePermissions()
 
-  const [doctors, setDoctor] = useState<Doctor[]>([])
+  const [doctors, setDoctors] = useState<Doctor[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // Delete modal states
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [doctorToDelete, setDoctorToDelete] = useState<Doctor | null>(null)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
+  // const [deleteLoading, setDeleteLoading] = useState(false)
+
   useEffect(() => {
     const fetchDoctors = async () => {
-      if (!token) {
-        console.error('No token found. Please login.')
-        return
-      }
+      if (!token) return
 
       try {
         setLoading(true)
@@ -54,11 +58,11 @@ const Doctors = () => {
         }
 
         const resData = await res.json()
-        setDoctor(resData.data)
+        setDoctors(resData.data)
       } catch (err: unknown) {
         if (err instanceof Error) setError(err.message)
         else setError('Something went wrong')
-        setDoctor([])
+        setDoctors([])
       } finally {
         setLoading(false)
       }
@@ -67,8 +71,41 @@ const Doctors = () => {
     fetchDoctors()
   }, [API_URL, token])
 
+  // Open delete modal
+  const handleDeleteClick = (doctor: Doctor) => {
+    setDoctorToDelete(doctor)
+    setDeleteError(null)
+    setIsModalOpen(true)
+  }
+
+  const handleDelete = async () => {
+    if (!doctorToDelete || !token) return
+
+    try {
+      // setDeleteLoading(true)
+      setDeleteError(null)
+
+      const res = await fetch(`${API_URL}/api/doctor/${doctorToDelete.id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      })
+
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message || 'Failed to delete doctor')
+
+      // Remove deleted doctor from state
+      setDoctors((prev) => prev.filter((doc) => doc.id !== doctorToDelete.id))
+
+      setIsModalOpen(false)
+      setDoctorToDelete(null)
+    } catch (err: unknown) {
+      if (err instanceof Error) setDeleteError(err.message)
+      else setDeleteError('Something went wrong')
+    } 
+  }
+
   return (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col gap-10 relative">
       <div className="flex justify-between items-center w-full border-b pb-3">
         <p className="text-xl font-semibold">Doctor Management</p>
         <Link to={routePaths.ADD_DOCTOR}>
@@ -80,15 +117,15 @@ const Doctors = () => {
         <table className="w-full text-sm text-left rtl:text-right">
           <thead className="text-xs text-white uppercase bg-dark">
             <tr>
-              <th className="px-6 py-3">ID</th>
-              <th className="px-6 py-3">Doctor Name</th>
-              <th className="px-6 py-3">Age</th>
-              <th className="px-6 py-3">Department</th>
-              <th className="px-6 py-3">ID Card</th>
-              <th className="px-6 py-3">Employment Type</th>
-              <th className="px-6 py-3">Timing</th>
-              <th className="px-6 py-3">Status</th>
-              <th className="px-6 py-3">Action</th>
+              <th className="px-6 py-4">ID</th>
+              <th className="px-6 py-4">Doctor Name</th>
+              <th className="px-6 py-4">Age</th>
+              <th className="px-6 py-4">Department</th>
+              <th className="px-6 py-4">ID Card</th>
+              <th className="px-6 py-4">Employment Type</th>
+              <th className="px-6 py-4">Timing</th>
+              <th className="px-6 py-4">Status</th>
+              <th className="px-6 py-4">Action</th>
             </tr>
           </thead>
 
@@ -113,7 +150,7 @@ const Doctors = () => {
 
             {!loading && !error && doctors.length === 0 && (
               <tr>
-                <td colSpan={9} className="py-8 text-center">
+                <td colSpan={9} className="py-6 text-center">
                   No doctors found
                 </td>
               </tr>
@@ -121,7 +158,6 @@ const Doctors = () => {
 
             {!loading &&
               !error &&
-              doctors.length > 0 &&
               doctors.map((doctor) => (
                 <tr
                   key={doctor.id}
@@ -166,21 +202,10 @@ const Doctors = () => {
                         <use href="/assets/svg/edit-icon.svg#edit-icon" />
                       </svg>
                     </Link>
-                    <a
-                      href="#"
-                      className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200"
-                    >
-                      <svg
-                        className="w-[18px] h-[18px] text-white group-hover:text-dark"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 8 8"
-                      >
-                        <use href="/assets/svg/eye-icon.svg#eye-icon" />
-                      </svg>
-                    </a>
+
                     {role === 'superadmin' && (
-                      <a
-                        href="#"
+                      <button
+                        onClick={() => handleDeleteClick(doctor)}
                         className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200"
                       >
                         <svg
@@ -191,7 +216,7 @@ const Doctors = () => {
                         >
                           <use href="/assets/svg/delete-icon.svg#delete-icon" />
                         </svg>
-                      </a>
+                      </button>
                     )}
                   </td>
                 </tr>
@@ -199,6 +224,17 @@ const Doctors = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Delete Modal */}
+      {isModalOpen && doctorToDelete && (
+        <DeleteModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onConfirm={handleDelete}
+          itemName={`${doctorToDelete.name || ''} Doctor`}
+          errorMessage={deleteError}
+        />
+      )}
     </div>
   )
 }
