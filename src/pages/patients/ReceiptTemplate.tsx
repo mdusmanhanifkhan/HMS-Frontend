@@ -30,9 +30,10 @@ type Patient = {
   department?: Department
   welfareRecord?: WelfareRecord
   doctor?: Doctor
-
+  patientId?: number
+  discountPercentage?: number
+  fees?: string
 }
-
 
 type ReceiptTemplateProps = {
   patient: Patient
@@ -47,14 +48,10 @@ const ReceiptTemplate = ({ patient }: ReceiptTemplateProps) => {
     year: '2-digit'
   }).replace(/ /g, '-')
 
-  const month = String(today.getMonth() + 1).padStart(2, '0')
-  const year = String(today.getFullYear()).slice(-2)
-  const receiptNo = `${year}/${month}/${String(patient.id).padStart(5, '0')}`
-
   const originalFee = patient.procedure?.fee ?? 0;
   const discount = patient.welfareRecord?.discountPercentage ?? 0;
   const netFee = originalFee - (originalFee * discount) / 100;
-
+console.log(netFee)
   return `
   <html>
     <head>
@@ -126,8 +123,7 @@ const ReceiptTemplate = ({ patient }: ReceiptTemplateProps) => {
         <!-- Patient Info -->
         <table class="info-table">
           <tr><td class="bold">Date:</td><td>${formattedDate}</td></tr>
-          <tr><td class="bold">Receipt No:</td><td>${receiptNo}</td></tr>
-          <tr><td class="bold">M.R #:</td><td>MR-${patient.id}</td></tr>
+          <tr><td class="bold">M.R #:</td><td>MR-${patient.patientId}</td></tr>
           <tr><td class="bold">Patient:</td><td>${patient.name}</td></tr>
           <tr><td class="bold">Age:</td><td>${patient.age}</td></tr>
           <tr><td class="bold">Department:</td><td>${patient.department?.name || '-'}</td></tr>
@@ -159,15 +155,15 @@ const ReceiptTemplate = ({ patient }: ReceiptTemplateProps) => {
         <!-- Totals -->
         <div class="totals-box">
           <div class="amount-row"><span>Total Amount:</span><span>${originalFee.toFixed(2)}</span></div>
-          <div class="amount-row"><span>Discount:</span><span>${discount} %</span></div>
+          <div class="amount-row"><span>Discount:</span><span>${patient.discountPercentage} %</span></div>
           <div class="amount-row bold" style="font-size: 14px;">
-            <span>Net Amount:</span><span>Rs. ${netFee}</span>
+            <span>Net Amount:</span><span>Rs. ${patient.fees}</span>
           </div>
         </div>
 
         <!-- Amount in words -->
         <div style="margin-top: 10px; font-style: italic; font-size: 11px;">
-          <span class="bold">In Words:</span> Rs. ${netFee} Only.
+          <span class="bold">In Words:</span> Rs. ${patient.fees} Only.
         </div>
 
         <div class="line"></div>

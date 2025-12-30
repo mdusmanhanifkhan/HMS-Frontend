@@ -47,6 +47,7 @@ type FormState = {
   procedure?: Procedure;
   discountPercentage: number;
   fees: string;
+  patientId?: number
 };
 
 const PatientReceiptGenerator = () => {
@@ -76,6 +77,7 @@ const PatientReceiptGenerator = () => {
     procedure: undefined,
     discountPercentage: 0,
     fees: '',
+    patientId:0
   });
 
   // Fetch departments
@@ -129,6 +131,7 @@ const PatientReceiptGenerator = () => {
             procedure: undefined,
             discountPercentage: data.data?.welfareRecord?.discountPercentage ?? 0,
             fees: '',
+            patientId:data.data.patientId
           });
           setShowPatientInfo(true);
         }

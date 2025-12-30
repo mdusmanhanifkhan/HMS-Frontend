@@ -139,8 +139,8 @@ const Dashboard = () => {
 
   // read user from localStorage
   const storedUser = localStorage.getItem("user")
-  const userRole = storedUser ? JSON.parse(storedUser)?.role?.name : null
-
+  const userRole = storedUser ? JSON.parse(storedUser)?.user?.role?.name : null
+console.log(userRole)
   const visibleCards =
     userRole === "superadmin"
       ? cards
