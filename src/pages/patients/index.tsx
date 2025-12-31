@@ -286,7 +286,7 @@ const Patients = () => {
                         ''
                       )}
                       <Link
-                        to={`${routePaths.PATIENTS_RECEIPT_GENERATE}/${p.patientId}`}
+                        to={`${routePaths.PATIENTS}${routePaths.PATIENTS_RECEIPT_GENERATE}/${p.patientId}`}
                         className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200"
                       >
                         <svg

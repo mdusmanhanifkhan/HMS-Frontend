@@ -48,7 +48,7 @@ export const router = createBrowserRouter([
       { path: routePaths.ADD_PATIENTS, element: <AddPatients /> },
       { path: `${routePaths.PATIENTS}/:id`, element: <EditPatients /> },
       {
-        path: `${routePaths.PATIENTS_RECEIPT_GENERATE}/:id`,
+        path: `${routePaths.PATIENTS}${routePaths.PATIENTS_RECEIPT_GENERATE}/:id`,
         element: <PatientReceiptGenerator />,
       },
       { path: routePaths.FIND_PATIENT, element: <ComingSoon /> },

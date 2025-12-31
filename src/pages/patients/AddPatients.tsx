@@ -27,7 +27,6 @@ const bloodGroupOptions = [
   { id: 'AB-', name: 'AB-' },
 ]
 
-// ✅ Yup schema
 const patientSchema = Yup.object().shape({
   name: Yup.string().required('Name is required'),
   gender: Yup.string().required('Gender is required'),
@@ -36,17 +35,14 @@ const patientSchema = Yup.object().shape({
     .positive('Age must be positive')
     .integer('Age must be an integer')
     .required('Age is required'),
-  guardianName: Yup.string(),
-  maritalStatus: Yup.string(),
-  bloodGroup: Yup.string(),
-  phoneNumber: Yup.string().matches(
-    /^\d{11}$/,
-    'Phone number must be 11 digits'
-  ),
-  cnicNumber: Yup.string().matches(/^\d{13}$/, 'CNIC must be 13 digits'),
-  address: Yup.string(),
+  guardianName: Yup.string().required('Guardian name is required'),
+  maritalStatus: Yup.string().required('Marital status is required'),
+  bloodGroup: Yup.string().required('Blood group is required'),
+  phoneNumber: Yup.string()
+    .optional()
+    .matches(/^\d{11}$/, 'Phone number is required & must be exactly 11 digits')
+    .nullable(),
 })
-
 const AddPatients = () => {
   const API_BASE = import.meta.env.VITE_API_BASE_URL
   const token = localStorage.getItem('token')
@@ -198,7 +194,7 @@ const AddPatients = () => {
 
       <form
         onSubmit={handleSubmit}
-        className="grid min-[1440px]:grid-cols-3 max-w-[1000px] gap-x-3 gap-y-4 mt-6"
+        className="grid min-desktop:grid-cols-3 max-w-[1000px] gap-x-3 gap-y-4 mt-6"
       >
         {/* Name */}
         <GroupInput>
@@ -306,7 +302,7 @@ const AddPatients = () => {
           </Label>
           <Input
             name="phoneNumber"
-            placeholder="0304-3763110"
+            placeholder="0000-0000000"
             value={form.phoneNumber}
             onChange={handleChange}
           />
@@ -317,14 +313,13 @@ const AddPatients = () => {
 
         {/* CNIC */}
         <GroupInput>
-          <Label required="required" htmlFor="cnicNumber">
-            CNIC / ID Card No.
-          </Label>
+          <Label htmlFor="cnicNumber">CNIC / ID Card No.</Label>
           <Input
             name="cnicNumber"
-            placeholder="12345-1234567-1"
+            placeholder="00000-0000000-0"
             value={form.cnicNumber}
             onChange={handleChange}
+            maxLength={14}
           />
           {errors.cnicNumber && (
             <p className="text-red text-sm">{errors.cnicNumber}</p>
