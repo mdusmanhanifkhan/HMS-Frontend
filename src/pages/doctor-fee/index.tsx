@@ -113,7 +113,7 @@ const DoctorFee = () => {
 
       {errorMsg && <p className="text-red-500 font-medium">{errorMsg}</p>}
 
-      <div className="relative overflow-x-auto shadow-lg rounded-lg">
+      <div className="relative overflow-x-auto shadow-lg rounded-lg max-w-270 desktop-lg:max-w-full">
         <table className="w-full text-sm text-left rtl:text-right">
           <thead className="text-xs text-white uppercase bg-dark">
             <tr>

@@ -60,6 +60,25 @@ export const SidebarRoutes = [
     ),
   },
   {
+    name: 'Patient History',
+    link: routePaths.PATIENT_HISTORY,
+    permission: 'canManagePatientsHistory',
+    icon: (
+      <svg
+        className="w-[15px] h-[15px]"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <circle cx="12" cy="7" r="4" />
+        <path d="M5.5 21v-2a6.5 6.5 0 0 1 13 0v2" />
+      </svg>
+    ),
+  },
+  {
     name: 'Departments',
     link: routePaths.DEPARTMENTS,
     permission: 'canManageDepartments',

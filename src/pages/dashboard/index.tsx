@@ -1,6 +1,6 @@
-import { useNavigate } from "react-router-dom"
-import { routePaths } from "../../constants/routePaths"
-import type { ReactNode } from "react"
+import { useNavigate } from 'react-router-dom'
+import { routePaths } from '../../constants/routePaths'
+import { useEffect, useState, type ReactNode } from 'react'
 
 interface DashboardCard {
   title: string
@@ -10,10 +10,11 @@ interface DashboardCard {
 
 const Dashboard = () => {
   const navigate = useNavigate()
+  const [userRole, setUserRole] = useState<string | null>(null)
 
   const cards: DashboardCard[] = [
     {
-      title: "Patients",
+      title: 'Patients',
       path: routePaths.PATIENTS,
       icon: (
         <svg
@@ -33,7 +34,7 @@ const Dashboard = () => {
     },
 
     {
-      title: "Departments",
+      title: 'Departments',
       path: routePaths.DEPARTMENTS,
       icon: (
         <svg
@@ -54,7 +55,7 @@ const Dashboard = () => {
     },
 
     {
-      title: "Procedures",
+      title: 'Procedures',
       path: routePaths.PROCEDURE,
       icon: (
         <svg
@@ -74,7 +75,7 @@ const Dashboard = () => {
     },
 
     {
-      title: "Doctors",
+      title: 'Doctors',
       path: routePaths.DOCTORS,
       icon: (
         <svg
@@ -94,7 +95,7 @@ const Dashboard = () => {
     },
 
     {
-      title: "Doctor Fee",
+      title: 'Doctor Fee',
       path: routePaths.DOCTOR_FEE,
       icon: (
         <svg
@@ -114,7 +115,7 @@ const Dashboard = () => {
     },
 
     {
-      title: "Appointments",
+      title: 'Appointments',
       path: routePaths.APPOINTMENTS,
       icon: (
         <svg
@@ -136,21 +137,24 @@ const Dashboard = () => {
     },
   ]
 
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user')
+    const roleName = storedUser
+      ? JSON.parse(storedUser)?.user?.role?.name
+      : null
+    setUserRole(roleName)
+  }, [])
 
-  // read user from localStorage
-  const storedUser = localStorage.getItem("user")
-  const userRole = storedUser ? JSON.parse(storedUser)?.user?.role?.name : null
-console.log(userRole)
   const visibleCards =
-    userRole === "superadmin"
+    userRole === 'superadmin'
       ? cards
-      : cards.filter(card => card.title === "Patients")
+      : cards.filter((card) => card.title === 'Patients')
 
   return (
     <div className="min-h-screen ">
       <h1
         className="text-xl font-semibold mb-8 tracking-wide underline"
-        style={{ color: "var(--color-dark)" }}
+        style={{ color: 'var(--color-dark)' }}
       >
         Dashboard
       </h1>
@@ -176,7 +180,7 @@ console.log(userRole)
 
             <h2
               className="text-sm font-semibold text-center"
-              style={{ color: "var(--color-dark)" }}
+              style={{ color: 'var(--color-dark)' }}
             >
               {card.title}
             </h2>

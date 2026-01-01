@@ -8,6 +8,8 @@ import TextArea from '../../components/input/TextArea'
 import Dropdown from '../../components/input/Dropdown'
 import { routePaths } from '../../constants/routePaths'
 import ToggleButton from '../../components/button/ToggleButton'
+import ErrorMessage from '../../components/error-handling/ErrorMessage'
+import SuccessMessage from '../../components/error-handling/SuccessMessage'
 
 // ✅ Type definitions
 interface Department {
@@ -39,7 +41,7 @@ const procedureSchema = Yup.object().shape({
 const AddProcedure: React.FC = () => {
   const [departments, setDepartments] = useState<Department[]>([])
   const [form, setForm] = useState<ProcedureForm>({
-    status: false,
+    status: true,
     name: '',
     shortCode: '',
     department: null,
@@ -51,7 +53,7 @@ const AddProcedure: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false)
 
   const API_BASE = import.meta.env.VITE_API_BASE_URL
-    const token = localStorage.getItem('token')
+  const token = localStorage.getItem('token')
 
   // ✅ Handle input/checkbox change
   const handleChange = (
@@ -98,7 +100,10 @@ const AddProcedure: React.FC = () => {
 
       const res = await fetch(`${API_BASE}/api/procedures`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' , Authorization: `Bearer ${token}`},
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(payload),
       })
 
@@ -135,40 +140,39 @@ const AddProcedure: React.FC = () => {
     }
   }
 
-// ✅ Fetch departments on mount with token
-useEffect(() => {
-  const fetchDepartments = async () => {
-    if (!token) {
-      console.error('No token found. Please login first.')
-      return
-    }
-
-    try {
-      const res = await fetch(`${API_BASE}/api/department?status=true`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (!res.ok) {
-        const errData = await res.json()
-        throw new Error(errData.message || 'Failed to fetch departments')
+  // ✅ Fetch departments on mount with token
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      if (!token) {
+        console.error('No token found. Please login first.')
+        return
       }
 
-      const data = (await res.json()) as { data: Department[] }
-      setDepartments(data.data || [])
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        console.error('Error fetching departments:', err.message)
-      } else {
-        console.error('Unknown error fetching departments')
+      try {
+        const res = await fetch(`${API_BASE}/api/department?status=true`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+
+        if (!res.ok) {
+          const errData = await res.json()
+          throw new Error(errData.message || 'Failed to fetch departments')
+        }
+
+        const data = (await res.json()) as { data: Department[] }
+        setDepartments(data.data || [])
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          console.error('Error fetching departments:', err.message)
+        } else {
+          console.error('Unknown error fetching departments')
+        }
       }
     }
-  }
 
-  fetchDepartments()
-}, [API_BASE, token])
-
+    fetchDepartments()
+  }, [API_BASE, token])
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-10">
@@ -187,25 +191,25 @@ useEffect(() => {
         </Button>
       </div>
 
-      {/* Messages */}
-      {successMsg && <p className="text-green-600 font-medium">{successMsg}</p>}
-      {errorMsg && <p className="text-red-600 font-medium">{errorMsg}</p>}
-
+      {errorMsg && <ErrorMessage msg={errorMsg} />}
+      {successMsg && <SuccessMessage msg={successMsg} />}
       <div className="grid grid-cols-3 gap-3 max-w-[1000px]">
         {/* Status */}
         <GroupInput className="col-span-full">
           <Label htmlFor="status">Status</Label>
 
           <ToggleButton
-                        id="status"
-                        checked={form.status}
-                        onChange={handleChange}
-                      />
+            id="status"
+            checked={form.status}
+            onChange={handleChange}
+          />
         </GroupInput>
 
         {/* Procedure Name */}
         <GroupInput>
-          <Label required='true' htmlFor="name">Procedure Name</Label>
+          <Label required="true" htmlFor="name">
+            Procedure Name
+          </Label>
           <Input
             id="name"
             placeholder="Enter Procedure Name"
@@ -217,7 +221,9 @@ useEffect(() => {
 
         {/* Short Code */}
         <GroupInput>
-          <Label htmlFor="shortCode" required='true'>Short Code</Label>
+          <Label htmlFor="shortCode" required="true">
+            Short Code
+          </Label>
           <Input
             id="shortCode"
             placeholder="Enter Procedure Short Code"
@@ -231,9 +237,9 @@ useEffect(() => {
 
         {/* Department */}
         <GroupInput>
-          <Label required='true'>Department</Label>
+          <Label required="true">Department</Label>
           <Dropdown
-            options={departments.map((d) => ({ id: d.id, name: d.name }))} 
+            options={departments.map((d) => ({ id: d.id, name: d.name }))}
             selected={
               form.department
                 ? { id: form.department.id, name: form.department.name }
@@ -241,7 +247,7 @@ useEffect(() => {
             }
             onSelect={(option) =>
               handleSelectDepartment({
-                id: Number(option.id), 
+                id: Number(option.id),
                 name: option.name,
               })
             }

@@ -211,3 +211,4 @@ const ReceiptTemplate = ({ patient }: ReceiptTemplateProps) => {
 }
 
 export default ReceiptTemplate
+export type { Patient }
