@@ -7,6 +7,8 @@ import { Label } from '../../components/input/Label'
 import TextArea from '../../components/input/TextArea'
 import Dropdown from '../../components/input/Dropdown'
 import { routePaths } from '../../constants/routePaths'
+import '../../assets/css/success-notification.css'
+import SuccessNotification from '../../components/toastify/SuccessNotification'
 
 // ✅ Dropdown options
 const maritalStatusOptions = [
@@ -175,7 +177,7 @@ const AddPatients = () => {
         <p className="text-red text-center col-span-full">{generalError}</p>
       )}
       {success && (
-        <p className="text-green-600 text-center col-span-full">{success}</p>
+        <SuccessNotification onClose={()=>console.log("first")} msg={success}/>
       )}
 
       <div className="flex justify-between items-center border-b pb-3">

@@ -1,5 +1,5 @@
-import helpingHandLogo from '../../assets/images/helping-hand.jpeg'
-import kindrLogo from '../../assets/images/kindr-logo.jpeg'
+import helpingHandLogoBase64 from '../../assets/images/helping-hand.jpeg'
+import kindrLogoBase64 from '../../assets/images/kindr-logo.jpeg'
 
 type Procedure = {
   id: number
@@ -33,6 +33,7 @@ type Patient = {
   patientId?: number
   discountPercentage?: number
   fees?: string
+  netFees?: number
 }
 
 type ReceiptTemplateProps = {
@@ -41,17 +42,17 @@ type ReceiptTemplateProps = {
 
 const ReceiptTemplate = ({ patient }: ReceiptTemplateProps) => {
   const today = new Date()
-  
-  const formattedDate = today.toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: 'short',
-    year: '2-digit'
-  }).replace(/ /g, '-')
 
-  const originalFee = patient.procedure?.fee ?? 0;
-  const discount = patient.welfareRecord?.discountPercentage ?? 0;
-  const netFee = originalFee - (originalFee * discount) / 100;
-console.log(netFee)
+  const formattedDate = today
+    .toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: '2-digit',
+    })
+    .replace(/ /g, '-')
+
+  const originalFee = patient.procedure?.fee ?? 0
+
   return `
   <html>
     <head>
@@ -68,7 +69,9 @@ console.log(netFee)
         }
         
         .receipt-main { 
-          width: 80mm; 
+           width: 80mm; 
+          min-height: 210mm; 
+          max-height: 210mm;
           background: white; 
           padding: 10px; 
           font-family: 'Courier New', Courier, monospace; 
@@ -88,8 +91,33 @@ console.log(netFee)
           margin-bottom: 5px;
         }
         
-        .info-table { width: 100%; margin: 10px 0; }
-        .info-table td { padding: 2px 0; }
+        .info-table {
+  width: 100%;
+  margin: 10px 0;
+}
+
+.info-table tr {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.info-table td {
+  padding: 2px 0;
+  font-size: 12px;
+}
+
+/* Left column */
+.info-table td:first-child {
+  font-weight: bold;
+}
+
+/* Right column fully right-aligned */
+.info-table td:last-child {
+  text-align: right;
+  flex-shrink: 0;
+}
+
         
         .items-table { width: 100%; border-collapse: collapse; }
         .items-table th { border-bottom: 1px solid #000; text-align: left; }
@@ -110,11 +138,11 @@ console.log(netFee)
       <div class="receipt-main">
         <!-- Top Logos -->
         <div class="logo-row">
-          <img src="${helpingHandLogo}" style="height: 45px; width: auto;" />
-          <img src="${kindrLogo}" style="height: 45px; width: auto;" />
+         <img src="${helpingHandLogoBase64}" style="height: 45px; width: auto;" />
+         <img src="${kindrLogoBase64}" style="height: 45px; width: auto;" />
         </div>
 
-        <div class="center" style="font-size: 10px; margin-bottom: 10px;">
+        <div class="center bold" style="font-size: 10px; margin-bottom: 10px;">
           KARACHI INSTITUTE OF NEUROLOGICAL<br/>DISEASES AND REHABILITATION
         </div>
 
@@ -157,13 +185,13 @@ console.log(netFee)
           <div class="amount-row"><span>Total Amount:</span><span>${originalFee.toFixed(2)}</span></div>
           <div class="amount-row"><span>Discount:</span><span>${patient.discountPercentage} %</span></div>
           <div class="amount-row bold" style="font-size: 14px;">
-            <span>Net Amount:</span><span>Rs. ${patient.fees}</span>
+            <span>Net Amount:</span><span>Rs. ${patient.netFees}</span>
           </div>
         </div>
 
         <!-- Amount in words -->
         <div style="margin-top: 10px; font-style: italic; font-size: 11px;">
-          <span class="bold">In Words:</span> Rs. ${patient.fees} Only.
+          <span class="bold">In Words:</span> Rs. ${patient.netFees} Only.
         </div>
 
         <div class="line"></div>
@@ -182,4 +210,4 @@ console.log(netFee)
   </html>`
 }
 
-export default ReceiptTemplate;
+export default ReceiptTemplate

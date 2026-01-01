@@ -78,7 +78,7 @@ const PatientReceiptGenerator = () => {
     department: undefined,
     doctor: undefined,
     procedure: undefined,
-    fee:0,
+    fee: 0,
     discountPercentage: 0,
     netFees: 0,
     patientId: 0,
@@ -140,7 +140,7 @@ const PatientReceiptGenerator = () => {
             procedure: undefined,
             discountPercentage:
               data.data?.welfareRecord?.discountPercentage ?? 0,
-            fee:0,
+            fee: 0,
             netFees: 0,
             patientId: data.data.patientId,
           })
@@ -183,40 +183,15 @@ const PatientReceiptGenerator = () => {
     if (form.procedure) calculateFee(form.procedure.fee, value)
   }
 
-const calculateFee = (originalFee: number, discount: number) => {
-  const discountedFee = originalFee - (originalFee * discount) / 100
+  const calculateFee = (originalFee: number, discount: number) => {
+    const discountedFee = originalFee - (originalFee * discount) / 100
 
-  setForm(prev => ({
-    ...prev,
-    netFees: discountedFee  
-  }))
-}
+    setForm((prev) => ({
+      ...prev,
+      netFees: discountedFee,
+    }))
+  }
 
-
-  // const handleSubmit = (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   if (!form.department || !form.doctor || !form.procedure) {
-  //     alert('Please select department, doctor, and procedure.');
-  //     return;
-  //   }
-
-  //   const patientData = {
-  //     ...form,
-  //     procedure: form.procedure!,
-  //     welfareRecord: form.welfareRecord ?? undefined,
-  //     age: form.age ?? 0,
-  //   };
-
-  //   console.log(patientData)
-
-  //   const receiptHTML = ReceiptTemplate({ patient: patientData });
-  //   const originalContent = document.body.innerHTML;
-  //   document.body.innerHTML = receiptHTML;
-  //   window.print();
-  //   document.body.innerHTML = originalContent;
-  // };
-
-  console.log(form , "form")
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -224,7 +199,6 @@ const calculateFee = (originalFee: number, discount: number) => {
       alert('Please select department, doctor, and procedure.')
       return
     }
-
 
     const payload = {
       patientId: form.patientId,
@@ -250,12 +224,22 @@ const calculateFee = (originalFee: number, discount: number) => {
     const data = await res.json()
     console.log('API response', data)
 
-    // then print receipt
     const receiptHTML = ReceiptTemplate({ patient: { ...form } })
-    const original = document.body.innerHTML
-    document.body.innerHTML = receiptHTML
-    window.print()
-    document.body.innerHTML = original
+
+    const printWindow = window.open('', '_blank')
+
+    printWindow!.document.open()
+    printWindow!.document.write(receiptHTML)
+    printWindow!.document.close()
+
+    printWindow!.focus()
+
+    printWindow!.onload = () => {
+      setTimeout(() => {
+        printWindow!.print()
+        printWindow!.close()
+      }, 300)
+    }
   }
 
   // Dropdown options
