@@ -44,44 +44,49 @@ const PatientHistory = () => {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
-useEffect(() => {
-  const fetchHistory = async () => {
-    if (!patientId) return
-    setLoading(true)
+  useEffect(() => {
+    const fetchHistory = async () => {
+      if (!patientId) return
+      setLoading(true)
 
-    try {
-      const res = await fetch(`${API_BASE}/api/medical-records/${patientId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      try {
+        const res = await fetch(
+          `${API_BASE}/api/medical-records/${patientId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        )
 
-      const result: { data?: { patient: PatientInfo; records: VisitRecord[] }; message?: string } = await res.json()
+        const result: {
+          data?: { patient: PatientInfo; records: VisitRecord[] }
+          message?: string
+        } = await res.json()
 
-      if (!res.ok) {
-        setError(result?.message || 'Failed to fetch patient history')
-        setPatient(null)
-        setRecords([])
-        return
+        if (!res.ok) {
+          setError(result?.message || 'Failed to fetch patient history')
+          setPatient(null)
+          setRecords([])
+          return
+        }
+
+        if (!result?.data) {
+          setError('No visit history found for this patient')
+          setPatient(null)
+          setRecords([])
+        } else {
+          setPatient(result.data.patient)
+          setRecords(result.data.records || [])
+          setError(null)
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Something went wrong')
+      } finally {
+        setLoading(false)
       }
-
-      if (!result?.data) {
-        setError('No visit history found for this patient')
-        setPatient(null)
-        setRecords([])
-      } else {
-        setPatient(result.data.patient)
-        setRecords(result.data.records || [])
-        setError(null)
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong')
-    } finally {
-      setLoading(false)
     }
-  }
 
-  fetchHistory()
-}, [patientId, API_BASE, token])
-
+    fetchHistory()
+  }, [patientId, API_BASE, token])
 
   return (
     <div className="p-5">
@@ -100,7 +105,7 @@ useEffect(() => {
         </Button>
       </div>
 
-      {loading && <Loading/>}
+      {loading && <Loading />}
       {error && <p className="text-red mt-10 text-center">{error}</p>}
 
       {!loading && !error && patient && (
@@ -182,7 +187,7 @@ useEffect(() => {
                                 ...patient,
                                 procedure: {
                                   name: r.procedure?.name || 'Service',
-                                fee: Number(r.fee ?? 0), 
+                                  fee: Number(r.fee ?? 0),
                                 },
                                 department: r.department,
                                 doctor: r.doctor,
