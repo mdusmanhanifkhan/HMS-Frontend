@@ -193,90 +193,71 @@ const PatientReceiptGenerator = () => {
     }))
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
 
-    if (!form.department || !form.doctor || !form.procedure) {
-      setError('Please select department, doctor, and procedure.')
-      return
-    }
-
-    const payload = {
-      patientId: form.patientId,
-      departmentId: form.department.id,
-      doctorId: form.doctor.id,
-      procedureId: form.procedure.id,
-      fee: form.procedure.fee,
-      discount: form.discountPercentage ?? 0,
-      finalFee: form.netFees,
-      notes: form.notes ?? '',
-    }
-
-    try {
-      const res = await fetch(`${API_BASE}/api/medical-records`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      })
-
-      const data = await res.json()
-
-      if (!data.success) {
-        setError(data.message || 'Failed to create medical record')
-        return
-      }
-
-      const receiptHTML = ReceiptTemplate({
-        patient: { ...form },
-      })
-
-      const printWindow = window.open('', '_blank')
-      if (!printWindow) return
-
-      printWindow.document.open()
-      printWindow.document.write(receiptHTML)
-      printWindow.document.close()
-      printWindow.focus()
-
-      printWindow.onload = () => {
-        setTimeout(() => {
-          printWindow.print()
-          printWindow.close()
-        }, 300)
-      }
-
-      setForm({
-        id: 0,
-        name: '',
-        guardianName: '',
-        gender: '',
-        dob: '',
-        age: 0,
-        maritalStatus: '',
-        bloodGroup: '',
-        phoneNumber: '',
-        cnic: '',
-        address: '',
-        welfareRecord: undefined,
-        department: undefined,
-        doctor: undefined,
-        procedure: undefined,
-        fee: 0,
-        discountPercentage: 0,
-        netFees: 0,
-        patientId: 0,
-      })
-
-      setSuccess('Medical record created successfully!')
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error)
-      setError(`An error occurred: ${message}`)
-    }
+  if (!form.department || !form.doctor || !form.procedure) {
+    setError('Please select department, doctor, and procedure.')
+    return
   }
 
+  // const payload = {
+  //   patientId: form.patientId,
+  //   departmentId: form.department.id,
+  //   doctorId: form.doctor.id,
+  //   procedureId: form.procedure.id,
+  //   fee: form.procedure.fee,
+  //   discount: form.discountPercentage ?? 0,
+  //   finalFee: form.netFees,
+  //   notes: form.notes ?? '',
+  // }
+
+  try {
+    // ✅ Commented out API call
+    /*
+    const res = await fetch(`${API_BASE}/api/medical-records`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    })
+
+    const data = await res.json()
+
+    if (!data.success) {
+      setError(data.message || 'Failed to create medical record')
+      return
+    }
+    */
+
+    // Only generate and print receipt
+    const receiptHTML = ReceiptTemplate({
+      patient: { ...form },
+    })
+
+    const printWindow = window.open('', '_blank')
+    if (!printWindow) return
+
+    printWindow.document.open()
+    printWindow.document.write(receiptHTML)
+    printWindow.document.close()
+    printWindow.focus()
+
+    printWindow.onload = () => {
+      setTimeout(() => {
+        printWindow.print()
+        printWindow.close()
+      }, 300)
+    }
+
+    setSuccess('Medical record printed successfully!')
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    setError(`An error occurred: ${message}`)
+  }
+}
   // Dropdown options
   const departmentOptions = departments.map((dep) => ({
     id: dep.id,
