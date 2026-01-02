@@ -6,6 +6,7 @@ import { Input } from '../../components/input/Input'
 import { Label } from '../../components/input/Label'
 import Dropdown from '../../components/input/Dropdown'
 import ReceiptTemplate from './ReceiptTemplate'
+import SuccessMessage from '../../components/error-handling/SuccessMessage'
 
 type Procedure = {
   id: number
@@ -59,6 +60,7 @@ const PatientReceiptGenerator = () => {
   const token = localStorage.getItem('token') || ''
 
   const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
   const [departments, setDepartments] = useState<Department[]>([])
   const [showPatientInfo, setShowPatientInfo] = useState(false)
 
@@ -153,7 +155,6 @@ const PatientReceiptGenerator = () => {
     fetchPatient()
   }, [patientId, API_BASE, token])
 
-  // Handlers
   const handleDepartmentSelect = (dep: Department) => {
     setForm((prev) => ({
       ...prev,
@@ -196,49 +197,83 @@ const PatientReceiptGenerator = () => {
     e.preventDefault()
 
     if (!form.department || !form.doctor || !form.procedure) {
-      alert('Please select department, doctor, and procedure.')
+      setError('Please select department, doctor, and procedure.')
       return
     }
 
     const payload = {
       patientId: form.patientId,
-      departmentId: form.department!.id,
-      doctorId: form.doctor!.id,
-      procedureId: form.procedure!.id,
+      departmentId: form.department.id,
+      doctorId: form.doctor.id,
+      procedureId: form.procedure.id,
       fee: form.procedure.fee,
       discount: form.discountPercentage ?? 0,
       finalFee: form.netFees,
       notes: form.notes ?? '',
     }
 
-    // 👇 Explicit API call
-    const res = await fetch(`${API_BASE}/api/medical-records`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    })
+    try {
+      const res = await fetch(`${API_BASE}/api/medical-records`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      })
 
-    const data = await res.json()
-    console.log('API response', data)
+      const data = await res.json()
 
-    const receiptHTML = ReceiptTemplate({ patient: { ...form } })
+      if (!data.success) {
+        setError(data.message || 'Failed to create medical record')
+        return
+      }
 
-    const printWindow = window.open('', '_blank')
+      const receiptHTML = ReceiptTemplate({
+        patient: { ...form },
+      })
 
-    printWindow!.document.open()
-    printWindow!.document.write(receiptHTML)
-    printWindow!.document.close()
+      const printWindow = window.open('', '_blank')
+      if (!printWindow) return
 
-    printWindow!.focus()
+      printWindow.document.open()
+      printWindow.document.write(receiptHTML)
+      printWindow.document.close()
+      printWindow.focus()
 
-    printWindow!.onload = () => {
-      setTimeout(() => {
-        printWindow!.print()
-        printWindow!.close()
-      }, 300)
+      printWindow.onload = () => {
+        setTimeout(() => {
+          printWindow.print()
+          printWindow.close()
+        }, 300)
+      }
+
+      setForm({
+        id: 0,
+        name: '',
+        guardianName: '',
+        gender: '',
+        dob: '',
+        age: 0,
+        maritalStatus: '',
+        bloodGroup: '',
+        phoneNumber: '',
+        cnic: '',
+        address: '',
+        welfareRecord: undefined,
+        department: undefined,
+        doctor: undefined,
+        procedure: undefined,
+        fee: 0,
+        discountPercentage: 0,
+        netFees: 0,
+        patientId: 0,
+      })
+
+      setSuccess('Medical record created successfully!')
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error)
+      setError(`An error occurred: ${message}`)
     }
   }
 
@@ -258,6 +293,7 @@ const PatientReceiptGenerator = () => {
     <form onSubmit={handleSubmit}>
       <p className="text-xl font-semibold underline">Patient Receipt</p>
       {error && <p className="text-red-500 mt-3">{error}</p>}
+      {success && <SuccessMessage msg={success} />}
 
       {showPatientInfo && (
         <div className="grid min-[1440px]:grid-cols-3 max-w-[1000px] gap-x-3 gap-y-4 mt-6">

@@ -22,7 +22,7 @@ const departmentSchema = yup.object().shape({
 
 const AddDepartments = () => {
   const initialForm = {
-    status: false,
+    status: true,
     name: '',
     shortCode: '',
     timeFrom: '',
@@ -114,8 +114,8 @@ const AddDepartments = () => {
 
   return (
     <>
-      {error && <ErrorMessage error={error} />}
-      {success && <SuccessMessage success={success} />}
+      {error && <ErrorMessage msg={error} />}
+      {success && <SuccessMessage msg={success} />}
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-10">
         <div className="flex justify-between items-center border-b pb-3">

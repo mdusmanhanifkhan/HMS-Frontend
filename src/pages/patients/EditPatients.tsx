@@ -8,6 +8,9 @@ import { Label } from '../../components/input/Label'
 import TextArea from '../../components/input/TextArea'
 import Dropdown from '../../components/input/Dropdown'
 import Loading from '../../components/loading/Loading'
+import SuccessMessage from '../../components/error-handling/SuccessMessage'
+import ErrorMessage from '../../components/error-handling/ErrorMessage'
+import { routePaths } from '../../constants/routePaths'
 
 // ✅ Dropdown options
 const maritalStatusOptions = [
@@ -209,14 +212,22 @@ const EditPatients = () => {
 
   return (
     <>
-      <p className="text-3xl font-semibold mb-2">Edit Patient</p>
+      <div className="flex justify-between items-center border-b pb-3">
+        <p className="text-xl font-semibold w-full">Edit Patient</p>
+        <Button to={routePaths.PATIENTS} asLink={true}>
+          <svg
+            className="w-3.5 h-3.5 -scale-x-100"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 640 640"
+          >
+            <use href="/assets/svg/arrow-icon.svg#arrow-icon" />
+          </svg>
+          Back
+        </Button>
+      </div>
 
-      {generalError && (
-        <p className="text-red text-center col-span-full">{generalError}</p>
-      )}
-      {success && (
-        <p className="text-green-600 text-center col-span-full">{success}</p>
-      )}
+      {generalError && <ErrorMessage msg={generalError} />}
+      {success && <SuccessMessage msg={success} />}
 
       <form
         onSubmit={handleSubmit}
@@ -350,7 +361,7 @@ const EditPatients = () => {
         {/* Submit */}
         <div className="col-span-full mx-auto">
           <Button type="submit" disabled={loading}>
-            {loading ? 'Updating...' : 'Update Patient'}
+            {loading ? <Loading/> : 'Update Patient'}
           </Button>
         </div>
       </form>

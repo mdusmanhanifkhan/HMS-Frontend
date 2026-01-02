@@ -4,9 +4,6 @@ import Button from '../../components/button/Button'
 import { routePaths } from '../../constants/routePaths'
 import { Input } from '../../components/input/Input'
 import Loading from '../../components/loading/Loading'
-import { usePermissions } from '../../context/PermissionsContext'
-import DeleteModal from '../../components/modal/DeleteModal'
-import SuccessMessage from '../../components/error-handling/SuccessMessage'
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL
 
@@ -29,27 +26,17 @@ interface Patient {
   welfareRecord?: WelfareRecord | null
 }
 
-const Patients = () => {
+const AllPatients = () => {
   const [patients, setPatients] = useState<Patient[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<string | null>(null)
 
   // Separate search fields
-  const [searchName, setSearchName] = useState<string>('')
   const [searchMR, setSearchMR] = useState<string>('')
-  const [searchCNIC, setSearchCNIC] = useState<string>('')
-  const [searchPhone, setSearchPhone] = useState<string>('')
 
-  const [showModal, setShowModal] = useState<boolean>(false)
-  const [deleteId, setDeleteId] = useState<number | null>(null)
-  const [deletePatientName, setDeletePatientName] = useState<string | null>(
-    null
-  )
   const token = localStorage.getItem('token')
 
   if (!token) console.error('No token found. Please login.')
-  const { role } = usePermissions()
 
   // Fetch Patients
   const fetchPatients = async (filters?: {
@@ -97,83 +84,25 @@ const Patients = () => {
   // Search button handler
   const handleSearch = () => {
     fetchPatients({
-      name: searchName,
       patientId: searchMR,
-      cnic: searchCNIC,
-      phone: searchPhone,
     })
-  }
-
-  // Delete Modal
-  const confirmDelete = (id: number) => {
-    setDeleteId(id)
-    setShowModal(true)
-  }
-
-  const handleDelete = async () => {
-    if (!deleteId || !token) return
-
-    try {
-      const res = await fetch(`${API_BASE}/api/patient/${deleteId}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      })
-
-      const data = await res.json()
-      if (!res.ok) throw new Error(data?.general_error || 'Delete failed')
-
-      setSuccess(data.message)
-      setPatients((prev) => prev.filter((p) => p.patientId !== deleteId))
-      setShowModal(false)
-      setDeleteId(null)
-    } catch (err) {
-      alert(err instanceof Error ? err.message : 'Unknown error')
-    }
   }
 
   return (
     <div className="flex flex-col gap-10 relative">
-      {success && <SuccessMessage msg={success} />}
-
       {/* Header */}
       <div className="flex justify-between items-center w-full border-b pb-3">
-        <p className="text-xl font-semibold">Patients Management</p>
-        <Link to={routePaths.ADD_PATIENTS}>
-          <Button>+ Add Patient</Button>
-        </Link>
-      </div>
-
-      <div className="space-y-5">
-        {/* Search Fields */}
+        <p className="text-xl font-semibold">Patients History</p>
+          {/* Search Fields */}
         <div className="flex gap-2 items-center">
-          <Input
-            type="text"
-            placeholder="Search by Name"
-            value={searchName}
-            onChange={(e) => setSearchName(e.target.value)}
-            className="min-w-[150px]"
-          />
           <Input
             type="text"
             placeholder="Search by MR ID"
             value={searchMR}
             onChange={(e) => setSearchMR(e.target.value)}
-            className="min-w-[150px]"
+            className="min-w-[250px] w-full"
           />
-          <Input
-            type="text"
-            placeholder="Search by CNIC"
-            value={searchCNIC}
-            onChange={(e) => setSearchCNIC(e.target.value)}
-            className="min-w-[150px]"
-          />
-          <Input
-            type="text"
-            placeholder="Search by Phone"
-            value={searchPhone}
-            onChange={(e) => setSearchPhone(e.target.value)}
-            className="min-w-[150px]"
-          />
+        
           <Button onClick={handleSearch}>
             {' '}
             <svg
@@ -204,6 +133,10 @@ const Patients = () => {
             Search
           </Button>
         </div>
+      </div>
+
+      <div className="space-y-5">
+      
 
         {/* Table */}
         <div className="relative overflow-x-auto shadow-lg rounded-lg">
@@ -216,7 +149,7 @@ const Patients = () => {
                 <th className="px-6 py-4">Age</th>
                 <th className="px-6 py-4">CNIC / ID</th>
                 <th className="px-6 py-4">Contact No.</th>
-                <th className="px-6 py-4 w-[10%]">Action</th>
+                <th className="px-6 py-4 w-[10%] text-center">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -256,51 +189,17 @@ const Patients = () => {
                     <td className="px-6 py-2">{p.age}</td>
                     <td className="px-6 py-2">{p.cnicNumber || '-'}</td>
                     <td className="px-6 py-2">{p.phoneNumber || '-'}</td>
-                    <td className="px-6 py-2 flex items-center gap-2">
+                    <td className="px-6 py-2 flex items-center justify-center">
                       <Link
-                        to={`${routePaths.PATIENTS}/${p.patientId}`}
-                        className="bg-dark p-1 cursor-pointer rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200"
+                        to={`${routePaths.PATIENT_HISTORY}/${p.patientId}`}
+                        className="p-1 cursor-pointer rounded-md group bg-white border border-dark transition-all ease-linear duration-200"
                       >
                         <svg
                           className="w-[18px] h-[18px] text-white group-hover:text-dark"
-                          viewBox="0 0 12 12"
-                          fill="none"
                           xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 512 513.11"
                         >
-                          <use href="/assets/svg/edit-icon.svg#edit-icon" />
-                        </svg>
-                      </Link>
-                      {role == 'superadmin' ? (
-                        <button
-                          onClick={() => {
-                            confirmDelete(p.patientId)
-                            setDeletePatientName(p.name)
-                          }}
-                          className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200 cursor-pointer"
-                        >
-                          <svg
-                            className="w-[18px] h-[18px] text-white group-hover:text-[#cc0000]"
-                            viewBox="0 0 12 12"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <use href="/assets/svg/delete-icon.svg#delete-icon" />
-                          </svg>
-                        </button>
-                      ) : (
-                        ''
-                      )}
-                      <Link
-                        to={`${routePaths.PATIENTS}${routePaths.PATIENTS_RECEIPT_GENERATE}/${p.patientId}`}
-                        className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200"
-                      >
-                        <svg
-                          className="w-[18px] h-[18px] text-white group-hover:text-dark"
-                          viewBox="0 0 12 12"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <use href="/assets/svg/printer-icon.svg#printer-icon" />
+                          <use href="/assets/svg/history-icon.svg#history-icon" />
                         </svg>
                       </Link>
                     </td>
@@ -311,18 +210,8 @@ const Patients = () => {
           </table>
         </div>
       </div>
-
-      {/* Delete Modal */}
-      {showModal && (
-        <DeleteModal
-          isOpen={showModal}
-          onClose={() => setShowModal(false)}
-          onConfirm={handleDelete}
-          itemName={deletePatientName || ''}
-        />
-      )}
     </div>
   )
 }
 
-export default Patients
+export default AllPatients

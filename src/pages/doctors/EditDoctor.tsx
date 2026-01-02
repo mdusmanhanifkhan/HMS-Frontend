@@ -285,8 +285,8 @@ const EditDoctor = () => {
 
   return (
     <>
-      {errorMsg && <ErrorMessage error={errorMsg} />}
-      {successMsg && <SuccessMessage success={successMsg} />}
+      {errorMsg && <ErrorMessage msg={errorMsg} />}
+      {successMsg && <SuccessMessage msg={successMsg} />}
       <form onSubmit={handleSubmit} className="flex flex-col gap-10">
         {/* Header */}
         <div className="flex justify-between items-center border-b pb-3">

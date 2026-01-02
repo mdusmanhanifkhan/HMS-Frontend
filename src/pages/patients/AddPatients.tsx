@@ -7,10 +7,9 @@ import { Label } from '../../components/input/Label'
 import TextArea from '../../components/input/TextArea'
 import Dropdown from '../../components/input/Dropdown'
 import { routePaths } from '../../constants/routePaths'
-import '../../assets/css/success-notification.css'
-import SuccessNotification from '../../components/toastify/SuccessNotification'
+import SuccessMessage from '../../components/error-handling/SuccessMessage'
+import Loading from '../../components/loading/Loading'
 
-// ✅ Dropdown options
 const maritalStatusOptions = [
   { id: 'single', name: 'Single' },
   { id: 'married', name: 'Married' },
@@ -37,13 +36,7 @@ const patientSchema = Yup.object().shape({
     .positive('Age must be positive')
     .integer('Age must be an integer')
     .required('Age is required'),
-  guardianName: Yup.string().required('Guardian name is required'),
   maritalStatus: Yup.string().required('Marital status is required'),
-  bloodGroup: Yup.string().required('Blood group is required'),
-  phoneNumber: Yup.string()
-    .optional()
-    .matches(/^\d{11}$/, 'Phone number is required & must be exactly 11 digits')
-    .nullable(),
 })
 const AddPatients = () => {
   const API_BASE = import.meta.env.VITE_API_BASE_URL
@@ -67,14 +60,12 @@ const AddPatients = () => {
   const [generalError, setGeneralError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
 
-  // ✅ Format phone like 0304-3763110 (for display only)
   const formatPhoneNumber = (value: string): string => {
     const digits = value.replace(/\D/g, '').slice(0, 11)
     if (digits.length > 4) return `${digits.slice(0, 4)}-${digits.slice(4)}`
     return digits
   }
 
-  // ✅ Format CNIC like 12345-1234567-1 (for display only)
   const formatCnicNumber = (value: string): string => {
     const digits = value.replace(/\D/g, '').slice(0, 13)
     if (digits.length > 12)
@@ -83,7 +74,6 @@ const AddPatients = () => {
     return digits
   }
 
-  // ✅ Handle input changes
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -98,7 +88,6 @@ const AddPatients = () => {
     setGeneralError(null)
   }
 
-  // ✅ Handle dropdown select
   const handleDropdownSelect = (
     name: string,
     option: { id: string | number; name: string }
@@ -108,7 +97,6 @@ const AddPatients = () => {
     setGeneralError(null)
   }
 
-  // ✅ Handle submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSuccess(null)
@@ -117,10 +105,10 @@ const AddPatients = () => {
     try {
       const cleanForm = {
         ...form,
-        phoneNumber: form.phoneNumber.replace(/\D/g, ''),
-        cnicNumber: form.cnicNumber.replace(/\D/g, ''),
+        age: Number(form.age),
+        phoneNumber: form.phoneNumber?.replace(/\D/g, ''),
+        cnicNumber: form.cnicNumber?.replace(/\D/g, ''),
       }
-
       await patientSchema.validate(cleanForm, { abortEarly: false })
       setErrors({})
       setLoading(true)
@@ -176,9 +164,7 @@ const AddPatients = () => {
       {generalError && (
         <p className="text-red text-center col-span-full">{generalError}</p>
       )}
-      {success && (
-        <SuccessNotification onClose={()=>console.log("first")} msg={success}/>
-      )}
+      {success && <SuccessMessage msg={success} />}
 
       <div className="flex justify-between items-center border-b pb-3">
         <p className="text-xl font-semibold w-full">Add Patient</p>
@@ -261,7 +247,6 @@ const AddPatients = () => {
           {errors.age && <p className="text-red text-sm">{errors.age}</p>}
         </GroupInput>
 
-        {/* ✅ Marital Status (Dropdown) */}
         <GroupInput>
           <Label>Marital Status</Label>
           <Dropdown
@@ -279,7 +264,6 @@ const AddPatients = () => {
           )}
         </GroupInput>
 
-        {/* ✅ Blood Group (Dropdown) */}
         <GroupInput>
           <Label>Blood Group</Label>
           <Dropdown
@@ -292,28 +276,19 @@ const AddPatients = () => {
             onSelect={(opt) => handleDropdownSelect('bloodGroup', opt)}
             placeholder="Select blood group"
           />
-          {errors.bloodGroup && (
-            <p className="text-red text-sm">{errors.bloodGroup}</p>
-          )}
         </GroupInput>
 
-        {/* Phone Number */}
         <GroupInput>
-          <Label required="required" htmlFor="phoneNumber">
-            Phone Number
-          </Label>
+          <Label htmlFor="phoneNumber">Phone Number</Label>
           <Input
             name="phoneNumber"
             placeholder="0000-0000000"
             value={form.phoneNumber}
             onChange={handleChange}
+            maxLength={12}
           />
-          {errors.phoneNumber && (
-            <p className="text-red text-sm">{errors.phoneNumber}</p>
-          )}
         </GroupInput>
 
-        {/* CNIC */}
         <GroupInput>
           <Label htmlFor="cnicNumber">CNIC / ID Card No.</Label>
           <Input
@@ -328,7 +303,6 @@ const AddPatients = () => {
           )}
         </GroupInput>
 
-        {/* Address */}
         <GroupInput className="col-span-2">
           <Label>Address</Label>
           <TextArea
@@ -342,10 +316,9 @@ const AddPatients = () => {
           )}
         </GroupInput>
 
-        {/* Submit */}
         <div className="col-span-full mx-auto">
           <Button type="submit" disabled={loading}>
-            {loading ? 'Adding...' : 'Add patient'}
+            {loading ? <Loading /> : 'Add patient'}
           </Button>
         </div>
       </form>

@@ -42,7 +42,7 @@ const AddDoctorFee = () => {
   const [procedures, setProcedures] = useState<OptionType[]>([])
   const [doctors, setDoctors] = useState<OptionType[]>([])
   const [form, setForm] = useState<FormType>({
-    status: false,
+    status: true,
     doctor: null,
     department: null,
     procedure: null,

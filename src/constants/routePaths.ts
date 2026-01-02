@@ -3,7 +3,7 @@ export const routePaths = {
   PATIENTS: '/patients',
   ADD_PATIENTS: '/patients/add',
   PATIENTS_RECEIPT_GENERATE: '/patients-receipt-generate',
-  FIND_PATIENT: '/patients/search',
+  PATIENT_HISTORY: '/patient-history',
   APPOINTMENTS: '/appointments',
   DEPARTMENTS: '/department',
   ADD_DEPARTMENT: '/department/add',

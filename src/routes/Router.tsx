@@ -27,6 +27,8 @@ import Dashboard from '../pages/dashboard/index.tsx'
 import UserManagement from '../pages/user-management/index.tsx'
 import CreateUser from '../pages/user-management/CreateUser.tsx'
 import EditDoctorFee from '../pages/doctor-fee/EditDoctorFee.tsx'
+import PatientHistory from '../pages/patient-history/PatientHistory.tsx'
+import AllPatients from '../pages/patient-history/AllPatients.tsx'
 
 export const router = createBrowserRouter([
   {
@@ -51,7 +53,8 @@ export const router = createBrowserRouter([
         path: `${routePaths.PATIENTS}${routePaths.PATIENTS_RECEIPT_GENERATE}/:id`,
         element: <PatientReceiptGenerator />,
       },
-      { path: routePaths.FIND_PATIENT, element: <ComingSoon /> },
+      { path: `${routePaths.PATIENT_HISTORY}/:id`, element: <PatientHistory /> },
+      { path: routePaths.PATIENT_HISTORY, element: <AllPatients /> },
       { path: routePaths.APPOINTMENTS, element: <ComingSoon /> },
       // Department
       { path: routePaths.DEPARTMENTS, element: <Departments /> },
