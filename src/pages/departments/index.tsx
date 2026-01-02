@@ -22,6 +22,7 @@ const Departments: React.FC = () => {
   const [departments, setDepartments] = useState<Department[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [generalError, setGeneralError] = useState<string | null>(null)
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedDept, setSelectedDept] = useState<Department | null>(null)
@@ -96,7 +97,7 @@ const Departments: React.FC = () => {
       const data = await res.json()
 
       if (!res.ok) {
-        setError(data.general_error || 'Something went wrong while deleting')
+        setGeneralError(data.general_error || 'Something went wrong while deleting')
         return
       }
 
@@ -117,7 +118,7 @@ const Departments: React.FC = () => {
           onClose={() => setIsModalOpen(false)}
           onConfirm={handleDelete}
           itemName={`${selectedDept.name || ''} Department`}
-          errorMessage={error ?? undefined}
+          errorMessage={generalError ?? undefined}
         />
       )}
 
