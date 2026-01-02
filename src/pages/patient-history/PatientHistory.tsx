@@ -185,12 +185,24 @@ const PatientHistory = () => {
                             onClick={() => {
                               const printablePatient = {
                                 ...patient,
+                                phoneNumber: patient.phoneNumber ?? '',
                                 procedure: {
+                                  id: 0,
                                   name: r.procedure?.name || 'Service',
                                   fee: Number(r.fee ?? 0),
                                 },
-                                department: r.department,
-                                doctor: r.doctor,
+                                department: r.department
+                                  ? {
+                                      id: 0,
+                                      name: r.department.name,
+                                    }
+                                  : { id: 0, name: '-' },
+                                doctor: r.doctor
+                                  ? {
+                                      id: 0,
+                                      name: r.doctor.name,
+                                    }
+                                  : { id: 0, name: 'General OPD' },
                                 discountPercentage: r.discount,
                                 netFees: r.finalFee,
                                 fee: r.fee,

@@ -25,7 +25,7 @@ type Patient = {
   id: number
   name: string
   age: number | string
-  phoneNumber?: string
+  phoneNumber?: string | null
   procedure?: Procedure
   department?: Department
   welfareRecord?: WelfareRecord
