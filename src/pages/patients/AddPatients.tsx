@@ -248,7 +248,7 @@ const AddPatients = () => {
         </GroupInput>
 
         <GroupInput>
-          <Label>Marital Status</Label>
+          <Label required='true'>Marital Status</Label>
           <Dropdown
             options={maritalStatusOptions}
             selected={

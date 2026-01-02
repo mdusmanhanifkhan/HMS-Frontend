@@ -158,52 +158,57 @@ const AddDoctor = () => {
     })
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setErrorMsg(null)
-    setSuccessMsg(null)
-    setErrors({})
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
+  setErrorMsg(null)
+  setSuccessMsg(null)
+  setErrors({})
 
-    try {
-      await doctorSchema.validate(form, { abortEarly: false })
-      setLoading(true)
+  try {
+    await doctorSchema.validate(form, { abortEarly: false })
+    setLoading(true)
 
-      // Remove dashes from CNIC before sending
-      const payload = { ...form, idCard: form.idCard.replace(/-/g, '') }
+    const payload = { ...form, idCard: form.idCard.replace(/-/g, '') }
 
-      const res = await fetch(`${API_URL}/api/doctor`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      })
+    const res = await fetch(`${API_URL}/api/doctor`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    })
 
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.general_error || 'Something went wrong')
+    const data = await res.json()
 
-      setSuccessMsg('Doctor created successfully!')
-      setForm(initialFormState)
-    } catch (err: unknown) {
-      if (err instanceof yup.ValidationError) {
-        // Handle yup validation errors
-        const fieldErrors: Record<string, string> = {}
-        err.inner.forEach((e) => {
-          if (e.path) fieldErrors[e.path] = e.message
-        })
-        setErrors(fieldErrors)
-      } else if (err instanceof Error) {
-        // Handle general JS errors
-        setErrorMsg(err.message || 'Submission failed')
-      } else {
-        // Fallback for unknown error types
-        setErrorMsg('An unknown error occurred')
+    if (!res.ok) {
+      if (data.errors && typeof data.errors === 'object') {
+        setErrors(data.errors) 
       }
-    } finally {
-      setLoading(false)
+      if (data.general_error) {
+        setErrorMsg(data.general_error) 
+      }
+      return
     }
+
+    setSuccessMsg('Doctor created successfully!')
+    setForm(initialFormState)
+  } catch (err: unknown) {
+    if (err instanceof yup.ValidationError) {
+      const fieldErrors: Record<string, string> = {}
+      err.inner.forEach((e) => {
+        if (e.path) fieldErrors[e.path] = e.message
+      })
+      setErrors(fieldErrors)
+    } else if (err instanceof Error) {
+      setErrorMsg(err.message || 'Submission failed')
+    } else {
+      setErrorMsg('An unknown error occurred')
+    }
+  } finally {
+    setLoading(false)
   }
+}
 
   useEffect(() => {
     const fetchDepartments = async () => {
