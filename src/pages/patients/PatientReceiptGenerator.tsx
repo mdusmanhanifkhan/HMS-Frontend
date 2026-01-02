@@ -7,6 +7,7 @@ import { Label } from '../../components/input/Label'
 import Dropdown from '../../components/input/Dropdown'
 import ReceiptTemplate from './ReceiptTemplate'
 import SuccessMessage from '../../components/error-handling/SuccessMessage'
+import { usePermissions } from '../../context/PermissionsContext'
 
 type Procedure = {
   id: number
@@ -63,6 +64,10 @@ const PatientReceiptGenerator = () => {
   const [success, setSuccess] = useState<string | null>(null)
   const [departments, setDepartments] = useState<Department[]>([])
   const [showPatientInfo, setShowPatientInfo] = useState(false)
+
+  const { user } = usePermissions()
+  console.log(user?.id)
+  
 
   const [form, setForm] = useState<FormState>({
     id: 0,
@@ -201,20 +206,21 @@ const handleSubmit = async (e: React.FormEvent) => {
     return
   }
 
-  // const payload = {
-  //   patientId: form.patientId,
-  //   departmentId: form.department.id,
-  //   doctorId: form.doctor.id,
-  //   procedureId: form.procedure.id,
-  //   fee: form.procedure.fee,
-  //   discount: form.discountPercentage ?? 0,
-  //   finalFee: form.netFees,
-  //   notes: form.notes ?? '',
-  // }
+  const payload = {
+    patientId: form.patientId,
+    departmentId: form.department.id,
+    doctorId: form.doctor.id,
+    procedureId: form.procedure.id,
+    fee: form.procedure.fee,
+    discount: form.discountPercentage ?? 0,
+    finalFee: form.netFees,
+    notes: form.notes ?? '',
+    createdByUserId: user?.id
+  }
 
   try {
     // ✅ Commented out API call
-    /*
+    
     const res = await fetch(`${API_BASE}/api/medical-records`, {
       method: 'POST',
       headers: {
@@ -230,7 +236,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       setError(data.message || 'Failed to create medical record')
       return
     }
-    */
+    
 
     // Only generate and print receipt
     const receiptHTML = ReceiptTemplate({
