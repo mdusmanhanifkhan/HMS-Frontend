@@ -62,7 +62,7 @@ export const SidebarRoutes = [
   {
     name: 'Patient History',
     link: routePaths.PATIENT_HISTORY,
-    permission: 'canManagePatientsHistory',
+    // permission: 'canManagePatientsHistory',
     icon: (
       <svg
         className="w-[15px] h-[15px]"
