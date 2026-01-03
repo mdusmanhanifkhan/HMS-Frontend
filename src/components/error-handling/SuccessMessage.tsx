@@ -17,14 +17,6 @@ const SuccessMessage = ({ msg }: SuccessNotificationProps) => {
         </div>
 
         <div className="toast__title">{msg}</div>
-
-        {/* <div className="toast__close" >
-          <svg width="20" height="20" viewBox="0 0 20 20">
-            <path d="M5.3 5.3 10 10l4.7-4.7L16.4 6
-              11.7 10.7l4.7 4.7-1.7 1.6L10 12.3
-              5.3 16.9 3.6 15.3l4.7-4.6L3.6 6z" />
-          </svg>
-        </div> */}
       </div>
     </div>
   );

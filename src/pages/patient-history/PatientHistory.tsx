@@ -15,10 +15,15 @@ export interface PatientInfo {
   dob?: string | null
   phoneNumber?: string | null
   address: string
+  createdBy: {
+    name: string
+  }
 }
 
 export interface VisitRecord {
-  patientId: number
+  patient?: {
+    patientId: number
+  }
   visitDate: string
   fee: number
   discount: number
@@ -44,49 +49,56 @@ const PatientHistory = () => {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    const fetchHistory = async () => {
-      if (!patientId) return
-      setLoading(true)
+useEffect(() => {
+  const fetchHistory = async () => {
+    if (!patientId) return;
+    setLoading(true);
 
-      try {
-        const res = await fetch(
-          `${API_BASE}/api/medical-records/${patientId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        )
-
-        const result: {
-          data?: { patient: PatientInfo; records: VisitRecord[] }
-          message?: string
-        } = await res.json()
-
-        if (!res.ok) {
-          setError(result?.message || 'Failed to fetch patient history')
-          setPatient(null)
-          setRecords([])
-          return
+    try {
+      const res = await fetch(
+        `${API_BASE}/api/medical-records/${patientId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
         }
+      );
 
-        if (!result?.data) {
-          setError('No visit history found for this patient')
-          setPatient(null)
-          setRecords([])
-        } else {
-          setPatient(result.data.patient)
-          setRecords(result.data.records || [])
-          setError(null)
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Something went wrong')
-      } finally {
-        setLoading(false)
+      const result: {
+        success: boolean;
+        patient?: PatientInfo;
+        records?: VisitRecord[];
+        message?: string;
+      } = await res.json();
+
+      console.log(result);
+
+      if (!res.ok || !result.success) {
+        setError(result?.message || 'Failed to fetch patient history');
+        setPatient(null);
+        setRecords([]);
+        return;
       }
-    }
 
-    fetchHistory()
-  }, [patientId, API_BASE, token])
+      if (!result.patient) {
+        setError('No visit history found for this patient');
+        setPatient(null);
+        setRecords([]);
+      } else {
+        setPatient(result.patient);
+        setRecords(result.records || []);
+        setError(null);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong');
+      setPatient(null);
+      setRecords([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchHistory();
+}, [patientId, API_BASE, token]);
+
 
   return (
     <div className="p-5">
@@ -151,7 +163,7 @@ const PatientHistory = () => {
                 <tbody>
                   {records.length === 0 ? (
                     <tr>
-                      <td colSpan={9}>
+                      <td colSpan={10}>
                         <div className="flex justify-center py-4">
                           No records found
                         </div>
@@ -163,23 +175,42 @@ const PatientHistory = () => {
                         key={index}
                         className="bg-[#DFDEDE] border-b hover:bg-gray-100"
                       >
-                        <td className="px-6 py-2">{r.patientId}</td>
+                        {/* MR ID */}
+                        <td className="px-6 py-2">{r?.patient?.patientId}</td>
+
+                        {/* Doctor */}
                         <td className="px-6 py-2">{r.doctor?.name || '-'}</td>
+
+                        {/* Department */}
                         <td className="px-6 py-2">
                           {r.department?.name || '-'}
                         </td>
+
+                        {/* Procedure */}
                         <td className="px-6 py-2">
                           {r.procedure?.name || '-'}
                         </td>
+
+                        {/* Fee */}
                         <td className="px-6 py-2">{r.fee}</td>
+
+                        {/* Discount */}
                         <td className="px-6 py-2">{r.discount}</td>
+
+                        {/* Net Fee */}
                         <td className="px-6 py-2">{r.finalFee}</td>
+
+                        {/* Created By */}
                         <td className="px-6 py-2 text-center">
-                          {r?.createdBy?.name || '-'}
+                          {patient.createdBy?.name || '-'}
                         </td>
+
+                        {/* Visit Date */}
                         <td className="px-6 py-2">
                           {new Date(r.visitDate).toLocaleString()}
                         </td>
+
+                        {/* Action */}
                         <td className="px-6 py-2 flex items-center gap-2">
                           <button
                             onClick={() => {
@@ -192,27 +223,19 @@ const PatientHistory = () => {
                                   fee: Number(r.fee ?? 0),
                                 },
                                 department: r.department
-                                  ? {
-                                      id: 0,
-                                      name: r.department.name,
-                                    }
+                                  ? { id: 0, name: r.department.name }
                                   : { id: 0, name: '-' },
                                 doctor: r.doctor
-                                  ? {
-                                      id: 0,
-                                      name: r.doctor.name,
-                                    }
+                                  ? { id: 0, name: r.doctor.name }
                                   : { id: 0, name: 'General OPD' },
                                 discountPercentage: r.discount,
                                 netFees: r.finalFee,
                                 fee: r.fee,
                               }
 
-                              // Generate receipt HTML using the template you already have
                               const receiptHTML = ReceiptTemplate({
                                 patient: printablePatient,
                               })
-
                               const printWindow = window.open('', '_blank')
                               if (!printWindow) return
 

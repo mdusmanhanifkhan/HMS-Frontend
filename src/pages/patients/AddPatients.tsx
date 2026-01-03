@@ -108,6 +108,7 @@ const AddPatients = () => {
         age: Number(form.age),
         phoneNumber: form.phoneNumber?.replace(/\D/g, ''),
         cnicNumber: form.cnicNumber?.replace(/\D/g, ''),
+        createdByUserId: 1,
       }
       await patientSchema.validate(cleanForm, { abortEarly: false })
       setErrors({})
@@ -248,7 +249,7 @@ const AddPatients = () => {
         </GroupInput>
 
         <GroupInput>
-          <Label required='true'>Marital Status</Label>
+          <Label required="true">Marital Status</Label>
           <Dropdown
             options={maritalStatusOptions}
             selected={

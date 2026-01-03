@@ -8,6 +8,8 @@ import TextArea from '../../components/input/TextArea'
 import Dropdown from '../../components/input/Dropdown'
 import ToggleButton from '../../components/button/ToggleButton'
 import { routePaths } from '../../constants/routePaths'
+import SuccessMessage from '../../components/error-handling/SuccessMessage'
+import ErrorMessage from '../../components/error-handling/ErrorMessage'
 
 // ✅ Validation schema
 const procedureSchema = Yup.object().shape({
@@ -205,8 +207,8 @@ const AddDoctorFee = () => {
         </Button>
       </div>
 
-      {successMsg && <p className="text-green-600">{successMsg}</p>}
-      {errorMsg && <p className="text-red-600">{errorMsg}</p>}
+      {successMsg && <SuccessMessage msg={successMsg} />}
+      {errorMsg && <ErrorMessage msg={errorMsg} />}
 
       <div className="grid grid-cols-3 gap-3 max-w-[1000px]">
         {/* Status */}
