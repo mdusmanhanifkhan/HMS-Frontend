@@ -34,16 +34,37 @@ const EditProcedure = () => {
     department: undefined,
     description: '',
   })
+    const [departments, setDepartments] = useState<
+    { id: number; name: string }[]
+  >([])
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
 
-  const departments: Department[] = [
-    { id: 1, name: 'Dental' },
-    { id: 2, name: 'Ortho' },
-    { id: 3, name: 'Eye' },
-  ]
+  // const departments: Department[] = [
+  //   { id: 1, name: 'Dental' },
+  //   { id: 2, name: 'Ortho' },
+  //   { id: 3, name: 'Eye' },
+  // ]
+
+
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/department`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        const resData = await res.json()
+        setDepartments(resData.data)
+      } catch (error) {
+        console.log('Error fetching departments:', error)
+      }
+    }
+    fetchDepartments()
+  }, [API_BASE, token])
 
   // ✅ Fixed type for checkbox/text/textarea
   const handleChange = (
