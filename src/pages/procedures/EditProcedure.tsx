@@ -60,8 +60,13 @@ const EditProcedure = () => {
         const resData = await res.json()
         setDepartments(resData.data)
       } catch (error) {
-        console.log('Error fetching departments:', error)
-      }
+
+  if (error instanceof Error) {
+    setError(error.message)
+  } else {
+    setError(String(error))
+  }
+}
     }
     fetchDepartments()
   }, [API_BASE, token])

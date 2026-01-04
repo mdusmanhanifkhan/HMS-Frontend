@@ -66,8 +66,6 @@ const PatientReceiptGenerator = () => {
   const [showPatientInfo, setShowPatientInfo] = useState(false)
 
   const { user } = usePermissions()
-  console.log(user?.id)
-  
 
   const [form, setForm] = useState<FormState>({
     id: 0,

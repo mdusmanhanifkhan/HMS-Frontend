@@ -109,7 +109,6 @@ const AddWelfarePatient = () => {
         throw new Error(data.message || 'Failed to save welfare record')
       }
 
-      console.log('Server response:', data)
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message)

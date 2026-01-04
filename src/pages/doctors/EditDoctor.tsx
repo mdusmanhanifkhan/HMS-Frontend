@@ -277,7 +277,11 @@ const EditDoctor = () => {
         const resData = await res.json()
         setDepartments(resData.data)
       } catch (error) {
-        console.log('Error fetching departments:', error)
+        if (error instanceof Error) {
+          setErrorMsg(error.message)
+        } else {
+          setErrorMsg(String(error))
+        }
       }
     }
     fetchDepartments()

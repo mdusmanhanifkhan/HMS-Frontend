@@ -12,7 +12,7 @@ interface RouteItem {
 
 export const Sidebar = () => {
   const { user } = usePermissions()
-console.log(user)
+  
   const filteredRoutes = SidebarRoutes.filter((route: RouteItem) => {
     if (!route.permission) return true
     return user?.role[route.permission] === true
