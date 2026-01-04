@@ -39,6 +39,15 @@ export interface VisitRecord {
   procedure?: { name: string }
 }
 
+type VisitHistoryResponse = {
+  success: boolean
+  data?: {
+    patient?: PatientInfo
+    records?: VisitRecord[]
+  }
+  message?: string
+}
+
 const PatientHistory = () => {
   const { id: patientId } = useParams<{ id: string }>()
   const API_BASE = import.meta.env.VITE_API_BASE_URL
@@ -49,56 +58,52 @@ const PatientHistory = () => {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
-useEffect(() => {
-  const fetchHistory = async () => {
-    if (!patientId) return;
-    setLoading(true);
+  useEffect(() => {
+    const fetchHistory = async () => {
+      if (!patientId) return
+      setLoading(true)
 
-    try {
-      const res = await fetch(
-        `${API_BASE}/api/medical-records/${patientId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
+      try {
+        const res = await fetch(
+          `${API_BASE}/api/medical-records/${patientId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        )
+
+        const result: VisitHistoryResponse = await res.json()
+
+        if (!res.ok || !result.success) {
+          setError(result?.message || 'Failed to fetch patient history')
+          setPatient(null)
+          setRecords([])
+          return
         }
-      );
 
-      const result: {
-        success: boolean;
-        patient?: PatientInfo;
-        records?: VisitRecord[];
-        message?: string;
-      } = await res.json();
+        const patient = result.data?.patient ?? null
+        const records = result.data?.records ?? []
 
-      console.log(result);
+        if (!patient) {
+          setError('No visit history found for this patient')
+          setPatient(null)
+          setRecords([])
+          return
+        }
 
-      if (!res.ok || !result.success) {
-        setError(result?.message || 'Failed to fetch patient history');
-        setPatient(null);
-        setRecords([]);
-        return;
+        setPatient(patient)
+        setRecords(records)
+        setError(null)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Something went wrong')
+        setPatient(null)
+        setRecords([])
+      } finally {
+        setLoading(false)
       }
-
-      // if (!result.patient) {
-      //   setError('No visit history found for this patient');
-      //   setPatient(null);
-      //   setRecords([]);
-      // } else {
-        setPatient(result?.patient);
-        setRecords(result.records || []);
-        setError(null);
-      // }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong');
-      setPatient(null);
-      setRecords([]);
-    } finally {
-      setLoading(false);
     }
-  };
 
-  fetchHistory();
-}, [patientId, API_BASE, token]);
-
+    fetchHistory()
+  }, [patientId, API_BASE, token])
 
   return (
     <div className="p-5">
