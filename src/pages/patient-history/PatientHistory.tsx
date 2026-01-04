@@ -78,15 +78,15 @@ useEffect(() => {
         return;
       }
 
-      if (!result.patient) {
-        setError('No visit history found for this patient');
-        setPatient(null);
-        setRecords([]);
-      } else {
-        setPatient(result.patient);
+      // if (!result.patient) {
+      //   setError('No visit history found for this patient');
+      //   setPatient(null);
+      //   setRecords([]);
+      // } else {
+        setPatient(result?.patient);
         setRecords(result.records || []);
         setError(null);
-      }
+      // }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
       setPatient(null);
