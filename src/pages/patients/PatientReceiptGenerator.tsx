@@ -102,6 +102,7 @@ const PatientReceiptGenerator = () => {
         )
         if (!res.ok) throw new Error('Failed to fetch departments')
         const data = await res.json()
+      console.log(data,"data")
         setDepartments(data.data || [])
       } catch (err: unknown) {
         setError(
@@ -262,6 +263,7 @@ const handleSubmit = async (e: React.FormEvent) => {
     setError(`An error occurred: ${message}`)
   }
 }
+console.log(departments,"departments")
   // Dropdown options
   const departmentOptions = departments.map((dep) => ({
     id: dep.id,

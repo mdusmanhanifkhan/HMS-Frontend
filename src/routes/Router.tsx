@@ -29,6 +29,8 @@ import CreateUser from '../pages/user-management/CreateUser.tsx'
 import EditDoctorFee from '../pages/doctor-fee/EditDoctorFee.tsx'
 import PatientHistory from '../pages/patient-history/PatientHistory.tsx'
 import AllPatients from '../pages/patient-history/AllPatients.tsx'
+import LabFee from '../pages/lab-fee/index.tsx'
+import AddLabFee from '../pages/lab-fee/AddLabFee.tsx'
 
 export const router = createBrowserRouter([
   {
@@ -77,6 +79,10 @@ export const router = createBrowserRouter([
       { path: routePaths.DOCTOR_FEE, element: <DoctorFee /> },
       { path: routePaths.ADD_DOCTOR_FEE, element: <AddDoctorFee /> },
       { path: `${routePaths.EDIT_DOCTOR_FEE}/:id`, element: <EditDoctorFee /> },
+      // LAB Fee
+      { path: routePaths.LAB_FEE, element: <LabFee /> },
+      { path: routePaths.ADD_LAB_FEE, element: <AddLabFee /> },
+      // { path: `${routePaths.EDIT_DOCTOR_FEE}/:id`, element: <EditDoctorFee /> },
       // WELFARE MANAGEMENT
       { path: routePaths.WELFARE_MANAGEMENT, element: <Welfare /> },
       {

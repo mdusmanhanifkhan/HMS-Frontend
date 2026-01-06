@@ -110,6 +110,13 @@ const AddProcedure: React.FC = () => {
       const data = await res.json()
 
       if (!res.ok) {
+        // API returned validation errors
+        if (data?.errors) {
+          setErrors(data.errors)
+          throw new Error(data.general_error || 'Validation failed')
+        }
+
+        // fallback generic
         throw new Error(data.message || 'Failed to add procedure')
       }
 
