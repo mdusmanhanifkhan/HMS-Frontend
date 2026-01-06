@@ -22,7 +22,7 @@ const doctorSchema = yup.object().shape({
   employmentType: yup
     .string()
     .oneOf(
-      ['Full-time', 'Visiting', 'Consultant', 'On Call'],
+      ['Full-time', 'Visiting', 'Consultant', 'On Call' , 'Part Time'],
       'Select a valid employment type'
     )
     .required('Employment type is required'),

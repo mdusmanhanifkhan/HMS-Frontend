@@ -260,7 +260,7 @@ const Procedures = () => {
                       </svg>
                     </Link>
                     {/* Delete */}
-                    {role == 'superadmin' ? (
+                    {role == 'developer' ? (
                       <button
                         onClick={() => handleDeleteClick(proc)}
                         className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200 cursor-pointer"

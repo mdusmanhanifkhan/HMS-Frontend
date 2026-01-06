@@ -199,7 +199,7 @@ const DoctorFee = () => {
                       </svg>
                     </Link>
 
-                    {role === 'superadmin' && (
+                    {role === 'developer' && (
                       <button
                         type="button"
                         onClick={() => openDeleteModal(fee)}

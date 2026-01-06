@@ -270,7 +270,7 @@ const Patients = () => {
                           <use href="/assets/svg/edit-icon.svg#edit-icon" />
                         </svg>
                       </Link>
-                      {role == 'superadmin' ? (
+                      {role == 'developer' ? (
                         <button
                           onClick={() => {
                             confirmDelete(p.patientId)

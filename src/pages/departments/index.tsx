@@ -265,7 +265,7 @@ const Departments: React.FC = () => {
                           <use href="/assets/svg/edit-icon.svg#edit-icon" />
                         </svg>
                       </Link>
-                      {role === 'superadmin' ? (
+                      {role === 'developer' ? (
                         <button
                           onClick={() => {
                             setIsModalOpen(true)

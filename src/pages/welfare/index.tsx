@@ -194,7 +194,7 @@ const Welfare = () => {
                     </a>
 
                     {/* Delete */}
-                    {role == 'superadmin' ? (
+                    {role == 'developer' ? (
                       <a className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all duration-200 cursor-pointer">
                         <svg
                           className="w-[18px] h-[18px] text-white group-hover:text-[#cc0000]"

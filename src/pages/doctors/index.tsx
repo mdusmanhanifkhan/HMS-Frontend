@@ -203,7 +203,7 @@ const Doctors = () => {
                       </svg>
                     </Link>
 
-                    {role === 'superadmin' && (
+                    {role === 'developer' && (
                       <button
                         onClick={() => handleDeleteClick(doctor)}
                         className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200"
