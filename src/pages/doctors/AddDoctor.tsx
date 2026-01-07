@@ -363,6 +363,7 @@ const AddDoctor = () => {
                 placeholder="Enter Contact"
                 value={form.phoneNumber}
                 onChange={handleChange}
+                maxLength={11}
               />
               {errors.phoneNumber && (
                 <p className="text-red text-xs">{errors.phoneNumber}</p>

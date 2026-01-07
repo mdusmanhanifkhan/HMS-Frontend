@@ -169,7 +169,7 @@ const AddDoctorFee = () => {
           fetch(`${API_BASE}/api/doctors`, {
             headers: { Authorization: `Bearer ${token}` }, // ✅ Token added
           }),
-          fetch(`${API_BASE}/api/procedures`, {
+          fetch(`${API_BASE}/api/active-procedures`, {
             headers: { Authorization: `Bearer ${token}` }, // ✅ Token added
           }),
           fetch(`${API_BASE}/api/department`, {
