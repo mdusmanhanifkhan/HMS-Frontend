@@ -68,17 +68,32 @@ const ReceiptTemplate = ({ patient }: ReceiptTemplateProps) => {
           background-color: #f0f0f0; /* Visual aid for browser only */
         }
         
-        .receipt-main { 
-           width: 80mm; 
-          min-height: 210mm; 
-          max-height: 210mm;
-          background: white; 
-          padding: 10px; 
-          font-family: 'Courier New', Courier, monospace; 
-          font-size: 12px; 
-          color: #000;
-          box-sizing: border-box;
-        }
+        // .receipt-main { 
+        //    width: 80mm; 
+        //   height: auto;
+        //   min-height: auto;
+        //   max-height: none;
+        //   background: white; 
+        //   padding: 10px; 
+        //   font-family: 'Courier New', Courier, monospace; 
+        //   font-size: 12px; 
+        //   color: #000;
+        //   box-sizing: border-box;
+        // }
+
+        .receipt-main {
+  width: 80mm; /* keep for thermal printer */
+  padding: 5px 10px; /* optional smaller padding */
+  margin: 0 auto;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12px;
+  color: #000;
+  box-sizing: border-box;
+
+  /* Important */
+  display: block; /* remove flex */
+}
+
 
         .center { text-align: center; }
         .bold { font-weight: bold; }
@@ -118,7 +133,6 @@ const ReceiptTemplate = ({ patient }: ReceiptTemplateProps) => {
   flex-shrink: 0;
 }
 
-        
         .items-table { width: 100%; border-collapse: collapse; }
         .items-table th { border-bottom: 1px solid #000; text-align: left; }
         
