@@ -303,12 +303,12 @@ const Patients = () => {
                           <use href="/assets/svg/printer-icon.svg#printer-icon" />
                         </svg>
                       </Link>
-                      <Link
+                      {/* <Link
                         to={`${routePaths.PATIENTS}${routePaths.PATIENTS_RECEIPT_GENERATE}/${p.patientId}`}
                         className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200 text-white hover:text-dark font-bold"
                       >
                       Lab
-                      </Link>
+                      </Link> */}
                     </td>
                   </tr>
                 ))

@@ -41,10 +41,10 @@ export interface VisitRecord {
 
 type VisitHistoryResponse = {
   success: boolean
-  data?: {
+  // data?: {
     patient?: PatientInfo
     records?: VisitRecord[]
-  }
+  // }
   message?: string
 }
 
@@ -80,15 +80,15 @@ const PatientHistory = () => {
           return
         }
 
-        const patient = result.data?.patient ?? null
-        const records = result.data?.records ?? []
+        const patient = result?.patient ?? null
+        const records = result?.records ?? []
 
-        if (!patient) {
-          setError('No visit history found for this patient')
-          setPatient(null)
-          setRecords([])
-          return
-        }
+        // if (!patient) {
+        //   setError('No visit history found for this patient')
+        //   setPatient(null)
+        //   setRecords([])
+        //   return
+        // }
 
         setPatient(patient)
         setRecords(records)
@@ -152,7 +152,7 @@ const PatientHistory = () => {
               <table className="w-full text-sm text-left">
                 <thead className="text-xs text-white uppercase bg-dark">
                   <tr>
-                    <th className="px-6 py-4">MR ID</th>
+                    {/* <th className="px-6 py-4">MR ID</th> */}
                     <th className="px-6 py-4">Doctor</th>
                     <th className="px-6 py-4">Department</th>
                     <th className="px-6 py-4">Procedure</th>
@@ -181,7 +181,7 @@ const PatientHistory = () => {
                         className="bg-[#DFDEDE] border-b hover:bg-gray-100"
                       >
                         {/* MR ID */}
-                        <td className="px-6 py-2">{r?.patient?.patientId}</td>
+                        {/* <td className="px-6 py-2">{r?.patient?.patientId}</td> */}
 
                         {/* Doctor */}
                         <td className="px-6 py-2">{r.doctor?.name || '-'}</td>
