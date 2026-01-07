@@ -91,7 +91,7 @@ const AddLabFee = () => {
         status: form.status,
         departmentId: form.department?.id,
         procedureId: form.procedure?.id,
-        fee: Number(form.fee),
+        price: Number(form.fee),
         discount: Number(form.discount) || 0,
         description: form.description,
       }

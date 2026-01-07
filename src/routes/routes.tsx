@@ -29,6 +29,25 @@ export const SidebarRoutes = [
       </svg>
     ),
   },
+  // {
+  //   name: 'Lab',
+  //   link: routePaths.PATIENTS,
+  //   permission: 'canManageLabPatients',
+  //   icon: (
+  //     <svg
+  //       className="w-[15px] h-[15px]"
+  //       viewBox="0 0 24 24"
+  //       fill="none"
+  //       stroke="currentColor"
+  //       strokeWidth="2"
+  //       strokeLinecap="round"
+  //       strokeLinejoin="round"
+  //     >
+  //       <circle cx="12" cy="7" r="4" />
+  //       <path d="M5.5 21v-2a6.5 6.5 0 0 1 13 0v2" />
+  //     </svg>
+  //   ),
+  // },
   {
     name: 'Patient History',
     link: routePaths.PATIENT_HISTORY,
@@ -129,26 +148,26 @@ export const SidebarRoutes = [
       </svg>
     ),
   },
-  {
-    name: 'Lab Fee',
-    link: routePaths.LAB_FEE,
-    // permission: 'canManageLabFees',
-    icon: (
-      <svg
-        width="28"
-        height="28"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M12 1v22" />
-        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 1 1 0 7H6" />
-      </svg>
-    ),
-  },
+  // {
+  //   name: 'Lab Fee',
+  //   link: routePaths.LAB_FEE,
+  //   // permission: 'canManageLabFees',
+  //   icon: (
+  //     <svg
+  //       width="28"
+  //       height="28"
+  //       viewBox="0 0 24 24"
+  //       fill="none"
+  //       stroke="currentColor"
+  //       strokeWidth="2"
+  //       strokeLinecap="round"
+  //       strokeLinejoin="round"
+  //     >
+  //       <path d="M12 1v22" />
+  //       <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 1 1 0 7H6" />
+  //     </svg>
+  //   ),
+  // },
   {
     name: 'Welfare Management',
     link: routePaths.WELFARE_MANAGEMENT,
