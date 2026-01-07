@@ -22,6 +22,7 @@ interface Patient {
   id: number
   patientId: number
   name: string
+  guardianName: string
   gender: string
   age: number
   cnicNumber?: string | null
@@ -211,7 +212,8 @@ const Patients = () => {
             <thead className="text-xs text-white uppercase bg-dark">
               <tr>
                 <th className="px-6 py-4">MR ID</th>
-                <th className="px-6 py-4">Full Name</th>
+                <th className="px-6 py-4">Name</th>
+                <th className="px-6 py-4">Guardian Name</th>
                 <th className="px-6 py-4">Gender</th>
                 <th className="px-6 py-4">Age</th>
                 <th className="px-6 py-4">CNIC / ID</th>
@@ -252,6 +254,7 @@ const Patients = () => {
                   >
                     <td className="px-6 py-2">{p.patientId}</td>
                     <td className="px-6 py-2">{p.name}</td>
+                    <td className="px-6 py-2">{p.guardianName}</td>
                     <td className="px-6 py-2">{p.gender}</td>
                     <td className="px-6 py-2">{p.age}</td>
                     <td className="px-6 py-2">{p.cnicNumber || '-'}</td>

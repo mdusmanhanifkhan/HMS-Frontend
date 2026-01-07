@@ -15,7 +15,7 @@ interface DoctorFeeType {
   doctorShare?: number
   hospitalShare?: number
   fixedPrice?: number
-  description?: string
+  procedurePrice?: string
   status: boolean
 }
 
@@ -125,7 +125,7 @@ const DoctorFee = () => {
               <th className="px-6 py-3">Doctor-Share (%)</th>
               <th className="px-6 py-3">Hospital-Share (%)</th>
               <th className="px-6 py-3">Fixed-Price</th>
-              <th className="px-6 py-3">Description</th>
+              <th className="px-6 py-3">Procedure Price</th>
               <th className="px-6 py-3">Status</th>
               <th className="px-6 py-3">Action</th>
             </tr>
@@ -173,7 +173,7 @@ const DoctorFee = () => {
                   <td className="px-6 py-3">{fee.doctorShare ?? '—'}</td>
                   <td className="px-6 py-3">{fee.hospitalShare ?? '—'}</td>
                   <td className="px-6 py-3">{fee.fixedPrice ?? '—'}</td>
-                  <td className="px-6 py-3">{fee.description || '—'}</td>
+                  <td className="px-6 py-3">{fee.procedurePrice || '—'}</td>
                   <td className="px-6 py-3">
                     <div className="flex items-center gap-1">
                       <span

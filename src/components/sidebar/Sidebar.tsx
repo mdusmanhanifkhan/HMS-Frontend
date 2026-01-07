@@ -20,25 +20,27 @@ export const Sidebar = () => {
 
   return (
     <aside>
-      <ul className="space-y-3">
+      <ul className="">
         {filteredRoutes.map((elem: RouteItem, index: number) => (
           <NavLink
             key={index}
             to={elem.link}
             className={({ isActive }) =>
-              `${isActive ? 'text-red' : 'text-white'}
-       px-3 border-[#353635] py-2 cursor-pointer
-       hover:text-red transition-all duration-300
-       flex items-center gap-2 border-b`
+              `${isActive ? 'text-yellow before:absolute before:w-1 before:h-full before:rounded-2xl before:bg-yellow' : 'text-white'}
+        border-[#353635] py-3 cursor-pointer
+       transition-all duration-300
+        border-b relative flex items-center hover:text-yellow `
             }
           >
-            {elem.icon && (
+           <div className='ps-5 flex items-center gap-2'>
+             {elem.icon && (
               <span className="w-[18px] h-[18px] flex items-center">
                 {elem.icon}
               </span>
             )}
 
             <span>{elem.name}</span>
+           </div>
           </NavLink>
         ))}
       </ul>

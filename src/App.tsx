@@ -3,7 +3,6 @@ import './App.css'
 import { Sidebar } from './components/sidebar/Sidebar'
 import { Topbar } from './components/topbar/Topbar'
 import Container from './layout/Container'
-import logo from "./assets/images/logo.jpg"
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
@@ -41,7 +40,7 @@ function App() {
       {/* SIDEBAR */}
       <aside className="bg-[#060505] w-[250px] h-full flex-shrink-0 overflow-y-auto flex justify-between flex-col px-3">
         <div>
-          <img src={logo} alt="logo of HMS" className='w-full' />
+          <p className='text-[40px] text-white font-bold text-center py-2'>HIKARI<span className='text-yellow'>MED</span></p>
           <Sidebar />
         </div>
 

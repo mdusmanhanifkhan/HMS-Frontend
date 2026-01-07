@@ -1,15 +1,15 @@
-import { useState } from "react"
-import Button from "../../components/button/Button"
-import { Input } from "../../components/input/Input"
-import { Label } from "../../components/input/Label"
+import { useState } from 'react'
+import Button from '../../components/button/Button'
+import { Input } from '../../components/input/Input'
+import { Label } from '../../components/input/Label'
 
 const Login = () => {
-  const [form, setForm] = useState({ email: "", password: "" })
+  const [form, setForm] = useState({ email: '', password: '' })
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
-  const [success, setSuccess] = useState("")
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
 
-    const API_BASE = import.meta.env.VITE_API_BASE_URL
+  const API_BASE = import.meta.env.VITE_API_BASE_URL
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -17,11 +17,11 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError("")
-    setSuccess("")
+    setError('')
+    setSuccess('')
 
     if (!form.email || !form.password) {
-      setError("Please fill all fields")
+      setError('Please fill all fields')
       return
     }
 
@@ -29,30 +29,29 @@ const Login = () => {
 
     try {
       const response = await fetch(`${API_BASE}/api/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       })
 
       const data = await response.json()
 
       if (!response.ok) {
-        setError(data.message || "Invalid credentials")
+        setError(data.message || 'Invalid credentials')
         setLoading(false)
         return
       }
 
-      localStorage.setItem("token", data.token)
-      localStorage.setItem("user", JSON.stringify(data.user))
+      localStorage.setItem('token', data.token)
+      localStorage.setItem('user', JSON.stringify(data.user))
 
-      setSuccess("Login successful!")
+      setSuccess('Login successful!')
 
       setTimeout(() => {
-        window.location.href = "/"
+        window.location.href = '/'
       }, 1000)
-
     } catch {
-      setError("Something went wrong. Try again.")
+      setError('Something went wrong. Try again.')
     }
 
     setLoading(false)
@@ -61,7 +60,7 @@ const Login = () => {
   return (
     <div
       className="min-h-screen flex items-center justify-center px-4"
-      style={{ backgroundColor: "var(--color-gray)" }}
+      style={{ backgroundColor: 'var(--color-gray)' }}
     >
       {/* Login Card */}
       <div
@@ -71,13 +70,16 @@ const Login = () => {
         "
       >
         {/* Header */}
+        <p className="text-[40px] text-dark font-bold text-center ">
+          HIKARI<span className="text-yellow">MED</span>
+        </p>
         <h2
           className="text-3xl font-bold text-center mb-6"
-          style={{ color: "var(--color-dark)" }}
+          style={{ color: 'var(--color-dark)' }}
         >
           Hospital Management
         </h2>
-        
+
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Email */}
@@ -85,7 +87,7 @@ const Login = () => {
             <Label
               htmlFor="email"
               className="font-medium text-sm"
-              style={{ color: "var(--color-dark)" }}
+              style={{ color: 'var(--color-dark)' }}
             >
               Email
             </Label>
@@ -106,7 +108,7 @@ const Login = () => {
             <Label
               htmlFor="password"
               className="font-medium text-sm"
-              style={{ color: "var(--color-dark)" }}
+              style={{ color: 'var(--color-dark)' }}
             >
               Password
             </Label>
@@ -123,9 +125,7 @@ const Login = () => {
           </div>
 
           {/* Alerts */}
-          {error && (
-            <p className="text-red text-sm text-center">{error}</p>
-          )}
+          {error && <p className="text-red text-sm text-center">{error}</p>}
           {success && (
             <p className="text-green text-sm text-center">{success}</p>
           )}
@@ -136,21 +136,21 @@ const Login = () => {
             disabled={loading}
             className="w-full py-2 flex justify-center font-semibold"
             style={{
-              background: "var(--color-red)",
-              color: "var(--color-white)",
+              background: 'var(--color-gray)',
+              color: 'var(--color-dark)',
               opacity: loading ? 0.8 : 1,
             }}
           >
-            {loading ? "Please wait..." : "Login"}
+            {loading ? 'Please wait...' : 'Login'}
           </Button>
         </form>
 
         {/* Footer */}
         <p
-          className="text-center text-xs mt-6"
-          style={{ color: "var(--color-dark)" }}
+          className="text-center text-xs mt-6 font-semibold"
+          style={{ color: 'var(--color-dark)' }}
         >
-          © {new Date().getFullYear()} Hospital Management System
+          © {new Date().getFullYear()} HIKARIMED HMS
         </p>
       </div>
     </div>
