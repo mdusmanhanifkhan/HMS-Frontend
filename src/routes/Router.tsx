@@ -30,6 +30,7 @@ import EditDoctorFee from '../pages/doctor-fee/EditDoctorFee.tsx'
 import PatientHistory from '../pages/patient-history/PatientHistory.tsx'
 import AllPatients from '../pages/patient-history/AllPatients.tsx'
 import TokenReceiptGenerate from '../pages/token-receipt-generate/index.tsx'
+import FinancialReport from '../pages/finance/FinancialReport.tsx'
 
 export const router = createBrowserRouter([
   {
@@ -99,6 +100,7 @@ export const router = createBrowserRouter([
       { path: routePaths.USERS_MANAGEMENT, element: <UserManagement /> },
       { path: routePaths.CREATE_USER, element: <CreateUser /> },
       { path: routePaths.SETTINGS, element: <ComingSoon /> },
+      { path: '/finance-report', element: <FinancialReport /> },
     ],
   },
 ])

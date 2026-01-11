@@ -294,7 +294,7 @@ const EditDoctor = () => {
       <form onSubmit={handleSubmit} className="flex flex-col gap-10">
         {/* Header */}
         <div className="flex justify-between items-center border-b pb-3">
-          <p className="text-xl font-semibold w-full">Add Doctor</p>
+          <p className="text-xl font-semibold w-full">Update Doctor</p>
           <Button to={routePaths.DOCTORS} asLink>
             <svg
               className="w-3.5 h-3.5 -scale-x-100"
@@ -675,7 +675,7 @@ const EditDoctor = () => {
         </div>
 
         <div className="col-span-full mx-auto mt-5">
-          <Button type="submit">{loading ? 'loading...' : 'Add Doctor'}</Button>
+          <Button type="submit">{loading ? 'loading...' : 'Update Doctor'}</Button>
         </div>
       </form>
     </>
