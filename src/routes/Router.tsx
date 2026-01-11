@@ -100,7 +100,7 @@ export const router = createBrowserRouter([
       { path: routePaths.USERS_MANAGEMENT, element: <UserManagement /> },
       { path: routePaths.CREATE_USER, element: <CreateUser /> },
       { path: routePaths.SETTINGS, element: <ComingSoon /> },
-      { path: '/finance-report', element: <FinancialReport /> },
+      { path: routePaths.FINANCE_REPORT, element: <FinancialReport /> },
     ],
   },
 ])

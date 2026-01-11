@@ -137,13 +137,15 @@ const Dashboard = () => {
     },
   ]
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user')
-    const roleName = storedUser
-      ? JSON.parse(storedUser)?.user?.role?.name
-      : null
-    setUserRole(roleName)
-  }, [])
+useEffect(() => {
+  const storedUser = localStorage.getItem('user')
+
+  const roleName = storedUser
+    ? JSON.parse(storedUser)?.role
+    : null
+
+  setUserRole(roleName)
+}, [])
 
   const visibleCards =
     userRole === 'superadmin'

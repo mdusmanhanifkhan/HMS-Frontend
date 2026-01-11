@@ -41,4 +41,5 @@ export const routePaths = {
   USERS_MANAGEMENT: '/user-management',
   CREATE_USER: '/user-management/create',
   SETTINGS: '/settings',
+  FINANCE_REPORT: '/finance-report',
 } as const

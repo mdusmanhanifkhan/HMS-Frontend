@@ -187,6 +187,24 @@ export const SidebarRoutes = [
     ),
   },
   {
+    name: 'Financial Report',
+    link: routePaths.FINANCE_REPORT,
+    permission: 'canViewReports',
+    icon: (
+      <svg
+        className="w-[18px] h-[18px]"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M12 8.5c1.8-2 5-1.8 6.3.6.7 1.3.6 3-.3 4.2L12 20l-6-6.7c-.9-1.2-1-2.9-.3-4.2C6.7 6.7 10.2 6.5 12 8.5z" />
+      </svg>
+    ),
+  },
+  {
     name: 'Billing & Receipts',
     link: routePaths.BILLING,
     permission: 'canViewBilling',
