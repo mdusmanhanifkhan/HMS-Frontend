@@ -1,7 +1,7 @@
 /* Toast container */
 .toast-wrapper {
   position: fixed;
-  top: 80px;
+  top: 120px;
   right: 6px;
   display: flex;
   flex-direction: column;

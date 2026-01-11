@@ -4,7 +4,7 @@ import Button from '../../components/button/Button'
 import { Input } from '../../components/input/Input'
 import { Label } from '../../components/input/Label'
 import Dropdown from '../../components/input/Dropdown'
-import ReceiptTemplate from './ReceiptTemplate'
+import ReceiptTemplate from '../patients/ReceiptTemplate'
 import SuccessMessage from '../../components/error-handling/SuccessMessage'
 import { usePermissions } from '../../context/PermissionsContext'
 import { GroupInput } from '../../components/input/GroupInput'
@@ -72,6 +72,7 @@ const PatientReceiptGenerator = () => {
   const [discount, setDiscount] = useState<number>(0)
   const [totalFee, setTotalFee] = useState<number>(0)
   const [finalFee, setFinalFee] = useState<number>(0)
+  const [searchPatientId, setSearchPatientId] = useState<string | null>(null)
 
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
@@ -123,6 +124,51 @@ const PatientReceiptGenerator = () => {
     }
     fetchPatient()
   }, [patientId, API_BASE, token])
+
+
+  const handleSearchPatientId = async () => {
+    // const fetchPatient = async () => {
+    if (!searchPatientId) return
+    try {
+      const res = await fetch(`${API_BASE}/api/patient/${searchPatientId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (!res.ok) throw new Error('Failed to fetch patient')
+      const data = await res.json()
+
+      if (!data?.data) {
+        setError('No patient found with this ID')
+        // setShowPatientInfo(false)
+      } else {
+        setPatient({
+          id: Number(data.data.id),
+          name: data.data.name || '',
+          guardianName: data.data.guardianName || '',
+          gender: data.data.gender || '',
+          dob: data.data.dob || '',
+          age: data.data.age ?? 0,
+          maritalStatus: data.data.maritalStatus || '',
+          bloodGroup: data.data.bloodGroup || '',
+          phoneNumber: data.data.phoneNumber || '',
+          // cnic: data.data.cnic || '',
+          address: data.data.address || '',
+          welfareRecord: data.data.welfareRecord ?? undefined,
+          // department: undefined,
+          // doctor: undefined,
+          // procedure: undefined,
+          // discountPercentage: data.data?.welfareRecord?.discountPercentage ?? 0,
+          // fee: 0,
+          // netFees: 0,
+          patientId: data.data.patientId,
+        })
+        // setShowPatientInfo(true)
+      }
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Error fetching patient')
+    }
+    // }
+    // fetchPatient()
+  }
 
   /* ---------- CART FUNCTIONS ---------- */
   const addToCart = (procedure: Procedure) => {
@@ -258,10 +304,21 @@ const handleSubmit = async (e: React.FormEvent) => {
 
   /* ---------- RENDER ---------- */
   return (
-    <form onSubmit={handleSubmit} className="p-4">
+    <div className="p-4">
       <h2 className="text-xl font-semibold mb-4">Patient Receipt Generator</h2>
       {error && <p className="text-red mb-2">{error}</p>}
       {success && <SuccessMessage msg={success} />}
+
+       <div className="flex items-center gap-3">
+        <Input
+          type="text"
+          placeholder="Enter MR ID"
+          className="max-w-64"
+          value={searchPatientId || ''}
+          onChange={(e) => setSearchPatientId(e.target.value)}
+        />
+        <Button type="button"  onClick={handleSearchPatientId}>Search</Button>
+      </div>
 
       {patient && (
         <div className="grid min-[1440px]:grid-cols-3 max-w-[1000px] gap-x-3 gap-y-4 mt-6">
@@ -376,12 +433,12 @@ const handleSubmit = async (e: React.FormEvent) => {
             <p className="font-bold">Final Fee: {finalFee}</p>
           </div>
 
-          <Button type="submit" className="mt-4 col-span-full w-fit mx-auto">
+          <Button type="button" onClick={handleSubmit} className="mt-4 col-span-full w-fit mx-auto">
            {loading ? "loading..." : "Generate Receipt"}
           </Button>
         </div>
       )}
-    </form>
+    </div>
   )
 }
 

@@ -38,9 +38,25 @@ type Patient = {
 
 type ReceiptTemplateProps = {
   patient: Patient
+  cart: CartItem[]
+  totalFee: number
+  finalFee: number
+  discount: number
 }
 
-const ReceiptTemplate = ({ patient }: ReceiptTemplateProps) => {
+type CartItem = {
+  department: Department
+  doctor: Doctor
+  procedure: Procedure
+}
+
+const ReceiptTemplate = ({
+  patient,
+  cart,
+  totalFee,
+  finalFee,
+  discount,
+}: ReceiptTemplateProps) => {
   const today = new Date()
 
   const formattedDate = today
@@ -50,8 +66,6 @@ const ReceiptTemplate = ({ patient }: ReceiptTemplateProps) => {
       year: '2-digit',
     })
     .replace(/ /g, '-')
-
-  const originalFee = patient.procedure?.fee ?? 0
 
   return `
   <html>
@@ -152,8 +166,8 @@ const ReceiptTemplate = ({ patient }: ReceiptTemplateProps) => {
       <div class="receipt-main">
         <!-- Top Logos -->
         <div class="logo-row">
-         <img src="${helpingHandLogoBase64}" style="height: 45px; width: auto;" />
-         <img src="${kindrLogoBase64}" style="height: 45px; width: auto;" />
+         <img src="${helpingHandLogoBase64}" style="height: 60px; width: auto;" />
+         <img src="${kindrLogoBase64}" style="height: 60px; width: auto;" />
         </div>
 
         <div class="center bold" style="font-size: 10px; margin-bottom: 10px;">
@@ -168,8 +182,14 @@ const ReceiptTemplate = ({ patient }: ReceiptTemplateProps) => {
           <tr><td class="bold">M.R #:</td><td>MR-${patient.patientId}</td></tr>
           <tr><td class="bold">Patient:</td><td>${patient.name}</td></tr>
           <tr><td class="bold">Age:</td><td>${patient.age}</td></tr>
-          <tr><td class="bold">Department:</td><td>${patient.department?.name || '-'}</td></tr>
-          <tr><td class="bold">Doctor:</td><td>${patient.doctor?.name || 'General OPD'}</td></tr>
+          <tr><td class="bold">Department:</td><td>
+    ${[...new Set(cart.map(item => item.department.name))].join(', ')}
+    <br/>
+  </td></tr>
+          <tr><td class="bold">Doctor:</td> <td>
+    ${[...new Set(cart.map(item => item.doctor.name))].join(', ')}
+    <br/>
+  </td></tr>
         </table>
 
         <div class="line"></div>
@@ -184,28 +204,35 @@ const ReceiptTemplate = ({ patient }: ReceiptTemplateProps) => {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>01</td>
-              <td>${patient.procedure?.name || 'Service'}<br/><small>Qty: 1</small></td>
-              <td style="text-align:right">${originalFee.toFixed(2)}</td>
-            </tr>
-          </tbody>
+    ${cart
+      .map(
+        (item, index) => `
+     <tr>
+       <td>${(index + 1).toString().padStart(2, '0')}</td>
+        <td>${item.procedure.name}<br/></td>
+       <td style="text-align:right">${item.procedure.fee}</td>
+     </tr>
+    `
+      )
+      .join('')}
+</tbody>
+
         </table>
 
         <div class="line"></div>
 
         <!-- Totals -->
         <div class="totals-box">
-          <div class="amount-row"><span>Total Amount:</span><span>${originalFee.toFixed(2)}</span></div>
-          <div class="amount-row"><span>Discount:</span><span>${patient.discountPercentage} %</span></div>
+          <div class="amount-row"><span>Total Amount:</span><span>${totalFee}</span></div>
+          <div class="amount-row"><span>Discount:</span><span>${discount} %</span></div>
           <div class="amount-row bold" style="font-size: 14px;">
-            <span>Net Amount:</span><span>Rs. ${patient.netFees}</span>
+            <span>Net Amount:</span><span>Rs. ${finalFee}</span>
           </div>
         </div>
 
         <!-- Amount in words -->
         <div style="margin-top: 10px; font-style: italic; font-size: 11px;">
-          <span class="bold">In Words:</span> Rs. ${patient.netFees} Only.
+          <span class="bold">In Words:</span> Rs. ${finalFee} Only.
         </div>
 
         <div class="line"></div>

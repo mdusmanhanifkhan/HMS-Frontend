@@ -49,7 +49,7 @@ const AllPatients = () => {
       setLoading(true)
       setError(null)
 
-      let url = `${API_BASE}/api/patient/search`
+      let url = `${API_BASE}/api/medical-records`
       const params = new URLSearchParams()
       if (filters?.name) params.append('name', filters.name)
       if (filters?.patientId) params.append('patientId', filters.patientId)

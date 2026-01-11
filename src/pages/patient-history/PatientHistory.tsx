@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import Button from '../../components/button/Button'
 import { routePaths } from '../../constants/routePaths'
-import ReceiptTemplate from '../patients/ReceiptTemplate'
 import Loading from '../../components/loading/Loading'
 
 export interface PatientInfo {
@@ -217,7 +216,7 @@ const PatientHistory = () => {
 
                         {/* Action */}
                         <td className="px-6 py-2 flex items-center gap-2">
-                          <button
+                          {/* <button
                             onClick={() => {
                               const printablePatient = {
                                 ...patient,
@@ -238,23 +237,23 @@ const PatientHistory = () => {
                                 fee: r.fee,
                               }
 
-                              const receiptHTML = ReceiptTemplate({
-                                patient: printablePatient,
-                              })
-                              const printWindow = window.open('', '_blank')
-                              if (!printWindow) return
+                              // const receiptHTML = ReceiptTemplate({
+                              //   patient: printablePatient,
+                              // })
+                              // const printWindow = window.open('', '_blank')
+                              // if (!printWindow) return
 
-                              printWindow.document.open()
-                              printWindow.document.write(receiptHTML)
-                              printWindow.document.close()
-                              printWindow.focus()
+                              // printWindow.document.open()
+                              // printWindow.document.write(receiptHTML)
+                              // printWindow.document.close()
+                              // printWindow.focus()
 
-                              printWindow.onload = () => {
-                                setTimeout(() => {
-                                  printWindow.print()
-                                  printWindow.close()
-                                }, 300)
-                              }
+                              // printWindow.onload = () => {
+                              //   setTimeout(() => {
+                              //     printWindow.print()
+                              //     printWindow.close()
+                              //   }, 300)
+                              // }
                             }}
                             className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200 cursor-pointer"
                           >
@@ -266,7 +265,7 @@ const PatientHistory = () => {
                             >
                               <use href="/assets/svg/printer-icon.svg#printer-icon" />
                             </svg>
-                          </button>
+                          </button> */}
                         </td>
                       </tr>
                     ))

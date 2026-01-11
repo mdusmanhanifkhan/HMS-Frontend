@@ -16,54 +16,32 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     const token = localStorage.getItem("token");
     const user = localStorage.getItem("user");
 
+    // No token → not authorized
     if (!token) {
       setIsAuthorized(false);
       setLoading(false);
       return;
     }
 
+    // User already cached → authorize immediately
     if (user) {
       setIsAuthorized(true);
       setLoading(false);
-
-      fetch(`${API_BASE}/api/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-        .then((res) => {
-          if (!res.ok) {
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
-            setIsAuthorized(false);
-          } else {
-            res.json().then((data) => {
-              localStorage.setItem("user", JSON.stringify(data));
-            });
-          }
-        })
-        .catch(() => {
-          localStorage.removeItem("token");
-          localStorage.removeItem("user");
-          setIsAuthorized(false);
-        });
-
       return;
     }
 
+    // Token exists but user missing → verify token
     const checkAuth = async () => {
       try {
         const res = await fetch(`${API_BASE}/api/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (!res.ok) {
-          localStorage.removeItem("token");
-          localStorage.removeItem("user");
-          setIsAuthorized(false);
-        } else {
-          const data = await res.json();
-          localStorage.setItem("user", JSON.stringify(data));
-          setIsAuthorized(true);
-        }
+        if (!res.ok) throw new Error("Unauthorized");
+
+        const data = await res.json();
+        localStorage.setItem("user", JSON.stringify(data));
+        setIsAuthorized(true);
       } catch {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
@@ -76,8 +54,13 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     checkAuth();
   }, []);
 
-  if (loading) return <p className="text-center mt-10">Checking authentication...</p>;
-  if (!isAuthorized) return <Navigate to="/login" replace />;
+  if (loading) {
+    return <p className="text-center mt-10">Checking authentication...</p>;
+  }
+
+  if (!isAuthorized) {
+    return <Navigate to="/login" replace />;
+  }
 
   return <>{children}</>;
 };

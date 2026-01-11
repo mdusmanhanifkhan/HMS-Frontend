@@ -4,7 +4,7 @@ export const routePaths = {
   ADD_PATIENTS: '/patients/add',
   PATIENTS_RECEIPT_GENERATE: '/patients-receipt-generate',
   PATIENT_HISTORY: '/patient-history',
-  LAB: '/lab',
+  TOKEN: '/token-receipt-generate',
   APPOINTMENTS: '/appointments',
   DEPARTMENTS: '/department',
   ADD_DEPARTMENT: '/department/add',
