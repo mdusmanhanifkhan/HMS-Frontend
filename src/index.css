@@ -7,6 +7,7 @@
   --breakpoint-desktop-xl: 1920px;
   --breakpoint-desktop-lg: 1440px;
   --breakpoint-desktop: 1280px;
+  --breakpoint-mobile: 600px;
 
   /* Custom Color */
   --color-*: initial;
