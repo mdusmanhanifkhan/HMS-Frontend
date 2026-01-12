@@ -40,7 +40,7 @@ function App() {
       {/* SIDEBAR */}
       <aside className="bg-[#060505] w-[250px] h-full flex-shrink-0 overflow-y-auto flex justify-between flex-col px-3">
         <div>
-          <p className='text-[35px] text-nowrap text-white font-bold text-center py-2'>HIKARI<span className='text-yellow'>MED</span>+</p>
+          <p className='text-[30px] text-nowrap text-white font-bold text-center py-2'>HIKARI<span className='text-yellow'>MED</span>+</p>
           <Sidebar />
         </div>
 

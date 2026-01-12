@@ -23,6 +23,7 @@ interface Patient {
   age: number
   cnicNumber?: string | null
   phoneNumber?: string | null
+  totalVisits?: string | null
   welfareRecord?: WelfareRecord | null
 }
 
@@ -149,6 +150,7 @@ const AllPatients = () => {
                 <th className="px-6 py-4">Age</th>
                 <th className="px-6 py-4">CNIC / ID</th>
                 <th className="px-6 py-4">Contact No.</th>
+                <th className="px-6 py-4">Total Visits</th>
                 <th className="px-6 py-4 w-[10%] text-center">Action</th>
               </tr>
             </thead>
@@ -189,6 +191,7 @@ const AllPatients = () => {
                     <td className="px-6 py-2">{p.age}</td>
                     <td className="px-6 py-2">{p.cnicNumber || '-'}</td>
                     <td className="px-6 py-2">{p.phoneNumber || '-'}</td>
+                    <td className="px-6 py-2">{p.totalVisits || '-'}</td>
                     <td className="px-6 py-2 flex items-center justify-center">
                       <Link
                         to={`${routePaths.PATIENT_HISTORY}/${p.patientId}`}

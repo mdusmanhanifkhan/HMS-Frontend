@@ -3,7 +3,9 @@ import { useParams } from 'react-router-dom'
 import Button from '../../components/button/Button'
 import { routePaths } from '../../constants/routePaths'
 import Loading from '../../components/loading/Loading'
+import ReceiptTemplate from '../patients/ReceiptTemplate'
 
+// Interfaces
 export interface PatientInfo {
   id: number
   patientId: number
@@ -19,31 +21,27 @@ export interface PatientInfo {
   }
 }
 
-export interface VisitRecord {
-  patient?: {
-    patientId: number
-  }
-  visitDate: string
-  fee: number
+export interface VisitItem {
+  department: { id: number; name: string }
+  doctor: { id: number; name: string }
+  procedure: { id: number; name: string }
+  fee: string
   discount: number
-  finalFee: number
-  notes: string
-  createdBy?: {
-    id: number
-    name: string
-    email: string
-  }
-  doctor?: { name: string }
-  department?: { name: string }
-  procedure?: { name: string }
+  finalFee: string
+}
+
+export interface VisitRecord {
+  id: number
+  items: VisitItem[]
+  totalFee: string
+  discount: number
+  finalFee: string
+  createdAt:string
 }
 
 type VisitHistoryResponse = {
   success: boolean
-  // data?: {
-    patient?: PatientInfo
-    records?: VisitRecord[]
-  // }
+  patient?: PatientInfo & { MedicalRecord?: VisitRecord[] }
   message?: string
 }
 
@@ -79,18 +77,8 @@ const PatientHistory = () => {
           return
         }
 
-        const patient = result?.patient ?? null
-        const records = result?.records ?? []
-
-        // if (!patient) {
-        //   setError('No visit history found for this patient')
-        //   setPatient(null)
-        //   setRecords([])
-        //   return
-        // }
-
-        setPatient(patient)
-        setRecords(records)
+        setPatient(result.patient ?? null)
+        setRecords(result.patient?.MedicalRecord ?? [])
         setError(null)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Something went wrong')
@@ -103,6 +91,46 @@ const PatientHistory = () => {
 
     fetchHistory()
   }, [patientId, API_BASE, token])
+
+  // 🔹 Print receipt
+  // Inside your component, replace handlePrint with this:
+
+  const handlePrint = (record: VisitRecord) => {
+    if (!patient || !record) return
+
+    const cart = record.items.map((item) => ({
+      department: item.department,
+      doctor: item.doctor,
+      procedure: {
+        ...item.procedure,
+        fee: Number(item.fee), // ✅ inject fee here
+      },
+    }))
+
+    const totalFee = Number(record.totalFee)
+    const finalFee = Number(record.finalFee)
+    const discount = Number(record.discount)
+
+    const receiptHTML = ReceiptTemplate({
+      patient: {
+        id: patient.id,
+        name: patient.name,
+        age: patient.age,
+        patientId: patient.patientId,
+      },
+      cart,
+      totalFee,
+      finalFee,
+      discount,
+    })
+
+    const printWindow = window.open('', '_blank')
+    if (printWindow) {
+      printWindow.document.write(receiptHTML)
+      printWindow.document.close()
+      printWindow.onload = () => printWindow.print()
+    }
+  }
 
   return (
     <div className="p-5">
@@ -137,12 +165,12 @@ const PatientHistory = () => {
 
             <div className="border border-gray rounded-xl col-span-full p-5 grid grid-cols-3 gap-5">
               <p>Full Name: {patient.name}</p>
-              <p>Guardian: {patient.guardianName}</p>
+              <p>Guardian: {patient.guardianName || '-'}</p>
               <p>Gender: {patient.gender}</p>
               <p>DOB: {patient.dob || 'N/A'}</p>
               <p>Age: {patient.age}</p>
               <p>Phone: {patient.phoneNumber || '-'}</p>
-              <p>Address: {patient.address}</p>
+              <p>Address: {patient.address || '-'}</p>
             </div>
           </div>
 
@@ -151,7 +179,6 @@ const PatientHistory = () => {
               <table className="w-full text-sm text-left">
                 <thead className="text-xs text-white uppercase bg-dark">
                   <tr>
-                    {/* <th className="px-6 py-4">MR ID</th> */}
                     <th className="px-6 py-4">Doctor</th>
                     <th className="px-6 py-4">Department</th>
                     <th className="px-6 py-4">Procedure</th>
@@ -163,11 +190,10 @@ const PatientHistory = () => {
                     <th className="px-6 py-4">Action</th>
                   </tr>
                 </thead>
-
                 <tbody>
                   {records.length === 0 ? (
                     <tr>
-                      <td colSpan={10}>
+                      <td colSpan={9}>
                         <div className="flex justify-center py-4">
                           No records found
                         </div>
@@ -179,83 +205,32 @@ const PatientHistory = () => {
                         key={index}
                         className="bg-[#DFDEDE] border-b hover:bg-gray-100"
                       >
-                        {/* MR ID */}
-                        {/* <td className="px-6 py-2">{r?.patient?.patientId}</td> */}
-
-                        {/* Doctor */}
-                        <td className="px-6 py-2">{r.doctor?.name || '-'}</td>
-
-                        {/* Department */}
                         <td className="px-6 py-2">
-                          {r.department?.name || '-'}
+                          {r.items.map((i) => i.doctor.name).join(', ') || '-'}
                         </td>
-
-                        {/* Procedure */}
                         <td className="px-6 py-2">
-                          {r.procedure?.name || '-'}
+                          {r.items.map((i) => i.department.name).join(', ') ||
+                            '-'}
                         </td>
-
-                        {/* Fee */}
-                        <td className="px-6 py-2">{r.fee}</td>
-
-                        {/* Discount */}
-                        <td className="px-6 py-2">{r.discount}</td>
-
-                        {/* Net Fee */}
+                        <td className="px-6 py-2">
+                          {r.items.map((i) => i.procedure.name).join(', ') ||
+                            '-'}
+                        </td>
+                        <td className="px-6 py-2">
+                          {r.items.map((i) => i.fee).join(', ')}
+                        </td>
+                        <td className="px-6 py-2">{r.discount}%</td>
                         <td className="px-6 py-2">{r.finalFee}</td>
-
-                        {/* Created By */}
                         <td className="px-6 py-2 text-center">
-                          {patient.createdBy?.name || '-'}
+                          {patient.createdBy.name}
                         </td>
-
-                        {/* Visit Date */}
                         <td className="px-6 py-2">
-                          {new Date(r.visitDate).toLocaleString()}
+                          {new Date(r.createdAt).toLocaleString()}
                         </td>
-
-                        {/* Action */}
-                        <td className="px-6 py-2 flex items-center gap-2">
-                          {/* <button
-                            onClick={() => {
-                              const printablePatient = {
-                                ...patient,
-                                phoneNumber: patient.phoneNumber ?? '',
-                                procedure: {
-                                  id: 0,
-                                  name: r.procedure?.name || 'Service',
-                                  fee: Number(r.fee ?? 0),
-                                },
-                                department: r.department
-                                  ? { id: 0, name: r.department.name }
-                                  : { id: 0, name: '-' },
-                                doctor: r.doctor
-                                  ? { id: 0, name: r.doctor.name }
-                                  : { id: 0, name: 'General OPD' },
-                                discountPercentage: r.discount,
-                                netFees: r.finalFee,
-                                fee: r.fee,
-                              }
-
-                              // const receiptHTML = ReceiptTemplate({
-                              //   patient: printablePatient,
-                              // })
-                              // const printWindow = window.open('', '_blank')
-                              // if (!printWindow) return
-
-                              // printWindow.document.open()
-                              // printWindow.document.write(receiptHTML)
-                              // printWindow.document.close()
-                              // printWindow.focus()
-
-                              // printWindow.onload = () => {
-                              //   setTimeout(() => {
-                              //     printWindow.print()
-                              //     printWindow.close()
-                              //   }, 300)
-                              // }
-                            }}
-                            className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200 cursor-pointer"
+                        <td className="px-6 py-2">
+                          <button
+                            onClick={() => handlePrint(r)} // ✅ Pass only this record
+                            className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all cursor-pointer"
                           >
                             <svg
                               className="w-[18px] h-[18px] text-white group-hover:text-dark"
@@ -265,7 +240,7 @@ const PatientHistory = () => {
                             >
                               <use href="/assets/svg/printer-icon.svg#printer-icon" />
                             </svg>
-                          </button> */}
+                          </button>
                         </td>
                       </tr>
                     ))

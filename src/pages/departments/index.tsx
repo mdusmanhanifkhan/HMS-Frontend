@@ -60,9 +60,12 @@ const Departments: React.FC = () => {
           signal: controller.signal,
         })
 
-        if (!res.ok) throw new Error('Failed to fetch departments')
-
+        
         const data = await res.json()
+        if (!res.ok) {
+          setError(data.message || data.general_error || 'Something went wrong')
+          return
+        }
         setDepartments(data.data || [])
       } catch (err: unknown) {
         if (err instanceof Error && err.name !== 'AbortError') {
@@ -97,7 +100,9 @@ const Departments: React.FC = () => {
       const data = await res.json()
 
       if (!res.ok) {
-        setGeneralError(data.general_error || 'Something went wrong while deleting')
+        setGeneralError(
+          data.general_error || 'Something went wrong while deleting'
+        )
         return
       }
 

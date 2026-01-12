@@ -43,11 +43,6 @@ const patientSchema = Yup.object().shape({
   guardianName: Yup.string(),
   maritalStatus: Yup.string(),
   bloodGroup: Yup.string(),
-  phoneNumber: Yup.string().matches(
-    /^\d{11}$/,
-    'Phone number must be 11 digits'
-  ),
-  cnicNumber: Yup.string().matches(/^\d{13}$/, 'CNIC must be 13 digits'),
   address: Yup.string(),
 })
 
@@ -328,9 +323,7 @@ const EditPatients = () => {
             onChange={handleChange}
             placeholder="0304-3763110"
           />
-          {errors.phoneNumber && (
-            <p className="text-red text-sm">{errors.phoneNumber}</p>
-          )}
+        
         </GroupInput>
 
         {/* CNIC */}
@@ -342,9 +335,7 @@ const EditPatients = () => {
             onChange={handleChange}
             placeholder="12345-1234567-1"
           />
-          {errors.cnicNumber && (
-            <p className="text-red text-sm">{errors.cnicNumber}</p>
-          )}
+        
         </GroupInput>
 
         {/* Address */}

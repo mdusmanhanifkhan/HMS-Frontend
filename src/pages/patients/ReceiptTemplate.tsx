@@ -182,14 +182,19 @@ const ReceiptTemplate = ({
           <tr><td class="bold">M.R #:</td><td>MR-${patient.patientId}</td></tr>
           <tr><td class="bold">Patient:</td><td>${patient.name}</td></tr>
           <tr><td class="bold">Age:</td><td>${patient.age}</td></tr>
-          <tr><td class="bold">Department:</td><td>
-    ${[...new Set(cart.map(item => item.department.name))].join(', ')}
-    <br/>
-  </td></tr>
-          <tr><td class="bold">Doctor:</td> <td>
-    ${[...new Set(cart.map(item => item.doctor.name))].join(', ')}
-    <br/>
-  </td></tr>
+         <tr>
+    <td class="bold" style="vertical-align: top;">Department:</td>
+    <td style="white-space: normal;">
+      ${[...new Set(cart.map(item => item.department.name))].join('<br/>')}
+    </td>
+  </tr>
+  <tr>
+    <td class="bold" style="vertical-align: top;">Doctor:</td>
+    <td style="white-space: normal;">
+      ${[...new Set(cart.map(item => item.doctor.name))].join('<br/>')}
+    </td>
+  </tr>
+
         </table>
 
         <div class="line"></div>
