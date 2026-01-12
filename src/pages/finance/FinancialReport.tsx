@@ -68,7 +68,7 @@ const FinancialReport = () => {
         <>
           {/* Departments */}
           <h2 className="text-2xl font-semibold mb-4">Departments</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 ">
+          <div className="flex items-center flex-wrap gap-4 ">
             {report.departments.map((d) => (
               <div
                 key={d.department}
@@ -79,7 +79,7 @@ const FinancialReport = () => {
     hover:shadow-[8px_8px_15px_#dfdede] 
               transition-all 
               flex flex-col items-center 
-              hover:-translate-y-1 max-w-72"
+              hover:-translate-y-1 min-w-64 max-w-72"
               >
                 <h3 className="text-lg font-semibold mb-2">{d.department}</h3>
                 <p className="text-2xl font-bold text-green-600">
@@ -90,7 +90,7 @@ const FinancialReport = () => {
           </div>
 
           {/* Receptions / Users */}
-          <h2 className="text-2xl font-semibold mt-8 mb-4">
+          {/* <h2 className="text-2xl font-semibold mt-8 mb-4">
             Receptions / Users
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -112,7 +112,7 @@ const FinancialReport = () => {
                 </p>
               </div>
             ))}
-          </div>
+          </div> */}
         </>
       )}
     </div>
