@@ -153,7 +153,6 @@ const AllPatients = () => {
                 <th className="px-6 py-4">CNIC / ID</th>
                 <th className="px-6 py-4">Contact No.</th>
                 <th className="px-6 py-4">Total Visits</th>
-                  <th className="px-6 py-4">CreatedAt</th>
                 <th className="px-6 py-4 w-[10%] text-center">Action</th>
               </tr>
             </thead>
