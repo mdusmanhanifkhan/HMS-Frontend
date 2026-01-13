@@ -244,7 +244,7 @@ const ReceiptTemplate = ({
 
         <!-- OPD Free Note -->
         <div class="urdu-text">
-          تمام طبی او پی ڈی خدمات فروری 2026 تک ہیلپنگ ہینڈ کے تعاون سے مفت ہیں۔
+          تمام طبی او پی ڈی خدمات 31 جنوری 2026 تک ہیلپنگ ہینڈ کے تعاون سے مفت ہیں۔
         </div>
 
         <div class="center" style="margin-top: 15px;">

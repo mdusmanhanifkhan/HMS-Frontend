@@ -225,7 +225,7 @@ const EditDoctorFee = () => {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-10">
       <div className="flex justify-between items-center border-b pb-3">
-        <p className="text-xl font-semibold w-full">Edit Doctor Fee</p>
+        <p className="text-xl font-semibold w-full">Edit Fee</p>
         <Button to={routePaths.DOCTOR_FEE} asLink>
           Back
         </Button>

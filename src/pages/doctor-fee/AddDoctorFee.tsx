@@ -194,7 +194,7 @@ const AddDoctorFee = () => {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-10">
       <div className="flex justify-between items-center border-b pb-3">
-        <p className="text-xl font-semibold w-full">Add Doctor Fee</p>
+        <p className="text-xl font-semibold w-full">Add Fee</p>
         <Button to={routePaths.DOCTOR_FEE} asLink={true}>
           <svg
             className="w-3.5 h-3.5 -scale-x-100"

@@ -42,4 +42,5 @@ export const routePaths = {
   CREATE_USER: '/user-management/create',
   SETTINGS: '/settings',
   FINANCE_REPORT: '/finance-report',
+  PATIENT_REPORT: '/patient-report',
 } as const

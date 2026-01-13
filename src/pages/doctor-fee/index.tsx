@@ -105,9 +105,9 @@ const DoctorFee = () => {
   return (
     <div className="flex flex-col gap-10">
       <div className="flex justify-between items-center w-full border-b pb-3">
-        <p className="text-xl font-semibold">Doctor Fee Management</p>
+        <p className="text-xl font-semibold">Fee Management</p>
         <Link to={routePaths.ADD_DOCTOR_FEE}>
-          <Button>+ Add Doctor Fee</Button>
+          <Button>+ Add Fee</Button>
         </Link>
       </div>
 
