@@ -326,7 +326,7 @@ const handleSubmit = async (e: React.FormEvent) => {
             }))}
             onSelect={(opt) => {
               const proc = selectedDoctor?.procedures.find(
-                (p) => p.id === opt.id
+                (p) => p.id === opt.id 
               )
               if (proc) addToCart(proc) // auto-reset dept & doctor
             }}

@@ -323,7 +323,6 @@ const EditPatients = () => {
             onChange={handleChange}
             placeholder="0304-3763110"
           />
-        
         </GroupInput>
 
         {/* CNIC */}
