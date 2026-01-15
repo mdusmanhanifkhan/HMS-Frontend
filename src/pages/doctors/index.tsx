@@ -48,7 +48,7 @@ const Doctors = () => {
         setLoading(true)
         setError(null)
 
-        const res = await fetch(`${API_URL}/api/doctors`, {
+        const res = await fetch(`${API_URL}/api/all-doctors`, {
           headers: { Authorization: `Bearer ${token}` },
         })
 

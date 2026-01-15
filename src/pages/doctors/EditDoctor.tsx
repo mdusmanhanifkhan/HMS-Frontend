@@ -10,6 +10,7 @@ import SuccessMessage from '../../components/error-handling/SuccessMessage'
 import ToggleButton from '../../components/button/ToggleButton'
 import { routePaths } from '../../constants/routePaths'
 import { useParams } from 'react-router-dom'
+import MultiSelectedDropdown from '../../components/input/MultiSelectedDropdown'
 
 const doctorSchema = yup.object().shape({
   name: yup.string().required('Name is required'),
@@ -113,45 +114,78 @@ const EditDoctor = () => {
     'Sunday',
   ]
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { id, value, type } = e.target
-    let newValue: string | number | boolean = value
+  // const handleChange = (
+  //   e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  // ) => {
+  //   const { id, value, type } = e.target
+  //   let newValue: string | number | boolean = value
 
-    if (type === 'checkbox' && e.target instanceof HTMLInputElement) {
-      newValue = e.target.checked
-    } else if (type === 'number') {
-      newValue = Number(value)
-    } else if (id === 'idCard') {
-      // CNIC formatting with dash: 12345-1234567-1
-      const digitsOnly = value.replace(/\D/g, '').slice(0, 13)
-      const formatted = digitsOnly
-        .replace(/^(\d{5})(\d{7})(\d{1})$/, '$1-$2-$3')
-        .replace(/^(\d{5})(\d{0,7})$/, '$1-$2')
-      newValue = formatted
-    } else if (id === 'dateOfBirth') {
-      // Auto calculate age
-      const today = new Date()
-      const birthDate = new Date(value)
-      let age = today.getFullYear() - birthDate.getFullYear()
-      const m = today.getMonth() - birthDate.getMonth()
-      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--
-      // setForm((prev) => ({ ...prev, age })) // update age
-      setForm((prev) => ({ ...prev, age: Number(age) }))
-    }
+  //   if (type === 'checkbox' && e.target instanceof HTMLInputElement) {
+  //     newValue = e.target.checked
+  //   } else if (type === 'number') {
+  //     newValue = Number(value)
+  //   } else if (id === 'idCard') {
+  //     // CNIC formatting with dash: 12345-1234567-1
+  //     const digitsOnly = value.replace(/\D/g, '').slice(0, 13)
+  //     const formatted = digitsOnly
+  //       .replace(/^(\d{5})(\d{7})(\d{1})$/, '$1-$2-$3')
+  //       .replace(/^(\d{5})(\d{0,7})$/, '$1-$2')
+  //     newValue = formatted
+  //   } else if (id === 'dateOfBirth') {
+  //     // Auto calculate age
+  //     const today = new Date()
+  //     const birthDate = new Date(value)
+  //     let age = today.getFullYear() - birthDate.getFullYear()
+  //     const m = today.getMonth() - birthDate.getMonth()
+  //     if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--
+  //     // setForm((prev) => ({ ...prev, age })) // update age
+  //     setForm((prev) => ({ ...prev, age: Number(age) }))
+  //   }
 
-    setForm((prev) => ({ ...prev, [id]: newValue }))
+  //   setForm((prev) => ({ ...prev, [id]: newValue }))
 
-    setErrors((prev) => {
-      if (prev[id]) {
-        const newErrors = { ...prev }
-        delete newErrors[id]
-        return newErrors
-      }
-      return prev
-    })
+  //   setErrors((prev) => {
+  //     if (prev[id]) {
+  //       const newErrors = { ...prev }
+  //       delete newErrors[id]
+  //       return newErrors
+  //     }
+  //     return prev
+  //   })
+  // }
+
+const handleChange = (
+  e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+) => {
+  const { id, value, type } = e.target
+
+  let newValue: string | number | boolean = value
+  const extra: Partial<typeof form> = {} // ✅ use const
+
+  if (type === 'checkbox' && e.target instanceof HTMLInputElement) {
+    newValue = e.target.checked
+  } else if (type === 'number') {
+    newValue = Number(value)
+  } else if (id === 'idCard') {
+    const digitsOnly = value.replace(/\D/g, '').slice(0, 13)
+    newValue = digitsOnly
+      .replace(/^(\d{5})(\d{7})(\d{1})$/, '$1-$2-$3')
+      .replace(/^(\d{5})(\d{0,7})$/, '$1-$2')
+  } else if (id === 'dateOfBirth') {
+    const today = new Date()
+    const birthDate = new Date(value)
+    let age = today.getFullYear() - birthDate.getFullYear()
+    const m = today.getMonth() - birthDate.getMonth()
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--
+    extra.age = age
   }
+
+  setForm((prev) => ({
+    ...prev,
+    ...extra,
+    [id]: newValue,
+  }))
+}
 
   const handleSelect = (
     field: keyof typeof form,
@@ -286,6 +320,9 @@ const EditDoctor = () => {
     }
     fetchDepartments()
   }, [API_BASE, token])
+const selectedDepartments = departments.filter((d) =>
+  form.departmentIds.includes(Number(d.id))
+)
 
   return (
     <>
@@ -473,7 +510,7 @@ const EditDoctor = () => {
 
             <GroupInput>
               <Label required="true">Department</Label>
-              <Dropdown
+              {/* <Dropdown
                 options={departments}
                 selected={departments?.filter((d) =>
                   form.departmentIds?.includes(Number(d.id))
@@ -493,7 +530,30 @@ const EditDoctor = () => {
                 }
                 placeholder="Select Departments"
                 multiple={true}
-              />
+              /> */}
+
+              <MultiSelectedDropdown
+  options={departments}
+  selected={selectedDepartments}
+  placeholder="Select Departments"
+  onSelect={(opt) => {
+    const id = Number(opt.id)
+    setForm((prev) => ({
+      ...prev,
+      departmentIds: prev.departmentIds.includes(id)
+        ? prev.departmentIds
+        : [...prev.departmentIds, id],
+    }))
+  }}
+  onRemove={(opt) => {
+    const id = Number(opt.id)
+    setForm((prev) => ({
+      ...prev,
+      departmentIds: prev.departmentIds.filter((d) => d !== id),
+    }))
+  }}
+/>
+
               {errors.departmentIds && (
                 <p className="text-red text-xs">{errors.departmentIds}</p>
               )}

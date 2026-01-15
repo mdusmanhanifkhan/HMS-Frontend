@@ -9,6 +9,7 @@ import SuccessMessage from '../../components/error-handling/SuccessMessage'
 import * as yup from 'yup'
 import ToggleButton from '../../components/button/ToggleButton'
 import { routePaths } from '../../constants/routePaths'
+import MultiSelectedDropdown from '../../components/input/MultiSelectedDropdown'
 
 const doctorSchema = yup.object().shape({
   name: yup.string().required('Name is required'),
@@ -231,6 +232,10 @@ const AddDoctor = () => {
     fetchDepartments()
   }, [API_URL, token])
 
+  const selectedDepartments = departments.filter((d) =>
+    form.departmentIds.includes(Number(d.id))
+  )
+
   return (
     <>
       {errorMsg && <ErrorMessage msg={errorMsg} />}
@@ -419,7 +424,7 @@ const AddDoctor = () => {
             {/* Department */}
             <GroupInput>
               <Label required="true">Department</Label>
-              <Dropdown
+              {/* <Dropdown
                 options={departments}
                 selected={departments?.filter((d) =>
                   form.departmentIds.includes(Number(d.id))
@@ -443,7 +448,29 @@ const AddDoctor = () => {
                 }
                 placeholder="Select Departments"
                 multiple={true}
+              /> */}
+              <MultiSelectedDropdown
+                options={departments}
+                selected={selectedDepartments}
+                placeholder="Select Departments"
+                onSelect={(opt) => {
+                  const id = Number(opt.id)
+                  setForm((prev) => ({
+                    ...prev,
+                    departmentIds: prev.departmentIds.includes(id)
+                      ? prev.departmentIds
+                      : [...prev.departmentIds, id],
+                  }))
+                }}
+                onRemove={(opt) => {
+                  const id = Number(opt.id)
+                  setForm((prev) => ({
+                    ...prev,
+                    departmentIds: prev.departmentIds.filter((d) => d !== id),
+                  }))
+                }}
               />
+
               {errors.departmentIds && (
                 <p className="text-red text-xs">{errors.departmentIds}</p>
               )}

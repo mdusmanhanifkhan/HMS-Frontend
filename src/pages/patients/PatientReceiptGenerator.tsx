@@ -67,6 +67,9 @@ const PatientReceiptGenerator = () => {
   const [selectedDepartment, setSelectedDepartment] =
     useState<Department | null>(null)
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null)
+  const [selectedProcedure, setSelectedProcedure] =
+  useState<Procedure | null>(null)
+
 
   const [cart, setCart] = useState<CartItem[]>([])
   const [discount, setDiscount] = useState<number>(0)
@@ -125,32 +128,61 @@ const PatientReceiptGenerator = () => {
   }, [patientId, API_BASE, token])
 
   /* ---------- CART FUNCTIONS ---------- */
-  const addToCart = (procedure: Procedure) => {
-    if (!selectedDepartment || !selectedDoctor) return
+  // const addToCart = (procedure: Procedure) => {
+  //   if (!selectedDepartment || !selectedDoctor) return
 
-    const exists = cart.some(
-      (item) =>
-        item.department.id === selectedDepartment.id &&
-        item.doctor.id === selectedDoctor.id &&
-        item.procedure.id === procedure.id
-    )
-    if (exists) return
+  //   const exists = cart.some(
+  //     (item) =>
+  //       item.department.id === selectedDepartment.id &&
+  //       item.doctor.id === selectedDoctor.id &&
+  //       item.procedure.id === procedure.id
+  //   )
+  //   if (exists) return
 
-    const updated = [
-      ...cart,
-      {
-        department: selectedDepartment,
-        doctor: selectedDoctor,
-        procedure,
-      },
-    ]
-    setCart(updated)
-    calculateTotals(updated, discount)
+  //   const updated = [
+  //     ...cart,
+  //     {
+  //       department: selectedDepartment,
+  //       doctor: selectedDoctor,
+  //       procedure,
+  //     },
+  //   ]
+  //   setCart(updated)
+  //   calculateTotals(updated, discount)
 
-    // Reset Department and Doctor after adding a procedure
-    setSelectedDepartment(null)
-    setSelectedDoctor(null)
-  }
+  //   // Reset Department and Doctor after adding a procedure
+  //   setSelectedDepartment(null)
+  //   setSelectedDoctor(null)
+  // }
+const addToCart = (doctor: Doctor) => {
+  if (!selectedDepartment || !selectedProcedure) return
+
+  const exists = cart.some(
+    (item) =>
+      item.department.id === selectedDepartment.id &&
+      item.doctor.id === doctor.id &&
+      item.procedure.id === selectedProcedure.id
+  )
+
+  if (exists) return
+
+  const updated = [
+    ...cart,
+    {
+      department: selectedDepartment,
+      doctor,
+      procedure: selectedProcedure,
+    },
+  ]
+
+  setCart(updated)
+  calculateTotals(updated, discount)
+
+  // ✅ RESET after add
+  setSelectedDoctor(null)
+  setSelectedProcedure(null)
+}
+
 
   const removeFromCart = (index: number) => {
     const updated = cart.filter((_, i) => i !== index)
@@ -232,6 +264,10 @@ const handleSubmit = async (e: React.FormEvent) => {
     }
 
     setSuccess('Medical record printed successfully!')
+    setDepartments([])
+    setDiscount(0)
+    setTotalFee(0)
+    setFinalFee(0)
     setCart([])
   } catch (err: unknown) {
     if (err instanceof Error) {
@@ -247,14 +283,40 @@ const handleSubmit = async (e: React.FormEvent) => {
 
   /* ---------- DROPDOWN OPTIONS ---------- */
   const departmentOptions = departments.map((d) => ({ id: d.id, name: d.name }))
+  // const doctorOptions =
+  //   selectedDepartment?.doctors.map((d) => ({ id: d.id, name: d.name })) || []
+  // const procedureOptions =
+  //   selectedDoctor?.procedures.map((p) => ({
+  //     id: p.id,
+  //     name: `${p.name} (${p.fee})`,
+  //     fee: p.fee,
+  //   })) || []
   const doctorOptions =
-    selectedDepartment?.doctors.map((d) => ({ id: d.id, name: d.name })) || []
-  const procedureOptions =
-    selectedDoctor?.procedures.map((p) => ({
+  selectedDepartment && selectedProcedure
+    ? selectedDepartment.doctors
+        .filter((doc) =>
+          doc.procedures.some((p) => p.id === selectedProcedure.id)
+        )
+        .map((doc) => ({
+          id: doc.id,
+          name: doc.name,
+        }))
+    : []
+
+  const procedureOptions = selectedDepartment
+  ? Array.from(
+      new Map(
+        selectedDepartment.doctors
+          .flatMap((doc) => doc.procedures)
+          .map((proc) => [proc.id, proc])
+      ).values()
+    ).map((p) => ({
       id: p.id,
       name: `${p.name} (${p.fee})`,
       fee: p.fee,
-    })) || []
+    }))
+  : []
+
 
   /* ---------- RENDER ---------- */
   return (
@@ -301,7 +363,7 @@ const handleSubmit = async (e: React.FormEvent) => {
           />
 
           {/* Doctor Dropdown */}
-          <Dropdown
+          {/* <Dropdown
             options={doctorOptions}
             selected={
               selectedDoctor
@@ -315,10 +377,10 @@ const handleSubmit = async (e: React.FormEvent) => {
               if (doc) setSelectedDoctor(doc)
             }}
             placeholder="Select Doctor"
-          />
+          /> */}
 
           {/* Procedure Dropdown */}
-          <Dropdown
+          {/* <Dropdown
             options={procedureOptions}
             selected={cart.map((item) => ({
               id: `${item.department.id}-${item.doctor.id}-${item.procedure.id}`,
@@ -331,7 +393,50 @@ const handleSubmit = async (e: React.FormEvent) => {
               if (proc) addToCart(proc) // auto-reset dept & doctor
             }}
             placeholder="Add procedures"
-          />
+          /> */}
+          <Dropdown
+  options={procedureOptions}
+  selected={
+    selectedProcedure
+      ? { id: selectedProcedure.id, name: selectedProcedure.name }
+      : null
+  }
+  onSelect={(opt) => {
+    const proc = procedureOptions.find((p) => p.id === opt.id)
+    if (proc) {
+      setSelectedProcedure(proc)
+      setSelectedDoctor(null)
+    }
+  }}
+  placeholder="Select Procedure"
+/>
+
+<Dropdown
+  options={doctorOptions}
+  selected={
+    selectedDoctor
+      ? { id: selectedDoctor.id, name: selectedDoctor.name }
+      : null
+  }
+  onSelect={(opt) => {
+    const doc = selectedDepartment?.doctors.find(
+      (d) => d.id === opt.id
+    )
+
+    if (!doc || !selectedProcedure) return
+
+    // optional: show selected briefly
+    setSelectedDoctor(doc)
+
+    // ✅ ADD EXACTLY ONCE
+    addToCart(doc)
+  }}
+  placeholder="Select Doctor"
+/>
+
+
+
+
 
           {/* Discount */}
           <div className="mt-2 col-span-full ">
@@ -379,6 +484,8 @@ const handleSubmit = async (e: React.FormEvent) => {
           <Button type="submit" className="mt-4 col-span-full w-fit mx-auto">
            {loading ? "loading..." : "Generate Receipt"}
           </Button>
+         
+
         </div>
       )}
     </form>

@@ -49,8 +49,8 @@ const Departments: React.FC = () => {
         setError(null)
 
         const url = debouncedSearch
-          ? `${API_BASE}/api/department?search=${debouncedSearch}`
-          : `${API_BASE}/api/department`
+          ? `${API_BASE}/api/all-departments?search=${debouncedSearch}`
+          : `${API_BASE}/api/all-departments`
 
         const res = await fetch(url, {
           headers: {

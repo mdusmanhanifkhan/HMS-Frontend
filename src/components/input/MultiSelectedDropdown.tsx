@@ -100,7 +100,7 @@ const MultiSelectedDropdown = ({
 
       {/* Dropdown options */}
       <div
-        className={`absolute top-full left-0 w-full bg-white border-x border-b border-gray rounded-b-md shadow transition-all duration-200 overflow-y-auto z-10 ${
+        className={`absolute top-8 left-0 w-full bg-white border-x border-b border-gray rounded-b-md shadow transition-all duration-200 overflow-y-auto z-10 ${
           isOpen && filteredOptions.length > 0
             ? 'max-h-40 opacity-100'
             : 'max-h-0 opacity-0 pointer-events-none'
@@ -131,13 +131,13 @@ const MultiSelectedDropdown = ({
           {selected.map((s) => (
             <span
               key={s.id}
-              className="flex items-center gap-1 bg-gray-200 text-sm px-2 py-1 rounded-full"
+              className="flex items-center gap-1 bg-dark text-sm px-2 py-[2px] rounded-full text-white cursor-pointer"
             >
               {s.name}
               <button
                 type="button"
                 onClick={() => onRemove(s)}
-                className="ml-1 text-gray-500 hover:text-red-500 font-bold"
+                className="ml-1 text-white hover:text-red font-bold cursor-pointer text-[16px]" 
               >
                 ×
               </button>
