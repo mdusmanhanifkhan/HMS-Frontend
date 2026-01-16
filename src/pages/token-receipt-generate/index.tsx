@@ -67,6 +67,9 @@ const PatientReceiptGenerator = () => {
   const [selectedDepartment, setSelectedDepartment] =
     useState<Department | null>(null)
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null)
+  const [selectedProcedure, setSelectedProcedure] = useState<Procedure | null>(
+    null
+  )
 
   const [cart, setCart] = useState<CartItem[]>([])
   const [discount, setDiscount] = useState<number>(0)
@@ -85,20 +88,29 @@ const PatientReceiptGenerator = () => {
         const res = await fetch(
           `${API_BASE}/api/department-doctor-procedure-tree`,
           {
-            headers: { Authorization: `Bearer ${token}` },
+            headers: {
+              Authorization: token ? `Bearer ${token}` : '',
+            },
           }
         )
-        if (!res.ok) throw new Error('Failed to fetch departments')
-        const data = await res.json()
-        setDepartments(data.data || [])
+
+        const result = await res.json()
+
+        if (!res.ok) {
+          setError(result?.message || 'Unauthorized')
+          return
+        }
+
+        setDepartments(result.data || [])
       } catch (err: unknown) {
         if (err instanceof Error) {
-          setError(err.message || 'Error fetching patient history')
+          setError(err.message)
         } else {
           setError('An unknown error occurred')
         }
       }
     }
+
     fetchDepartments()
   }, [API_BASE, token])
 
@@ -132,14 +144,14 @@ const PatientReceiptGenerator = () => {
       const res = await fetch(`${API_BASE}/api/patient/${searchPatientId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
-      
+
       const data = await res.json()
-      
+
       if (!res.ok || data.status === 404) {
         setError(data.general_error)
         return
       }
-      
+
       if (!data?.data) {
         setError('No patient found with this ID')
         // setShowPatientInfo(false)
@@ -175,31 +187,59 @@ const PatientReceiptGenerator = () => {
   }
 
   /* ---------- CART FUNCTIONS ---------- */
-  const addToCart = (procedure: Procedure) => {
-    if (!selectedDepartment || !selectedDoctor) return
+  // const addToCart = (procedure: Procedure) => {
+  //   if (!selectedDepartment || !selectedDoctor) return
+
+  //   const exists = cart.some(
+  //     (item) =>
+  //       item.department.id === selectedDepartment.id &&
+  //       item.doctor.id === selectedDoctor.id &&
+  //       item.procedure.id === procedure.id
+  //   )
+  //   if (exists) return
+
+  //   const updated = [
+  //     ...cart,
+  //     {
+  //       department: selectedDepartment,
+  //       doctor: selectedDoctor,
+  //       procedure,
+  //     },
+  //   ]
+  //   setCart(updated)
+  //   calculateTotals(updated, discount)
+
+  //   // Reset Department and Doctor after adding a procedure
+  //   setSelectedDepartment(null)
+  //   setSelectedDoctor(null)
+  // }
+  const addToCart = (doctor: Doctor) => {
+    if (!selectedDepartment || !selectedProcedure) return
 
     const exists = cart.some(
       (item) =>
         item.department.id === selectedDepartment.id &&
-        item.doctor.id === selectedDoctor.id &&
-        item.procedure.id === procedure.id
+        item.doctor.id === doctor.id &&
+        item.procedure.id === selectedProcedure.id
     )
+
     if (exists) return
 
     const updated = [
       ...cart,
       {
         department: selectedDepartment,
-        doctor: selectedDoctor,
-        procedure,
+        doctor,
+        procedure: selectedProcedure,
       },
     ]
+
     setCart(updated)
     calculateTotals(updated, discount)
 
-    // Reset Department and Doctor after adding a procedure
-    setSelectedDepartment(null)
+    // ✅ RESET after add
     setSelectedDoctor(null)
+    setSelectedProcedure(null)
   }
 
   const removeFromCart = (index: number) => {
@@ -229,7 +269,7 @@ const PatientReceiptGenerator = () => {
       return
     }
 
-    setLoading(true) // ✅ START loading
+    setLoading(true)
     setError('')
     setSuccess('')
 
@@ -281,6 +321,10 @@ const PatientReceiptGenerator = () => {
       }
 
       setSuccess('Medical record printed successfully!')
+      setDepartments([])
+      setDiscount(0)
+      setTotalFee(0)
+      setFinalFee(0)
       setCart([])
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -295,14 +339,39 @@ const PatientReceiptGenerator = () => {
 
   /* ---------- DROPDOWN OPTIONS ---------- */
   const departmentOptions = departments.map((d) => ({ id: d.id, name: d.name }))
+  // const doctorOptions =
+  //   selectedDepartment?.doctors.map((d) => ({ id: d.id, name: d.name })) || []
+  // const procedureOptions =
+  //   selectedDoctor?.procedures.map((p) => ({
+  //     id: p.id,
+  //     name: `${p.name} (${p.fee})`,
+  //     fee: p.fee,
+  //   })) || []
   const doctorOptions =
-    selectedDepartment?.doctors.map((d) => ({ id: d.id, name: d.name })) || []
-  const procedureOptions =
-    selectedDoctor?.procedures.map((p) => ({
-      id: p.id,
-      name: `${p.name} (${p.fee})`,
-      fee: p.fee,
-    })) || []
+    selectedDepartment && selectedProcedure
+      ? selectedDepartment.doctors
+          .filter((doc) =>
+            doc.procedures.some((p) => p.id === selectedProcedure.id)
+          )
+          .map((doc) => ({
+            id: doc.id,
+            name: doc.name,
+          }))
+      : []
+
+  const procedureOptions = selectedDepartment
+    ? Array.from(
+        new Map(
+          selectedDepartment.doctors
+            .flatMap((doc) => doc.procedures)
+            .map((proc) => [proc.id, proc])
+        ).values()
+      ).map((p) => ({
+        id: p.id,
+        name: `${p.name} (${p.fee})`,
+        fee: p.fee,
+      }))
+    : []
 
   /* ---------- RENDER ---------- */
   return (
@@ -362,7 +431,23 @@ const PatientReceiptGenerator = () => {
             placeholder="Select Department"
           />
 
-          {/* Doctor Dropdown */}
+          <Dropdown
+            options={procedureOptions}
+            selected={
+              selectedProcedure
+                ? { id: selectedProcedure.id, name: selectedProcedure.name }
+                : null
+            }
+            onSelect={(opt) => {
+              const proc = procedureOptions.find((p) => p.id === opt.id)
+              if (proc) {
+                setSelectedProcedure(proc)
+                setSelectedDoctor(null)
+              }
+            }}
+            placeholder="Select Procedure"
+          />
+
           <Dropdown
             options={doctorOptions}
             selected={
@@ -374,25 +459,16 @@ const PatientReceiptGenerator = () => {
               const doc = selectedDepartment?.doctors.find(
                 (d) => d.id === opt.id
               )
-              if (doc) setSelectedDoctor(doc)
+
+              if (!doc || !selectedProcedure) return
+
+              // optional: show selected briefly
+              setSelectedDoctor(doc)
+
+              // ✅ ADD EXACTLY ONCE
+              addToCart(doc)
             }}
             placeholder="Select Doctor"
-          />
-
-          {/* Procedure Dropdown */}
-          <Dropdown
-            options={procedureOptions}
-            selected={cart.map((item) => ({
-              id: `${item.department.id}-${item.doctor.id}-${item.procedure.id}`,
-              name: `${item.department.name} / ${item.doctor.name} / ${item.procedure.name} (${item.procedure.fee})`,
-            }))}
-            onSelect={(opt) => {
-              const proc = selectedDoctor?.procedures.find(
-                (p) => p.id === opt.id
-              )
-              if (proc) addToCart(proc) // auto-reset dept & doctor
-            }}
-            placeholder="Add procedures"
           />
 
           {/* Discount */}

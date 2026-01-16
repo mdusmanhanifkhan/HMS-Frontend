@@ -32,11 +32,16 @@ import AllPatients from '../pages/patient-history/AllPatients.tsx'
 import TokenReceiptGenerate from '../pages/token-receipt-generate/index.tsx'
 import FinancialReport from '../pages/finance/FinancialReport.tsx'
 import PatientReport from '../pages/reports/patient-report/index.tsx'
+import PublicRoute from '../middleware/PublicRoute.tsx'
 
 export const router = createBrowserRouter([
   {
     path: '/login',
-    element: <Login />,
+    element: (
+      <PublicRoute>
+        <Login />
+      </PublicRoute>
+    ),
   },
   {
     path: '/',
@@ -46,17 +51,23 @@ export const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
-      { path: '/', element: <Dashboard/> },
+      { path: '/', element: <Dashboard /> },
 
       // Patient
-      { path: routePaths.PATIENTS, element: <Patients /> },
+      {
+        path: routePaths.PATIENTS,
+        element: <Patients />,
+      },
       { path: routePaths.ADD_PATIENTS, element: <AddPatients /> },
       { path: `${routePaths.PATIENTS}/:id`, element: <EditPatients /> },
       {
         path: `${routePaths.PATIENTS}${routePaths.PATIENTS_RECEIPT_GENERATE}/:id`,
         element: <PatientReceiptGenerator />,
       },
-      { path: `${routePaths.PATIENT_HISTORY}/:id`, element: <PatientHistory /> },
+      {
+        path: `${routePaths.PATIENT_HISTORY}/:id`,
+        element: <PatientHistory />,
+      },
       { path: routePaths.PATIENT_HISTORY, element: <AllPatients /> },
       { path: routePaths.APPOINTMENTS, element: <ComingSoon /> },
       // Department
@@ -101,8 +112,14 @@ export const router = createBrowserRouter([
       { path: routePaths.USERS_MANAGEMENT, element: <UserManagement /> },
       { path: routePaths.CREATE_USER, element: <CreateUser /> },
       { path: routePaths.SETTINGS, element: <ComingSoon /> },
-      { path: routePaths.FINANCE_REPORT, element: <FinancialReport /> },
-      { path: routePaths.PATIENT_REPORT, element: <PatientReport /> },
+      {
+        path: routePaths.FINANCE_REPORT,
+        element: <FinancialReport />,
+      },
+      {
+        path: routePaths.PATIENT_REPORT,
+        element: <PatientReport />,
+      },
     ],
   },
 ])

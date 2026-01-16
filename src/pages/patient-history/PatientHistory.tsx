@@ -16,9 +16,6 @@ export interface PatientInfo {
   dob?: string | null
   phoneNumber?: string | null
   address: string
-  createdBy: {
-    name: string
-  }
 }
 
 export interface VisitItem {
@@ -36,7 +33,10 @@ export interface VisitRecord {
   totalFee: string
   discount: number
   finalFee: string
-  createdAt:string
+  createdAt: string
+  user: {
+    name: string
+  }
 }
 
 type VisitHistoryResponse = {
@@ -221,8 +221,8 @@ const PatientHistory = () => {
                         </td>
                         <td className="px-6 py-2">{r.discount}%</td>
                         <td className="px-6 py-2">{r.finalFee}</td>
-                        <td className="px-6 py-2 text-center">
-                          {patient.createdBy.name}
+                        <td className="px-6 py-2 text-center text-nowrap">
+                          {r?.user?.name}
                         </td>
                         <td className="px-6 py-2">
                           {new Date(r.createdAt).toLocaleString()}

@@ -19,7 +19,7 @@ interface Patient {
   id: number
   patientId: number
   name: string
-  guardianName:string
+  guardianName: string
   gender: string
   age: number
   cnicNumber?: string | null
@@ -37,8 +37,6 @@ const AllPatients = () => {
   const [searchMR, setSearchMR] = useState<string>('')
 
   const token = localStorage.getItem('token')
-
-  if (!token) console.error('No token found. Please login.')
 
   // Fetch Patients
   const fetchPatients = async (filters?: {
@@ -78,10 +76,14 @@ const AllPatients = () => {
     }
   }
 
-  // Fetch all patients on mount
   useEffect(() => {
-    if (token) fetchPatients()
-  }, [])
+    if (!token) {
+      setError('No token found. Please login.')
+      return
+    }
+
+    fetchPatients()
+  }, [token])
 
   // Search button handler
   const handleSearch = () => {
@@ -95,7 +97,7 @@ const AllPatients = () => {
       {/* Header */}
       <div className="flex justify-between items-center w-full border-b pb-3">
         <p className="text-xl font-semibold">Patients History</p>
-          {/* Search Fields */}
+        {/* Search Fields */}
         <div className="flex gap-2 items-center">
           <Input
             type="text"
@@ -104,7 +106,7 @@ const AllPatients = () => {
             onChange={(e) => setSearchMR(e.target.value)}
             className="min-w-[250px] w-full"
           />
-        
+
           <Button onClick={handleSearch}>
             {' '}
             <svg
@@ -138,8 +140,6 @@ const AllPatients = () => {
       </div>
 
       <div className="space-y-5">
-      
-
         {/* Table */}
         <div className="relative overflow-x-auto shadow-lg rounded-lg">
           <table className="w-full text-sm text-left">
@@ -159,7 +159,7 @@ const AllPatients = () => {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={7}>
+                  <td colSpan={8}>
                     <div className="flex justify-center py-4">
                       <Loading />
                     </div>
@@ -194,7 +194,9 @@ const AllPatients = () => {
                     <td className="px-6 py-2">{p.age}</td>
                     <td className="px-6 py-2">{p.cnicNumber || '-'}</td>
                     <td className="px-6 py-2">{p.phoneNumber || '-'}</td>
-                    <td className="px-6 py-2">{p.totalVisits || '-'}</td>
+                    <td className="px-6 py-2 text-center">
+                      {p.totalVisits || '-'}
+                    </td>
                     <td className="px-6 py-2 flex items-center justify-center">
                       <Link
                         to={`${routePaths.PATIENT_HISTORY}/${p.patientId}`}

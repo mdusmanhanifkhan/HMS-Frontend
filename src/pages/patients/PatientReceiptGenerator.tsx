@@ -67,9 +67,9 @@ const PatientReceiptGenerator = () => {
   const [selectedDepartment, setSelectedDepartment] =
     useState<Department | null>(null)
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null)
-  const [selectedProcedure, setSelectedProcedure] =
-  useState<Procedure | null>(null)
-
+  const [selectedProcedure, setSelectedProcedure] = useState<Procedure | null>(
+    null
+  )
 
   const [cart, setCart] = useState<CartItem[]>([])
   const [discount, setDiscount] = useState<number>(0)
@@ -78,7 +78,7 @@ const PatientReceiptGenerator = () => {
 
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
-   const [loading, setLoading] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false)
 
   /* ---------- FETCH DEPARTMENTS & TREE ---------- */
   useEffect(() => {
@@ -154,35 +154,34 @@ const PatientReceiptGenerator = () => {
   //   setSelectedDepartment(null)
   //   setSelectedDoctor(null)
   // }
-const addToCart = (doctor: Doctor) => {
-  if (!selectedDepartment || !selectedProcedure) return
+  const addToCart = (doctor: Doctor) => {
+    if (!selectedDepartment || !selectedProcedure) return
 
-  const exists = cart.some(
-    (item) =>
-      item.department.id === selectedDepartment.id &&
-      item.doctor.id === doctor.id &&
-      item.procedure.id === selectedProcedure.id
-  )
+    const exists = cart.some(
+      (item) =>
+        item.department.id === selectedDepartment.id &&
+        item.doctor.id === doctor.id &&
+        item.procedure.id === selectedProcedure.id
+    )
 
-  if (exists) return
+    if (exists) return
 
-  const updated = [
-    ...cart,
-    {
-      department: selectedDepartment,
-      doctor,
-      procedure: selectedProcedure,
-    },
-  ]
+    const updated = [
+      ...cart,
+      {
+        department: selectedDepartment,
+        doctor,
+        procedure: selectedProcedure,
+      },
+    ]
 
-  setCart(updated)
-  calculateTotals(updated, discount)
+    setCart(updated)
+    calculateTotals(updated, discount)
 
-  // ✅ RESET after add
-  setSelectedDoctor(null)
-  setSelectedProcedure(null)
-}
-
+    // ✅ RESET after add
+    setSelectedDoctor(null)
+    setSelectedProcedure(null)
+  }
 
   const removeFromCart = (index: number) => {
     const updated = cart.filter((_, i) => i !== index)
@@ -202,84 +201,82 @@ const addToCart = (doctor: Doctor) => {
     calculateTotals(cart, value)
   }
 
-
   /* ---------- SUBMIT API ---------- */
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault()
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
 
-  if (!patient || cart.length === 0) {
-    setError('Patient and at least one procedure are required.')
-    return
-  }
-
-  setLoading(true) // ✅ START loading
-  setError('')
-  setSuccess('')
-
-  const payload = {
-    patientId: patient.patientId,
-    discount,
-    totalFee,
-    finalFee,
-    items: cart.map((c) => ({
-      departmentId: c.department.id,
-      doctorId: c.doctor.id,
-      procedureId: c.procedure.id,
-      fee: c.procedure.fee,
-    })),
-    createdByUserId: user?.id,
-  }
-
-  try {
-    const res = await fetch(`${API_BASE}/api/medical-records`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    })
-
-    const data = await res.json()
-
-    if (!data.success) {
-      setError(data.message || 'Failed to create medical record')
+    if (!patient || cart.length === 0) {
+      setError('Patient and at least one procedure are required.')
       return
     }
 
-    // ✅ Generate receipt
-    const receiptHTML = ReceiptTemplate({
-      patient,
-      cart,
+    setLoading(true) // ✅ START loading
+    setError('')
+    setSuccess('')
+
+    const payload = {
+      patientId: patient.patientId,
+      discount,
       totalFee,
       finalFee,
-      discount,
-    })
-
-    const printWindow = window.open('', '_blank')
-    if (printWindow) {
-      printWindow.document.write(receiptHTML)
-      printWindow.document.close()
-      printWindow.onload = () => printWindow.print()
+      items: cart.map((c) => ({
+        departmentId: c.department.id,
+        doctorId: c.doctor.id,
+        procedureId: c.procedure.id,
+        fee: c.procedure.fee,
+      })),
+      createdByUserId: user?.id,
     }
 
-    setSuccess('Medical record printed successfully!')
-    setDepartments([])
-    setDiscount(0)
-    setTotalFee(0)
-    setFinalFee(0)
-    setCart([])
-  } catch (err: unknown) {
-    if (err instanceof Error) {
-      setError(err.message || 'Error saving patient')
-    } else {
-      setError('Server Error')
+    try {
+      const res = await fetch(`${API_BASE}/api/medical-records`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      })
+
+      const data = await res.json()
+
+      if (!data.success) {
+        setError(data.message || 'Failed to create medical record')
+        return
+      }
+
+      // ✅ Generate receipt
+      const receiptHTML = ReceiptTemplate({
+        patient,
+        cart,
+        totalFee,
+        finalFee,
+        discount,
+      })
+
+      const printWindow = window.open('', '_blank')
+      if (printWindow) {
+        printWindow.document.write(receiptHTML)
+        printWindow.document.close()
+        printWindow.onload = () => printWindow.print()
+      }
+
+      setSuccess('Medical record printed successfully!')
+      setDepartments([])
+      setDiscount(0)
+      setTotalFee(0)
+      setFinalFee(0)
+      setCart([])
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || 'Error saving patient')
+      } else {
+        setError('Server Error')
+      }
+    } finally {
+      setLoading(false)
     }
-  } finally {
-    setLoading(false) 
   }
-}
-
 
   /* ---------- DROPDOWN OPTIONS ---------- */
   const departmentOptions = departments.map((d) => ({ id: d.id, name: d.name }))
@@ -292,31 +289,30 @@ const handleSubmit = async (e: React.FormEvent) => {
   //     fee: p.fee,
   //   })) || []
   const doctorOptions =
-  selectedDepartment && selectedProcedure
-    ? selectedDepartment.doctors
-        .filter((doc) =>
-          doc.procedures.some((p) => p.id === selectedProcedure.id)
-        )
-        .map((doc) => ({
-          id: doc.id,
-          name: doc.name,
-        }))
-    : []
+    selectedDepartment && selectedProcedure
+      ? selectedDepartment.doctors
+          .filter((doc) =>
+            doc.procedures.some((p) => p.id === selectedProcedure.id)
+          )
+          .map((doc) => ({
+            id: doc.id,
+            name: doc.name,
+          }))
+      : []
 
   const procedureOptions = selectedDepartment
-  ? Array.from(
-      new Map(
-        selectedDepartment.doctors
-          .flatMap((doc) => doc.procedures)
-          .map((proc) => [proc.id, proc])
-      ).values()
-    ).map((p) => ({
-      id: p.id,
-      name: `${p.name} (${p.fee})`,
-      fee: p.fee,
-    }))
-  : []
-
+    ? Array.from(
+        new Map(
+          selectedDepartment.doctors
+            .flatMap((doc) => doc.procedures)
+            .map((proc) => [proc.id, proc])
+        ).values()
+      ).map((p) => ({
+        id: p.id,
+        name: `${p.name} (${p.fee})`,
+        fee: p.fee,
+      }))
+    : []
 
   /* ---------- RENDER ---------- */
   return (
@@ -395,48 +391,44 @@ const handleSubmit = async (e: React.FormEvent) => {
             placeholder="Add procedures"
           /> */}
           <Dropdown
-  options={procedureOptions}
-  selected={
-    selectedProcedure
-      ? { id: selectedProcedure.id, name: selectedProcedure.name }
-      : null
-  }
-  onSelect={(opt) => {
-    const proc = procedureOptions.find((p) => p.id === opt.id)
-    if (proc) {
-      setSelectedProcedure(proc)
-      setSelectedDoctor(null)
-    }
-  }}
-  placeholder="Select Procedure"
-/>
+            options={procedureOptions}
+            selected={
+              selectedProcedure
+                ? { id: selectedProcedure.id, name: selectedProcedure.name }
+                : null
+            }
+            onSelect={(opt) => {
+              const proc = procedureOptions.find((p) => p.id === opt.id)
+              if (proc) {
+                setSelectedProcedure(proc)
+                setSelectedDoctor(null)
+              }
+            }}
+            placeholder="Select Procedure"
+          />
 
-<Dropdown
-  options={doctorOptions}
-  selected={
-    selectedDoctor
-      ? { id: selectedDoctor.id, name: selectedDoctor.name }
-      : null
-  }
-  onSelect={(opt) => {
-    const doc = selectedDepartment?.doctors.find(
-      (d) => d.id === opt.id
-    )
+          <Dropdown
+            options={doctorOptions}
+            selected={
+              selectedDoctor
+                ? { id: selectedDoctor.id, name: selectedDoctor.name }
+                : null
+            }
+            onSelect={(opt) => {
+              const doc = selectedDepartment?.doctors.find(
+                (d) => d.id === opt.id
+              )
 
-    if (!doc || !selectedProcedure) return
+              if (!doc || !selectedProcedure) return
 
-    // optional: show selected briefly
-    setSelectedDoctor(doc)
+              // optional: show selected briefly
+              setSelectedDoctor(doc)
 
-    // ✅ ADD EXACTLY ONCE
-    addToCart(doc)
-  }}
-  placeholder="Select Doctor"
-/>
-
-
-
-
+              // ✅ ADD EXACTLY ONCE
+              addToCart(doc)
+            }}
+            placeholder="Select Doctor"
+          />
 
           {/* Discount */}
           <div className="mt-2 col-span-full ">
@@ -456,20 +448,23 @@ const handleSubmit = async (e: React.FormEvent) => {
           <div className="mt-2 p-3 rounded col-span-full">
             {/* <h3 className="font-semibold mb-2">Selected Services</h3> */}
             {cart.map((item, index) => (
-              <div key={index} className="flex justify-between mb-1 border-b border-gray pb-2">
-               <div className='flex items-center gap-5'>
+              <div
+                key={index}
+                className="flex justify-between mb-1 border-b border-gray pb-2"
+              >
+                <div className="flex items-center gap-5">
                   <Button
-                  type="button"
-                  onClick={() => removeFromCart(index)}
-                  className="!rounded-full !px-[5px] !py-0"
-                >
-                  ✕
-                </Button>
-                <span>
-                  {item.department.name} → {item.doctor.name} →{' '}
-                  {item.procedure.name}
-                </span>
-               </div>
+                    type="button"
+                    onClick={() => removeFromCart(index)}
+                    className="!rounded-full !px-[5px] !py-0"
+                  >
+                    ✕
+                  </Button>
+                  <span>
+                    {item.department.name} → {item.doctor.name} →{' '}
+                    {item.procedure.name}
+                  </span>
+                </div>
                 <span>{item.procedure.fee}</span>
               </div>
             ))}
@@ -482,10 +477,8 @@ const handleSubmit = async (e: React.FormEvent) => {
           </div>
 
           <Button type="submit" className="mt-4 col-span-full w-fit mx-auto">
-           {loading ? "loading..." : "Generate Receipt"}
+            {loading ? 'loading...' : 'Generate Receipt'}
           </Button>
-         
-
         </div>
       )}
     </form>
