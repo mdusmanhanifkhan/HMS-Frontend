@@ -42,7 +42,7 @@ type ReceiptTemplateProps = {
   totalFee: number
   finalFee: number
   discount: number
-  tokenNo: number
+  // tokenNo: number
 }
 
 type CartItem = {
@@ -57,7 +57,7 @@ const ReceiptTemplate = ({
   totalFee,
   finalFee,
   discount,
-  tokenNo
+  // tokenNo
 }: ReceiptTemplateProps) => {
   const today = new Date()
 
@@ -191,9 +191,6 @@ const ReceiptTemplate = ({
         <div class="center bold" style="font-size: 12px; margin-bottom: 10px;">
           KARACHI INSTITUTE OF NEUROLOGICAL<br/>DISEASES AND REHABILITATION
         </div>
-
-<div class="token-box">Token: ${tokenNo}</div>
-
 
         <!-- Patient Info -->
         <table class="info-table">
