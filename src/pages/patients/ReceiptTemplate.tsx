@@ -42,6 +42,7 @@ type ReceiptTemplateProps = {
   totalFee: number
   finalFee: number
   discount: number
+  tokenNo: number
 }
 
 type CartItem = {
@@ -56,6 +57,7 @@ const ReceiptTemplate = ({
   totalFee,
   finalFee,
   discount,
+  tokenNo
 }: ReceiptTemplateProps) => {
   const today = new Date()
 
@@ -96,8 +98,8 @@ const ReceiptTemplate = ({
         // }
 
         .receipt-main {
-  width: 80mm; /* keep for thermal printer */
-  padding: 5px 10px; /* optional smaller padding */
+  width: 83mm; /* keep for thermal printer */
+  padding: 5px 1px; /* optional smaller padding */
   margin: 0 auto;
   font-family: 'Courier New', Courier, monospace;
   font-size: 12px;
@@ -119,6 +121,16 @@ const ReceiptTemplate = ({
           align-items: center; 
           margin-bottom: 5px;
         }
+          .token-box {
+  text-align: center;
+  font-size: 28px;      /* big font */
+  font-weight: bold;
+  margin: 10px 0;
+  padding: 8px 0;       /* space inside the box */
+  border: 2px dashed #000; /* dashed border */
+  border-radius: 5px;    /* optional: slightly rounded corners */
+}
+
         
         .info-table {
   width: 100%;
@@ -146,6 +158,12 @@ const ReceiptTemplate = ({
   text-align: right;
   flex-shrink: 0;
 }
+     .token {
+          text-align: center;
+          font-size: 28px;
+          font-weight: bold;
+          margin: 10px 0;
+        }
 
         .items-table { width: 100%; border-collapse: collapse; }
         .items-table th { border-bottom: 1px solid #000; text-align: left; }
@@ -170,11 +188,12 @@ const ReceiptTemplate = ({
          <img src="${kindrLogoBase64}" style="height: 60px; width: auto;" />
         </div>
 
-        <div class="center bold" style="font-size: 10px; margin-bottom: 10px;">
+        <div class="center bold" style="font-size: 12px; margin-bottom: 10px;">
           KARACHI INSTITUTE OF NEUROLOGICAL<br/>DISEASES AND REHABILITATION
         </div>
 
-        <div class="line"></div>
+<div class="token-box">Token: ${tokenNo}</div>
+
 
         <!-- Patient Info -->
         <table class="info-table">
@@ -249,7 +268,7 @@ const ReceiptTemplate = ({
 
         <div class="center" style="margin-top: 15px;">
           <div class="bold" style="font-size: 13px;">Thank you for visiting KIND-R </div>
-          <small>Software by KINDR IT Dept</small>
+          <small>Software by HikariMed +</small>
         </div>
       </div>
     </body>

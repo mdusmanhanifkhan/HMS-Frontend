@@ -4,7 +4,6 @@ import Button from '../../components/button/Button'
 import { Input } from '../../components/input/Input'
 import { Label } from '../../components/input/Label'
 import Dropdown from '../../components/input/Dropdown'
-import ReceiptTemplate from './ReceiptTemplate'
 import SuccessMessage from '../../components/error-handling/SuccessMessage'
 import { usePermissions } from '../../context/PermissionsContext'
 import { GroupInput } from '../../components/input/GroupInput'
@@ -128,33 +127,6 @@ const OldPatientReceiptGenerator = () => {
     fetchPatient()
   }, [patientId, API_BASE, token])
 
-  /* ---------- CART FUNCTIONS ---------- */
-  // const addToCart = (procedure: Procedure) => {
-  //   if (!selectedDepartment || !selectedDoctor) return
-
-  //   const exists = cart.some(
-  //     (item) =>
-  //       item.department.id === selectedDepartment.id &&
-  //       item.doctor.id === selectedDoctor.id &&
-  //       item.procedure.id === procedure.id
-  //   )
-  //   if (exists) return
-
-  //   const updated = [
-  //     ...cart,
-  //     {
-  //       department: selectedDepartment,
-  //       doctor: selectedDoctor,
-  //       procedure,
-  //     },
-  //   ]
-  //   setCart(updated)
-  //   calculateTotals(updated, discount)
-
-  //   // Reset Department and Doctor after adding a procedure
-  //   setSelectedDepartment(null)
-  //   setSelectedDoctor(null)
-  // }
   const addToCart = (doctor: Doctor) => {
     if (!selectedDepartment || !selectedProcedure) return
 
@@ -250,23 +222,6 @@ const OldPatientReceiptGenerator = () => {
         setError(data.message || 'Failed to create medical record')
         return
       }
-
-      // ✅ Generate receipt
-      const receiptHTML = ReceiptTemplate({
-        patient,
-        cart,
-        totalFee,
-        finalFee,
-        discount,
-      })
-
-      const printWindow = window.open('', '_blank')
-      if (printWindow) {
-        printWindow.document.write(receiptHTML)
-        printWindow.document.close()
-        printWindow.onload = () => printWindow.print()
-      }
-
       setSuccess('Medical record printed successfully!')
       setDepartments([])
       setDiscount(0)
@@ -286,14 +241,6 @@ const OldPatientReceiptGenerator = () => {
 
   /* ---------- DROPDOWN OPTIONS ---------- */
   const departmentOptions = departments.map((d) => ({ id: d.id, name: d.name }))
-  // const doctorOptions =
-  //   selectedDepartment?.doctors.map((d) => ({ id: d.id, name: d.name })) || []
-  // const procedureOptions =
-  //   selectedDoctor?.procedures.map((p) => ({
-  //     id: p.id,
-  //     name: `${p.name} (${p.fee})`,
-  //     fee: p.fee,
-  //   })) || []
   const doctorOptions =
     selectedDepartment && selectedProcedure
       ? selectedDepartment.doctors
@@ -364,38 +311,6 @@ const OldPatientReceiptGenerator = () => {
             placeholder="Select Department"
           />
 
-          {/* Doctor Dropdown */}
-          {/* <Dropdown
-            options={doctorOptions}
-            selected={
-              selectedDoctor
-                ? { id: selectedDoctor.id, name: selectedDoctor.name }
-                : null
-            }
-            onSelect={(opt) => {
-              const doc = selectedDepartment?.doctors.find(
-                (d) => d.id === opt.id
-              )
-              if (doc) setSelectedDoctor(doc)
-            }}
-            placeholder="Select Doctor"
-          /> */}
-
-          {/* Procedure Dropdown */}
-          {/* <Dropdown
-            options={procedureOptions}
-            selected={cart.map((item) => ({
-              id: `${item.department.id}-${item.doctor.id}-${item.procedure.id}`,
-              name: `${item.department.name} / ${item.doctor.name} / ${item.procedure.name} (${item.procedure.fee})`,
-            }))}
-            onSelect={(opt) => {
-              const proc = selectedDoctor?.procedures.find(
-                (p) => p.id === opt.id 
-              )
-              if (proc) addToCart(proc) // auto-reset dept & doctor
-            }}
-            placeholder="Add procedures"
-          /> */}
           <Dropdown
             options={procedureOptions}
             selected={
