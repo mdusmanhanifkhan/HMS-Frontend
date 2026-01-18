@@ -28,6 +28,7 @@ interface Patient {
   cnicNumber?: string | null
   phoneNumber?: string | null
   welfareRecord?: WelfareRecord | null
+  createdAt?: string
 }
 
 const PAGE_SIZE = 20 // Patients per request
@@ -38,6 +39,7 @@ const Patients = () => {
   const [loadingMore, setLoadingMore] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
+  const [searchLoading, setSearchLoading] = useState<boolean>(false)
 
   const [searchName, setSearchName] = useState<string>('')
   const [searchMR, setSearchMR] = useState<string>('')
@@ -57,40 +59,51 @@ const Patients = () => {
   if (!token) console.error('No token found. Please login.')
   const { role } = usePermissions()
 
-  const fetchPatients = async (pageNumber: number, append = false) => {
+  const fetchPatients = async (
+    pageNumber: number,
+    append = false,
+    isSearch = false
+  ) => {
     if (!hasMore && append) return
+
     try {
-      if (append) setLoadingMore(true)
+      if (isSearch) setSearchLoading(true)
+      else if (append) setLoadingMore(true)
       else setLoading(true)
+
       setError(null)
 
       let url = `${API_BASE}/api/patient/search?page=${pageNumber}&limit=${PAGE_SIZE}`
       const params = new URLSearchParams()
+
       if (searchName) params.append('name', searchName)
       if (searchMR) params.append('patientId', searchMR)
       if (searchCNIC) params.append('cnic', searchCNIC)
       if (searchPhone) params.append('phone', searchPhone)
+
       if ([...params].length) url += `&${params.toString()}`
 
       const res = await fetch(url, {
         headers: { Authorization: `Bearer ${token}` },
       })
+
       const data = await res.json()
       if (!res.ok) throw new Error(data?.general_error || 'Failed to fetch')
 
       const newPatients = Array.isArray(data.data)
         ? data.data
         : data.data
-        ? [data.data]
-        : []
+          ? [data.data]
+          : []
 
       setPatients((prev) => (append ? [...prev, ...newPatients] : newPatients))
-      setHasMore(newPatients.length === PAGE_SIZE) // If less than page size, no more data
+      setHasMore(newPatients.length === PAGE_SIZE)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
       setLoading(false)
       setLoadingMore(false)
+      setSearchLoading(false)
     }
   }
 
@@ -101,9 +114,10 @@ const Patients = () => {
     }
   }, [token])
 
-  const handleSearch = () => {
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
     setPage(1)
-    fetchPatients(1)
+    fetchPatients(1, false, true)
   }
 
   // Infinite Scroll
@@ -164,7 +178,7 @@ const Patients = () => {
 
       <div className="space-y-5">
         {/* Search Fields */}
-        <div className="flex gap-2 items-center">
+        <form onSubmit={handleSearch} className="flex gap-2 items-center">
           <Input
             type="text"
             placeholder="Search by Name"
@@ -193,8 +207,14 @@ const Patients = () => {
             onChange={(e) => setSearchPhone(e.target.value)}
             className="min-w-[150px]"
           />
-          <Button onClick={handleSearch}>Search</Button>
-        </div>
+          <Button type="submit" disabled={searchLoading}>
+            {searchLoading ? (
+              <span className="flex items-center gap-2">Searching...</span>
+            ) : (
+              'Search'
+            )}
+          </Button>
+        </form>
 
         {/* Table */}
         <div className="relative overflow-x-auto shadow-lg rounded-lg">
@@ -208,6 +228,7 @@ const Patients = () => {
                 <th className="px-6 py-4">Age</th>
                 <th className="px-6 py-4">CNIC / ID</th>
                 <th className="px-6 py-4">Contact No.</th>
+                <th className="px-6 py-4">CreatedAt</th>
                 <th className="px-6 py-4 w-[10%]">Action</th>
               </tr>
             </thead>
@@ -251,7 +272,9 @@ const Patients = () => {
             </div>
           )}
           {loadingMore && (
-            <div className="flex justify-center py-4"><Loading/></div>
+            <div className="flex justify-center py-4">
+              <Loading />
+            </div>
           )}
           {error && (
             <div className="flex justify-center py-4 text-red">{error}</div>
@@ -294,7 +317,21 @@ const PatientRow = ({
     <td className="px-6 py-2">{patient.age}</td>
     <td className="px-6 py-2">{patient.cnicNumber || '-'}</td>
     <td className="px-6 py-2">{patient.phoneNumber || '-'}</td>
+    <td className="px-6 py-2">
+      {patient?.createdAt
+        ? new Date(patient?.createdAt).toLocaleDateString()
+        : '-'}
+    </td>
+
     <td className="px-6 py-2 flex items-center gap-2">
+       {role == 'superadmin' && (
+      <Link
+        to={`${routePaths.PATIENTS}${routePaths.OLD_PATIENTS_RECEIPT_GENERATE}/${patient.patientId}`}
+        className="bg-dark p-1 cursor-pointer rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200 text-white hover:text-dark"
+      >
+        old
+      </Link>
+       )}
       <Link
         to={`${routePaths.PATIENTS}/${patient.patientId}`}
         className="bg-dark p-1 cursor-pointer rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200"

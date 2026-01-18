@@ -33,6 +33,7 @@ import TokenReceiptGenerate from '../pages/token-receipt-generate/index.tsx'
 import FinancialReport from '../pages/finance/FinancialReport.tsx'
 import PatientReport from '../pages/reports/patient-report/index.tsx'
 import PublicRoute from '../middleware/PublicRoute.tsx'
+import OldPatientReceiptGenerator from '../pages/patients/OldPatientReceiptGenerator.tsx'
 
 export const router = createBrowserRouter([
   {
@@ -63,6 +64,10 @@ export const router = createBrowserRouter([
       {
         path: `${routePaths.PATIENTS}${routePaths.PATIENTS_RECEIPT_GENERATE}/:id`,
         element: <PatientReceiptGenerator />,
+      },
+      {
+        path: `${routePaths.PATIENTS}${routePaths.OLD_PATIENTS_RECEIPT_GENERATE}/:id`,
+        element: <OldPatientReceiptGenerator />,
       },
       {
         path: `${routePaths.PATIENT_HISTORY}/:id`,
