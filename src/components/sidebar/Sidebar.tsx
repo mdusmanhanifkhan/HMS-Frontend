@@ -32,7 +32,7 @@ export const Sidebar = () => {
         border-b relative flex items-center hover:text-yellow `
             }
           >
-           <div className='ps-5 flex items-center gap-2'>
+           <div className='ps-5 flex items-center gap-2 cursor-pointer'>
              {elem.icon && (
               <span className="w-[18px] h-[18px] flex items-center">
                 {elem.icon}
