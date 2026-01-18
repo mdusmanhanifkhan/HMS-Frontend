@@ -235,7 +235,7 @@ const OldPatientReceiptGenerator = () => {
     }
 
     try {
-      const res = await fetch(`${API_BASE}/api/medical-records-patientss`, {
+      const res = await fetch(`${API_BASE}/api/medical-records-patients`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
