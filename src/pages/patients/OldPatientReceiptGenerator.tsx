@@ -187,7 +187,7 @@ const OldPatientReceiptGenerator = () => {
       return
     }
 
-    setLoading(true) 
+    setLoading(true)
     setError('')
     setSuccess('')
 
@@ -223,6 +223,7 @@ const OldPatientReceiptGenerator = () => {
         return
       }
       setSuccess('Medical record printed successfully!')
+      setSelectedDepartment(null)
       setDepartments([])
       setDiscount(0)
       setTotalFee(0)
