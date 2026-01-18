@@ -34,6 +34,7 @@ export interface VisitRecord {
   discount: number
   finalFee: string
   createdAt: string
+  recordDate: string
   user: {
     name: string
   }
@@ -225,7 +226,7 @@ const PatientHistory = () => {
                           {r?.user?.name}
                         </td>
                         <td className="px-6 py-2">
-                          {new Date(r.createdAt).toLocaleString()}
+                          {new Date(r.recordDate).toLocaleString()}
                         </td>
                         <td className="px-6 py-2">
                           <button
