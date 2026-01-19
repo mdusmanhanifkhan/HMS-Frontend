@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Button from '../../components/button/Button'
 import { routePaths } from '../../constants/routePaths'
@@ -7,6 +7,7 @@ import Loading from '../../components/loading/Loading'
 import { usePermissions } from '../../context/PermissionsContext'
 import DeleteModal from '../../components/modal/DeleteModal'
 import SuccessMessage from '../../components/error-handling/SuccessMessage'
+import InfiniteScrollObserver from '../../components/infinite-scroll/InfiniteScrollObserver'
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL
 
@@ -31,7 +32,7 @@ interface Patient {
   createdAt?: string
 }
 
-const PAGE_SIZE = 20 // Patients per request
+const PAGE_SIZE = 20
 
 const Patients = () => {
   const [patients, setPatients] = useState<Patient[]>([])
@@ -120,28 +121,6 @@ const Patients = () => {
     fetchPatients(1, false, true)
   }
 
-  // Infinite Scroll
-  const observer = useRef<IntersectionObserver | null>(null)
-  const lastPatientRef = useCallback(
-    (node: HTMLTableRowElement | null) => {
-      if (loadingMore) return
-      if (observer.current) observer.current.disconnect()
-      observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasMore) {
-          setPage((prev) => prev + 1)
-        }
-      })
-      if (node) observer.current.observe(node)
-    },
-    [loadingMore, hasMore]
-  )
-
-  useEffect(() => {
-    if (page > 1) {
-      fetchPatients(page, true)
-    }
-  }, [page])
-
   const confirmDelete = (id: number) => {
     setDeleteId(id)
     setShowModal(true)
@@ -165,6 +144,12 @@ const Patients = () => {
       alert(err instanceof Error ? err.message : 'Unknown error')
     }
   }
+
+  useEffect(() => {
+    if (page > 1) {
+      fetchPatients(page, true)
+    }
+  }, [page])
 
   return (
     <div className="flex flex-col gap-10 relative">
@@ -208,11 +193,7 @@ const Patients = () => {
             className="min-w-[150px]"
           />
           <Button type="submit" disabled={searchLoading}>
-            {searchLoading ? (
-              <span className="flex items-center gap-2">Searching...</span>
-            ) : (
-              'Search'
-            )}
+            {searchLoading ? 'Searching...' : 'Search'}
           </Button>
         </form>
 
@@ -233,37 +214,31 @@ const Patients = () => {
               </tr>
             </thead>
             <tbody>
-              {patients.map((p, idx) => {
-                if (patients.length === idx + 1) {
-                  return (
-                    <tr
-                      ref={lastPatientRef}
-                      key={p.id}
-                      className="bg-[#DFDEDE] border-b hover:bg-gray-100"
-                    >
-                      <PatientRow
-                        patient={p}
-                        role={role || ''}
-                        confirmDelete={confirmDelete}
-                        setDeletePatientName={setDeletePatientName}
-                      />
-                    </tr>
-                  )
+              <InfiniteScrollObserver
+                loading={loadingMore}
+                hasMore={hasMore}
+                onLoadMore={() => setPage((prev) => prev + 1)}
+              >
+                {(lastRef) =>
+                  patients.map((p, idx) => {
+                    const isLast = patients.length === idx + 1
+                    return (
+                      <tr
+                        ref={isLast ? lastRef : null}
+                        key={p.id}
+                        className="bg-[#DFDEDE] border-b hover:bg-gray-100"
+                      >
+                        <PatientRow
+                          patient={p}
+                          role={role || ''}
+                          confirmDelete={confirmDelete}
+                          setDeletePatientName={setDeletePatientName}
+                        />
+                      </tr>
+                    )
+                  })
                 }
-                return (
-                  <tr
-                    key={p.id}
-                    className="bg-[#DFDEDE] border-b hover:bg-gray-100"
-                  >
-                    <PatientRow
-                      patient={p}
-                      role={role || ''}
-                      confirmDelete={confirmDelete}
-                      setDeletePatientName={setDeletePatientName}
-                    />
-                  </tr>
-                )
-              })}
+              </InfiniteScrollObserver>
             </tbody>
           </table>
           {loading && (
@@ -324,14 +299,14 @@ const PatientRow = ({
     </td>
 
     <td className="px-6 py-2 flex items-center gap-2">
-       {role == 'superadmin' && (
-      <Link
-        to={`${routePaths.PATIENTS}${routePaths.OLD_PATIENTS_RECEIPT_GENERATE}/${patient.patientId}`}
-        className="bg-dark p-1 cursor-pointer rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200 text-white hover:text-dark"
-      >
-        old
-      </Link>
-       )}
+      {role === 'superadmin' && (
+        <Link
+          to={`${routePaths.PATIENTS}${routePaths.OLD_PATIENTS_RECEIPT_GENERATE}/${patient.patientId}`}
+          className="bg-dark p-1 cursor-pointer rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200 text-white hover:text-dark"
+        >
+          old
+        </Link>
+      )}
       <Link
         to={`${routePaths.PATIENTS}/${patient.patientId}`}
         className="bg-dark p-1 cursor-pointer rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200"
@@ -345,7 +320,7 @@ const PatientRow = ({
           <use href="/assets/svg/edit-icon.svg#edit-icon" />
         </svg>
       </Link>
-      {role == 'developer' && (
+      {role === 'developer' && (
         <button
           onClick={() => {
             confirmDelete(patient.patientId)

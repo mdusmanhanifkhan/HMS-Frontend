@@ -4,7 +4,7 @@ import Button from '../../components/button/Button'
 import { routePaths } from '../../constants/routePaths'
 import Loading from '../../components/loading/Loading'
 import ReceiptTemplate from '../patients/ReceiptTemplate'
-import { getDailyToken } from '../../utils/dailyToken'
+// import { getDailyToken } from '../../utils/dailyToken'
 
 // Interfaces
 export interface PatientInfo {
@@ -49,7 +49,7 @@ type VisitHistoryResponse = {
 
 const PatientHistory = () => {
   const { id: patientId } = useParams<{ id: string }>()
-  const tokenNo = getDailyToken()
+  // const tokenNo = getDailyToken()
   const API_BASE = import.meta.env.VITE_API_BASE_URL
   const token = localStorage.getItem('token') || ''
 
@@ -125,7 +125,7 @@ const PatientHistory = () => {
       totalFee,
       finalFee,
       discount,
-      tokenNo,
+      // tokenNo,
     })
 
     const printWindow = window.open('', '_blank')
