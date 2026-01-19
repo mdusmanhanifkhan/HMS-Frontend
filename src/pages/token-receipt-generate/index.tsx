@@ -313,7 +313,7 @@ const PatientReceiptGenerator = () => {
         totalFee,
         finalFee,
         discount,
-        tokenNo,
+        // tokenNo,
       })
 
       const printWindow = window.open('', '_blank')
