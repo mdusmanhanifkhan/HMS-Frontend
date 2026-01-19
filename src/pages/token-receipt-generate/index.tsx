@@ -8,7 +8,7 @@ import ReceiptTemplate from '../patients/ReceiptTemplate'
 import SuccessMessage from '../../components/error-handling/SuccessMessage'
 import { usePermissions } from '../../context/PermissionsContext'
 import { GroupInput } from '../../components/input/GroupInput'
-import { getDailyToken } from '../../utils/dailyToken'
+// import { getDailyToken } from '../../utils/dailyToken'
 
 /* ------------------ TYPES ------------------ */
 type Procedure = {
@@ -56,7 +56,7 @@ type CartItem = {
 /* ------------------ COMPONENT ------------------ */
 const PatientReceiptGenerator = () => {
   const { id: patientId } = useParams()
-  const tokenNo = getDailyToken()
+  // const tokenNo = getDailyToken()
   const API_BASE = import.meta.env.VITE_API_BASE_URL
   const token = localStorage.getItem('token') || ''
 

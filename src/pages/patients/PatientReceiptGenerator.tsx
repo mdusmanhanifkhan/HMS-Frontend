@@ -8,7 +8,7 @@ import ReceiptTemplate from './ReceiptTemplate'
 import SuccessMessage from '../../components/error-handling/SuccessMessage'
 import { usePermissions } from '../../context/PermissionsContext'
 import { GroupInput } from '../../components/input/GroupInput'
-import { getDailyToken } from '../../utils/dailyToken'
+// import { getDailyToken } from '../../utils/dailyToken'
 
 /* ------------------ TYPES ------------------ */
 type Procedure = {
@@ -230,7 +230,7 @@ const PatientReceiptGenerator = () => {
     }
 
     try {
-      const tokenNo = getDailyToken()
+      // const tokenNo = getDailyToken()
       const res = await fetch(`${API_BASE}/api/medical-records`, {
         method: 'POST',
         headers: {
