@@ -88,21 +88,18 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     const token = localStorage.getItem("token");
     const user = localStorage.getItem("user");
 
-    // No token → not authorized
     if (!token) {
       setIsAuthorized(false);
       setLoading(false);
       return;
     }
 
-    // User already cached → authorize immediately
     if (user) {
       setIsAuthorized(true);
       setLoading(false);
       return;
     }
 
-    // Token exists but user missing → verify token
     const checkAuth = async () => {
       try {
         const res = await fetch(`${API_BASE}/api/me`, {
@@ -110,10 +107,9 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
         });
 
         if (!res.ok) {
-          // Unauthorized → remove token and redirect
           localStorage.removeItem("token");
           localStorage.removeItem("user");
-          setIsAuthorized(false); // ← this triggers redirect
+          setIsAuthorized(false)
           return;
         }
 
@@ -136,7 +132,6 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     return <p className="text-center mt-10">Checking authentication...</p>;
   }
 
-  // Redirect to login if not authorized
   if (!isAuthorized) {
     return <Navigate to="/login" replace />;
   }
