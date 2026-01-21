@@ -157,7 +157,7 @@ const Patients = () => {
       <div className="flex justify-between items-center w-full border-b pb-3">
         <p className="text-xl font-semibold">Patients Management</p>
         <div className='flex items-center gap-3'>
-          {role === 'superadmin' && ( <Button asLink={true} to={routePaths.ADD_PATIENTS}  >+ Add Patient Back Date</Button>)}
+          {role === 'superadmin' && ( <Button asLink={true} to={"/add-patient-back-date"}  >+ Add Patient Back Date</Button>)}
           <Button asLink={true} to={routePaths.ADD_PATIENTS}  >+ Add Patient</Button>
         </div>
     
