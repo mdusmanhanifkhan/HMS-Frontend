@@ -156,9 +156,12 @@ const Patients = () => {
       {success && <SuccessMessage msg={success} />}
       <div className="flex justify-between items-center w-full border-b pb-3">
         <p className="text-xl font-semibold">Patients Management</p>
-        <Link to={routePaths.ADD_PATIENTS}>
-          <Button>+ Add Patient</Button>
-        </Link>
+        <div className='flex items-center gap-3'>
+          {role === 'superadmin' && ( <Button asLink={true} to={routePaths.ADD_PATIENTS}  >+ Add Patient Back Date</Button>)}
+          <Button asLink={true} to={routePaths.ADD_PATIENTS}  >+ Add Patient</Button>
+        </div>
+    
+  
       </div>
 
       <div className="space-y-5">

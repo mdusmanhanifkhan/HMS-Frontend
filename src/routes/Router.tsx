@@ -34,6 +34,7 @@ import FinancialReport from '../pages/finance/FinancialReport.tsx'
 import PatientReport from '../pages/reports/patient-report/index.tsx'
 import PublicRoute from '../middleware/PublicRoute.tsx'
 import OldPatientReceiptGenerator from '../pages/patients/OldPatientReceiptGenerator.tsx'
+import AddPatientBackDate from '../pages/patients/AddPatientBackDate.tsx'
 
 export const router = createBrowserRouter([
   {
@@ -124,6 +125,10 @@ export const router = createBrowserRouter([
       {
         path: routePaths.PATIENT_REPORT,
         element: <PatientReport />,
+      },
+      {
+        path: "/add-patient-back-date",
+        element: <AddPatientBackDate />,
       },
     ],
   },

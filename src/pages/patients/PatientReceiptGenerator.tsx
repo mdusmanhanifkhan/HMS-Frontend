@@ -196,6 +196,7 @@ const PatientReceiptGenerator = () => {
     setTotalFee(total)
     setFinalFee(final)
   }
+ 
 
   const handleDiscountChange = (value: number) => {
     setDiscount(value)
@@ -211,7 +212,7 @@ const PatientReceiptGenerator = () => {
       return
     }
 
-    setLoading(true) // ✅ START loading
+    setLoading(true) 
     setError('')
     setSuccess('')
 
@@ -247,7 +248,6 @@ const PatientReceiptGenerator = () => {
         return
       }
 
-      // ✅ Generate receipt
       const receiptHTML = ReceiptTemplate({
         patient,
         cart,
@@ -317,7 +317,6 @@ const PatientReceiptGenerator = () => {
       }))
     : []
 
-  /* ---------- RENDER ---------- */
   return (
     <form onSubmit={handleSubmit} className="p-4">
       <h2 className="text-xl font-semibold mb-4">Patient Receipt Generator</h2>
