@@ -75,7 +75,7 @@ export default function SalesInvoice() {
           </thead>
 
           <tbody>
-            {items.map((row, index) => (
+            {items.map((_, index) => (
               <tr key={index}>
                 <td className="p-2 border">{index + 1}</td>
 
