@@ -1,7 +1,7 @@
 import { GroupInput } from '../../../components/input/GroupInput'
 import { Label } from '../../../components/input/Label'
 import { Input } from '../../../components/input/Input'
-import Dropdown from '../../../components/input/Dropdown'
+// import Dropdown from '../../../components/input/Dropdown'
 import Button from '../../../components/button/Button'
 
 export const Stock = () => {
@@ -18,13 +18,13 @@ export const Stock = () => {
 
         <GroupInput>
           <Label>Company</Label>
-          <Dropdown
+          {/* <Dropdown
             placeholder="All Companies"
             options={[
               { id: 'getz', name: 'Getz Pharma' },
               { id: 'gsk', name: 'GSK' },
             ]}
-          />
+          /> */}
         </GroupInput>
 
         <GroupInput>
@@ -39,7 +39,7 @@ export const Stock = () => {
 
         <GroupInput>
           <Label>Expiry Filter</Label>
-          <Dropdown
+          {/* <Dropdown
             placeholder="All"
             options={[
               { id: 'normal', name: 'Normal' },
@@ -47,7 +47,7 @@ export const Stock = () => {
               { id: 'expired', name: 'Expired' },
               { id: 'out', name: 'Out of Stock' },
             ]}
-          />
+          /> */}
         </GroupInput>
 
         <div className="col-span-full flex gap-3">

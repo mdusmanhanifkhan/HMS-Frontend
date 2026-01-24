@@ -4,7 +4,6 @@ import { routePaths } from '../../../constants/routePaths'
 import { GroupInput } from '../../../components/input/GroupInput'
 import ToggleButton from '../../../components/button/ToggleButton'
 import { Input } from '../../../components/input/Input'
-import Dropdown from '../../../components/input/Dropdown'
 import TextArea from '../../../components/input/TextArea'
 
 export default function AddDistributor() {
@@ -157,18 +156,6 @@ export default function AddDistributor() {
 
           <GroupInput className="col-span-full">
           <Label>Companies Supplied</Label>
-          <Dropdown
-            placeholder="Select Companies"
-            options={[
-              { id: 'getz', name: 'Getz Pharma' },
-              { id: 'gsk', name: 'GSK' },
-              { id: 'hilton', name: 'Hilton Pharma' },
-              // You can fetch dynamically from backend
-            ]}
-            placeholder={"select company"}
-            selected={""}
-            onSelect={""}
-          />
         </GroupInput>
 
         {/* REMARKS */}

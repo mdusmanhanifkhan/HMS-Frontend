@@ -4,7 +4,6 @@ import { routePaths } from '../../../constants/routePaths'
 import { GroupInput } from '../../../components/input/GroupInput'
 import ToggleButton from '../../../components/button/ToggleButton'
 import { Input } from '../../../components/input/Input'
-import Dropdown from '../../../components/input/Dropdown'
 import TextArea from '../../../components/input/TextArea'
 
 export default function AddMedicine() {
@@ -26,7 +25,6 @@ export default function AddMedicine() {
       </div>
 
       <div className="grid grid-cols-3 gap-4 max-w-[1100px]">
-
         {/* Status */}
         <GroupInput className="col-span-full">
           <Label>Status</Label>
@@ -46,29 +44,10 @@ export default function AddMedicine() {
 
         <GroupInput>
           <Label>Company</Label>
-          <Dropdown
-            placeholder="Select Company"
-            options={[
-              { id: 'getz', name: 'Getz Pharma' },
-              { id: 'gsk', name: 'GSK' },
-              // Fetch dynamically from backend
-            ]}
-          />
         </GroupInput>
 
         <GroupInput>
           <Label>Category / Form</Label>
-          <Dropdown
-            placeholder="Select Category"
-            options={[
-              { id: 'tablet', name: 'Tablet' },
-              { id: 'syrup', name: 'Syrup' },
-              { id: 'capsule', name: 'Capsule' },
-              { id: 'injection', name: 'Injection' },
-              { id: 'cream', name: 'Cream / Ointment' },
-              { id: 'other', name: 'Other' },
-            ]}
-          />
         </GroupInput>
 
         <GroupInput>

@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Label } from '../../../components/input/Label'
 import { GroupInput } from '../../../components/input/GroupInput'
 import { Input } from '../../../components/input/Input'
-import Dropdown from '../../../components/input/Dropdown'
 import Button from '../../../components/button/Button'
 import TextArea from '../../../components/input/TextArea'
 
@@ -82,24 +81,10 @@ export default function SalesInvoice() {
 
                 {/* Medicine */}
                 <td className="p-2 border">
-                  <Dropdown
-                    placeholder="Select Medicine"
-                    options={[
-                      { id: 'tootsial', name: 'TOOTSIAL 120ML' },
-                      { id: 'aria', name: 'ARIA 60ML' },
-                    ]}
-                  />
                 </td>
 
                 {/* Batch (from stock) */}
                 <td className="p-2 border">
-                  <Dropdown
-                    placeholder="Batch"
-                    options={[
-                      { id: '24HHH143', name: '24HHH143' },
-                      { id: '25J123', name: '25J123' },
-                    ]}
-                  />
                 </td>
 
                 <td className="p-2 border">
