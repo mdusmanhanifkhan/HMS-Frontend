@@ -35,6 +35,15 @@ import PatientReport from '../pages/reports/patient-report/index.tsx'
 import PublicRoute from '../middleware/PublicRoute.tsx'
 import OldPatientReceiptGenerator from '../pages/patients/OldPatientReceiptGenerator.tsx'
 import AddPatientBackDate from '../pages/patients/AddPatientBackDate.tsx'
+import AddDistributor from '../pages/pharmacy/distributor/AddDistributor.tsx'
+import Distributor from '../pages/pharmacy/distributor/index.tsx'
+import AddCompany from '../pages/pharmacy/company/AddCompany.tsx'
+import Company from '../pages/pharmacy/company/index.tsx'
+import AddMedicine from '../pages/pharmacy/medicine/AddMedicine.tsx'
+import AddInvoice from '../pages/pharmacy/invoice/AddInvoice.tsx'
+import { Stock } from '../pages/pharmacy/stock/index.tsx'
+import SalesInvoice from '../pages/pharmacy/sale/index.tsx'
+import Medicine from '../pages/pharmacy/medicine/index.tsx'
 
 export const router = createBrowserRouter([
   {
@@ -130,6 +139,43 @@ export const router = createBrowserRouter([
         path: "/add-patient-back-date",
         element: <AddPatientBackDate />,
       },
+      {
+        path: routePaths.DISTRIBUTOR,
+        element: <Distributor />,
+      },
+      {
+        path: routePaths.ADD_DISTRIBUTOR,
+        element: <AddDistributor />,
+      },
+      {
+        path: routePaths.COMPANY,
+        element: <Company />,
+      },
+      {
+        path: routePaths.ADD_COMPANY,
+        element: <AddCompany />,
+      },
+      {
+        path: routePaths.MEDICINE,
+        element: <Medicine />,
+      },
+      {
+        path: routePaths.ADD_MEDICINE,
+        element: <AddMedicine />,
+      },
+      {
+        path: routePaths.ADD_INVOICE,
+        element: <AddInvoice />,
+      },
+      {
+        path: routePaths.STOCK,
+        element: <Stock />,
+      },
+      {
+        path: routePaths.SALE_INVOICE,
+        element: <SalesInvoice />,
+      },
+
     ],
   },
 ])

@@ -44,4 +44,15 @@ export const routePaths = {
   SETTINGS: '/settings',
   FINANCE_REPORT: '/finance-report',
   PATIENT_REPORT: '/patient-report',
+  //Pharmacy
+  MEDICINE:'/medicine',
+  ADD_MEDICINE:'/medicine/add',
+  
+  DISTRIBUTOR:'/distributor',
+  ADD_DISTRIBUTOR:'/distributor/add',
+  COMPANY:'/company',
+  ADD_COMPANY:'/company/add',
+  ADD_INVOICE:'/invoice/add',
+  STOCK:'/stock',
+  SALE_INVOICE:'/sale-invoice',
 } as const
