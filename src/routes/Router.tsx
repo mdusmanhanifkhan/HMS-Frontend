@@ -40,10 +40,10 @@ import Distributor from '../pages/pharmacy/distributor/index.tsx'
 import AddCompany from '../pages/pharmacy/company/AddCompany.tsx'
 import Company from '../pages/pharmacy/company/index.tsx'
 import AddMedicine from '../pages/pharmacy/medicine/AddMedicine.tsx'
-import AddInvoice from '../pages/pharmacy/invoice/AddInvoice.tsx'
-import { Stock } from '../pages/pharmacy/stock/index.tsx'
 import SalesInvoice from '../pages/pharmacy/sale/index.tsx'
 import Medicine from '../pages/pharmacy/medicine/index.tsx'
+import AddInvoice from '../pages/pharmacy/invoice/AddInvoice.tsx'
+import Stock from '../pages/pharmacy/stock/index.tsx'
 
 export const router = createBrowserRouter([
   {

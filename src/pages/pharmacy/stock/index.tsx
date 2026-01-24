@@ -4,7 +4,7 @@ import { Input } from '../../../components/input/Input'
 // import Dropdown from '../../../components/input/Dropdown'
 import Button from '../../../components/button/Button'
 
-export const Stock = () => {
+const Stock = () => {
   return (
     <div className="flex flex-col gap-6">
 
@@ -135,3 +135,5 @@ export const Stock = () => {
     </div>
   )
 }
+
+export default Stock
