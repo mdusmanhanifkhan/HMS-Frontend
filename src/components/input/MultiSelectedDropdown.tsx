@@ -25,7 +25,7 @@ const MultiSelectedDropdown = ({
   const [highlightedIndex, setHighlightedIndex] = useState<number>(-1)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  const filteredOptions = options.filter(
+  const filteredOptions = options?.filter(
     (opt) =>
       opt.name.toLowerCase().includes(search.toLowerCase()) &&
       !selected.some((s) => String(s.id) === String(opt.id))

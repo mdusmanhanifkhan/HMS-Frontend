@@ -5,6 +5,7 @@ import { routePaths } from '../../../constants/routePaths'
 import { GroupInput } from '../../../components/input/GroupInput'
 import ToggleButton from '../../../components/button/ToggleButton'
 import { Input } from '../../../components/input/Input'
+import SuccessMessage from '../../../components/error-handling/SuccessMessage'
 
 interface CompanyForm {
   name: string
@@ -109,7 +110,7 @@ export default function AddCompany() {
 
   return (
     <form
-      className="flex flex-col gap-10 max-w-[1100px]"
+      className="flex flex-col gap-10 "
       onSubmit={handleSubmit}
     >
       {/* Header */}
@@ -129,10 +130,10 @@ export default function AddCompany() {
 
       {/* Error / Success Messages */}
       {error && <p className="text-red-600 font-medium">{error}</p>}
-      {success && <p className="text-green-600 font-medium">{success}</p>}
+      {success && <SuccessMessage msg={success} />}
 
       {/* FORM */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-4 max-w-[1100px]">
         {/* Status */}
         <GroupInput className="col-span-full">
           <Label>Status</Label>
