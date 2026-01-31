@@ -55,4 +55,8 @@ export const routePaths = {
   ADD_INVOICE:'/invoice/add',
   STOCK:'/stock',
   SALE_INVOICE:'/sale-invoice',
+  CATEGORY:'/category',
+  ADD_CATEGORY:'/category/add',
+  DOSAGE_FORM:'/dosage-form',
+  ADD_DOSAGE_FORM:'/dosage-form/add',
 } as const

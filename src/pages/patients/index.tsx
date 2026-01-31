@@ -151,17 +151,232 @@ const Patients = () => {
     }
   }, [page])
 
+  const printPatientCard = (patient: Patient) => {
+    const printWindow = window.open('', '_blank', 'width=600,height=400')
+
+    if (!printWindow) return
+
+    printWindow.document.write(`
+    <html>
+      <head>
+        <title>Patient Card</title>
+        <style>
+          @page {
+            size: A6;
+            margin: 0;
+          }
+
+          body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+          }
+
+          .card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+          }
+
+          .mr {
+            position: absolute;
+            top: 110px;
+            left: 60px;
+            font-size: 16px;
+            font-weight: bold;
+          }
+
+          .name {
+            position: absolute;
+            top: 150px;
+            left: 60px;
+            font-size: 16px;
+            font-weight: bold;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="card">
+          <div class="mr"> ${patient.patientId}</div>
+          <div class="name"> ${patient.name}</div>
+        </div>
+
+        <script>
+          window.onload = () => {
+            window.print();
+            window.close();
+          };
+        </script>
+      </body>
+    </html>
+  `)
+
+    printWindow.document.close()
+  }
+// ../../assets/images/card.jpeg
+
+// const printPatientCard = (patient: Patient) => {
+//   const printWindow = window.open('', '_blank', 'width=350,height=220')
+//   if (!printWindow) return
+
+//   printWindow.document.write(`
+//     <html>
+//       <head>
+//         <title>Patient Card</title>
+//         <style>
+//           @page {
+//             size: 86mm 54mm;
+//             margin: 0;
+//           }
+
+//           body {
+//             margin: 0;
+//             padding: 0;
+//             font-family: Arial, sans-serif;
+//           }
+
+//           .card {
+//             width: 86mm;
+//             height: 54mm;
+//             border: 1px solid #ccc;
+//             box-sizing: border-box;
+//             position: relative;
+//             background: white;
+//           }
+
+//           /* TOP BAR */
+//           .top {
+//             height: 12mm;
+//             background: #0b5f77;
+//             display: flex;
+//             align-items: center;
+//             justify-content: space-between;
+//             padding: 0 6mm;
+//             color: white;
+//             font-size: 10px;
+//             font-weight: bold;
+//           }
+
+//           /* TITLE */
+//           .title {
+//             text-align: center;
+//             margin-top: 3mm;
+//           }
+
+//           .title h2 {
+//             font-size: 11px;
+//             margin: 0;
+//             color: #f58220;
+//           }
+
+//           .title p {
+//             font-size: 8px;
+//             margin: 2px 0;
+//           }
+
+//           .badge {
+//             background: #f58220;
+//             color: white;
+//             font-size: 9px;
+//             display: inline-block;
+//             padding: 2px 10px;
+//             border-radius: 10px;
+//             margin-top: 3px;
+//           }
+
+//           /* DETAILS */
+//           .details {
+//             padding: 6mm;
+//             font-size: 10px;
+//           }
+
+//           .row {
+//             display: flex;
+//             margin-bottom: 4mm;
+//           }
+
+//           .label {
+//             width: 25mm;
+//             font-weight: bold;
+//           }
+
+//           .value {
+//             border-bottom: 1px solid #000;
+//             flex: 1;
+//           }
+
+//           /* FOOTER */
+//           .footer {
+//             position: absolute;
+//             bottom: 0;
+//             width: 100%;
+//             background: #0b5f77;
+//             color: white;
+//             text-align: center;
+//             font-size: 9px;
+//             padding: 2mm 0;
+//           }
+//         </style>
+//       </head>
+
+//       <body>
+//         <div class="card">
+//           <div class="top">
+//             <div>KINDR</div>
+//             <div>Helping Hand</div>
+//           </div>
+
+//           <div class="title">
+//             <h2>KARACHI INSTITUTE OF NEUROLOGICAL DISEASES</h2>
+//             <p>Karachi Institute of Neurological Diseases & Rehabilitation</p>
+//             <div class="badge">PATIENT RECORD CARD</div>
+//           </div>
+
+//           <div class="details">
+//             <div class="row">
+//               <div class="label">MR No:</div>
+//               <div class="value">${patient.patientId}</div>
+//             </div>
+
+//             <div class="row">
+//               <div class="label">Name:</div>
+//               <div class="value">${patient.name}</div>
+//             </div>
+//           </div>
+
+//           <div class="footer">A PROJECT OF HHRD</div>
+//         </div>
+
+//         <script>
+//           window.onload = () => {
+//             window.print();
+//             window.close();
+//           }
+//         </script>
+//       </body>
+//     </html>
+//   `)
+
+//   printWindow.document.close()
+// }
+
+
+
+
   return (
     <div className="flex flex-col gap-10 relative">
       {success && <SuccessMessage msg={success} />}
       <div className="flex justify-between items-center w-full border-b pb-3">
         <p className="text-xl font-semibold">Patients Management</p>
-        <div className='flex items-center gap-3'>
-          {role === 'superadmin' && ( <Button asLink={true} to={"/add-patient-back-date"}  >+ Add Patient Back Date</Button>)}
-          <Button asLink={true} to={routePaths.ADD_PATIENTS}  >+ Add Patient</Button>
+        <div className="flex items-center gap-3">
+          {role === 'superadmin' && (
+            <Button asLink={true} to={'/add-patient-back-date'}>
+              + Add Patient Back Date
+            </Button>
+          )}
+          <Button asLink={true} to={routePaths.ADD_PATIENTS}>
+            + Add Patient
+          </Button>
         </div>
-    
-  
       </div>
 
       <div className="space-y-5">
@@ -236,6 +451,7 @@ const Patients = () => {
                           role={role || ''}
                           confirmDelete={confirmDelete}
                           setDeletePatientName={setDeletePatientName}
+                          onPrint={printPatientCard}
                         />
                       </tr>
                     )
@@ -281,11 +497,13 @@ const PatientRow = ({
   role,
   confirmDelete,
   setDeletePatientName,
+  onPrint,
 }: {
   patient: Patient
   role: string
   confirmDelete: (id: number) => void
   setDeletePatientName: React.Dispatch<React.SetStateAction<string | null>>
+  onPrint: (patient: Patient) => void
 }) => (
   <>
     <td className="px-6 py-2">{patient.patientId}</td>
@@ -295,28 +513,34 @@ const PatientRow = ({
     <td className="px-6 py-2">{patient.age}</td>
     <td className="px-6 py-2">{patient.cnicNumber || '-'}</td>
     <td className="px-6 py-2">{patient.phoneNumber || '-'}</td>
-   <td className="px-6 py-2">
-  {patient?.createdAt
-    ? new Date(patient.createdAt).toLocaleString('en-GB', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      })
-    : '-'}
-</td>
-
+    <td className="px-6 py-2">
+      {patient?.createdAt
+        ? new Date(patient.createdAt).toLocaleString('en-GB', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+          })
+        : '-'}
+    </td>
 
     <td className="px-6 py-2 flex items-center gap-2">
-      {role === 'superadmin' && (
+      {/* {role === 'superadmin' && (
         <Link
           to={`${routePaths.PATIENTS}${routePaths.OLD_PATIENTS_RECEIPT_GENERATE}/${patient.patientId}`}
           className="bg-dark p-1 cursor-pointer rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200 text-white hover:text-dark"
         >
           old
         </Link>
-      )}
+      )} */}
+      <button
+        onClick={() => onPrint(patient)}
+        className="bg-dark p-1 rounded-md group hover:bg-white border border-dark text-white hover:text-dark"
+      >
+        PVC
+      </button>
+
       <Link
         to={`${routePaths.PATIENTS}/${patient.patientId}`}
         className="bg-dark p-1 cursor-pointer rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200"

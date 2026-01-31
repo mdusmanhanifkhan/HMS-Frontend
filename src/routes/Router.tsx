@@ -42,8 +42,10 @@ import Company from '../pages/pharmacy/company/index.tsx'
 import AddMedicine from '../pages/pharmacy/medicine/AddMedicine.tsx'
 import SalesInvoice from '../pages/pharmacy/sale/index.tsx'
 import Medicine from '../pages/pharmacy/medicine/index.tsx'
-import AddInvoice from '../pages/pharmacy/invoice/AddInvoice.tsx'
 import Stock from '../pages/pharmacy/stock/index.tsx'
+import AddCategory from '../pages/pharmacy/category/AddCategory.tsx'
+import AddDosageForm from '../pages/pharmacy/dosage-form/AddDosageForm.tsx'
+import { AddInvoice } from '../pages/pharmacy/invoice/AddInvoice.tsx'
 
 export const router = createBrowserRouter([
   {
@@ -174,6 +176,14 @@ export const router = createBrowserRouter([
       {
         path: routePaths.SALE_INVOICE,
         element: <SalesInvoice />,
+      },
+      {
+        path: routePaths.ADD_CATEGORY,
+        element: <AddCategory />,
+      },
+      {
+        path: routePaths.ADD_DOSAGE_FORM,
+        element: <AddDosageForm />,
       },
 
     ],

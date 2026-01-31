@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import Button from '../../../components/button/Button'
 import { Input } from '../../../components/input/Input'
 import { routePaths } from '../../../constants/routePaths'
+import { Link } from 'react-router-dom'
+import Loading from '../../../components/loading/Loading'
 
 interface CompanyType {
   id: number
@@ -9,7 +11,8 @@ interface CompanyType {
   shortCode?: string
   location?: string
   description?: string
-  status: boolean
+  isActive: boolean
+  contactPerson?: string
 }
 
 const Company = () => {
@@ -124,69 +127,85 @@ const Company = () => {
               <th className="px-6 py-4">ID</th>
               <th className="px-6 py-4">Name</th>
               <th className="px-6 py-4">Code</th>
-              <th className="px-6 py-4">Location</th>
+              <th className="px-6 py-4">Contact Person</th>
               <th className="px-6 py-4">Description</th>
               <th className="px-6 py-4">Status</th>
               <th className="px-6 py-4">Action</th>
             </tr>
           </thead>
 
-          <tbody className="bg-white divide-y">
-            {/* 🔹 Loading */}
+          <tbody>
             {loading && (
               <tr>
-                <td colSpan={7} className="text-center py-6 text-gray-500">
-                  Loading companies...
+                <td colSpan={8}>
+                  <div className="flex justify-center py-4">
+                    <Loading />
+                  </div>
                 </td>
               </tr>
             )}
-
-            {/* 🔹 Error */}
-            {error && !loading && (
+            {!loading && error && (
               <tr>
-                <td colSpan={7} className="text-center py-6 text-red-500">
+                <td colSpan={8} className="py-4 text-center text-red-500">
                   {error}
                 </td>
               </tr>
             )}
 
-            {/* 🔹 No Data */}
             {!loading && !error && filteredCompanies.length === 0 && (
               <tr>
-                <td colSpan={7} className="text-center py-6 text-gray-400">
-                  No companies found
+                <td colSpan={8} className="py-6 text-center">
+                  No Company found.
                 </td>
               </tr>
             )}
 
-            {/* 🔹 Data Rows */}
             {!loading &&
               !error &&
-              filteredCompanies.map((company) => (
-                <tr key={company.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4">{company.id}</td>
-                  <td className="px-6 py-4 font-medium">{company.name}</td>
-                  <td className="px-6 py-4">{company.shortCode || '-'}</td>
-                  <td className="px-6 py-4">{company.location || '-'}</td>
-                  <td className="px-6 py-4">{company.description || '-'}</td>
-
-                  {/* Status */}
-                  <td className="px-6 py-4">
-                    {company.status ? (
-                      <span className="px-3 py-1 rounded-full text-xs bg-green-100 text-green-700">
-                        Active
-                      </span>
-                    ) : (
-                      <span className="px-3 py-1 rounded-full text-xs bg-red-100 text-red-700">
-                        Inactive
-                      </span>
-                    )}
+              filteredCompanies.length > 0 &&
+              filteredCompanies.map((proc) => (
+                <tr
+                  key={proc.id}
+                  className="bg-[#DFDEDE] border-b border-gray-200"
+                >
+                  <td className="px-6 py-4 font-medium text-gray-900">
+                    {proc.id}
                   </td>
-
-                  {/* Actions */}
-                  <td className="px-6 py-4 flex gap-2">
-                    <Button>Edit</Button>
-                    <Button>Delete</Button>
+                  <td className="px-6 py-4">{proc.name}</td>
+                  <td className="px-6 py-4">{proc.shortCode || '-'}</td>
+                  <td className="px-6 py-4">{proc.contactPerson || '-'}</td>
+                  <td className="px-6 py-4">
+                    {proc.description?.length && proc.description.length > 45
+                      ? `${proc.description.substring(0, 45)}...`
+                      : proc.description || '-'}
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-1">
+                      <span
+                        className={`w-[10px] h-[10px] rounded-full ${
+                          proc.isActive ? 'bg-[#00cc00]' : 'bg-[#cc0000]'
+                        } block`}
+                      ></span>
+                      {proc.isActive ? 'Active' : 'Inactive'}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 flex items-center gap-2">
+                    {/* Edit */}
+                    <Link
+                      to={`${routePaths.EDIT_PROCEDURE}/${proc.id}`}
+                      className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200"
+                    >
+                      <svg
+                        className="w-[18px] h-[18px] text-white group-hover:text-dark"
+                        viewBox="0 0 12 12"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <use href="/assets/svg/edit-icon.svg#edit-icon" />
+                      </svg>
+                    </Link>
+                    {/* Delete */}
+                 
                   </td>
                 </tr>
               ))}
