@@ -179,14 +179,14 @@ const Patients = () => {
 
           .mr {
             position: absolute;
-            top: 75px;
+            top: 100px;
             left: 60px;
             font-size: 16px;
           }
 
           .name {
             position: absolute;
-            top: 105px;
+            top: 130px;
             left: 80px;
             font-size: 16px;
           }
