@@ -180,14 +180,14 @@ const Patients = () => {
           .mr {
             position: absolute;
             top: 99px;
-            left: 61px;
+            left: 65px;
             font-size: 13px;
           }
 
           .name {
             position: absolute;
             top: 132px;
-            left: 93px;
+            left: 97px;
             font-size: 13px;
           }
         </style>
