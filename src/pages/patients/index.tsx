@@ -187,7 +187,7 @@ const Patients = () => {
           .name {
             position: absolute;
             top: 133px;
-            left: 88px;
+            left: 90px;
             font-size: 16px;
           }
         </style>
