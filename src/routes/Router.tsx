@@ -46,6 +46,7 @@ import Stock from '../pages/pharmacy/stock/index.tsx'
 import AddCategory from '../pages/pharmacy/category/AddCategory.tsx'
 import AddDosageForm from '../pages/pharmacy/dosage-form/AddDosageForm.tsx'
 import { AddInvoice } from '../pages/pharmacy/invoice/AddInvoice.tsx'
+import AddIndent from '../pages/pharmacy/indent/AddIndent.tsx'
 
 export const router = createBrowserRouter([
   {
@@ -184,6 +185,10 @@ export const router = createBrowserRouter([
       {
         path: routePaths.ADD_DOSAGE_FORM,
         element: <AddDosageForm />,
+      },
+      {
+        path: '/indent/add',
+        element: <AddIndent />,
       },
 
     ],
