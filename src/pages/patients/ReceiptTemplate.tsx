@@ -259,9 +259,7 @@ const ReceiptTemplate = ({
         <div class="line"></div>
 
         <!-- OPD Free Note -->
-        <div class="urdu-text">
-          تمام طبی او پی ڈی خدمات 31 جنوری 2026 تک ہیلپنگ ہینڈ کے تعاون سے مفت ہیں۔
-        </div>
+     
 
         <div class="center" style="margin-top: 15px;">
           <div class="bold" style="font-size: 13px;">Thank you for visiting KIND-R </div>
