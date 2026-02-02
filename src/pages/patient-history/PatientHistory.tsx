@@ -23,17 +23,17 @@ export interface VisitItem {
   department: { id: number; name: string }
   doctor: { id: number; name: string }
   procedure: { id: number; name: string }
-  fee: string
+  fee: number
   discount: number
-  finalFee: string
+  finalFee: number
 }
 
 export interface VisitRecord {
   id: number
   items: VisitItem[]
-  totalFee: string
+  totalFee: number
   discount: number
-  finalFee: string
+  finalFee: number
   createdAt: string
   recordDate: string
   user: {
@@ -106,13 +106,13 @@ const PatientHistory = () => {
       doctor: item.doctor,
       procedure: {
         ...item.procedure,
-        fee: Number(item.fee), // ✅ inject fee here
+        fee: item.fee, // already number
       },
     }))
 
-    const totalFee = Number(record.totalFee)
-    const finalFee = Number(record.finalFee)
-    const discount = Number(record.discount)
+    const totalFee = record.totalFee
+    const finalFee = record.finalFee
+    const discount = record.discount
 
     const receiptHTML = ReceiptTemplate({
       patient: {
@@ -223,7 +223,7 @@ const PatientHistory = () => {
                         <td className="px-6 py-2">
                           {r.items.map((i) => i.fee).join(', ')}
                         </td>
-                        <td className="px-6 py-2">{r.discount}%</td>
+                        <td className="px-6 py-2">Rs. {r.discount}</td>
                         <td className="px-6 py-2">{r.finalFee}</td>
                         <td className="px-6 py-2 text-center text-nowrap">
                           {r?.user?.name}

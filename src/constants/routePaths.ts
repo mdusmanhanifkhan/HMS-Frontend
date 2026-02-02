@@ -59,4 +59,11 @@ export const routePaths = {
   ADD_CATEGORY:'/category/add',
   DOSAGE_FORM:'/dosage-form',
   ADD_DOSAGE_FORM:'/dosage-form/add',
+  INDENT:'/indent',
+  ADD_INDENT:'/indent/add',
+  PURCHASE_ORDER:'/purchase-order',
+  ADD_PURCHASE_ORDER:'/purchase-order/add',
+  PURCHASE_ORDER_APPROVEL:'/purchase-order-approvel',
+  ACCOUNTS_PO_APPROVEL:'/accounts-po-approvel',
+  ACCOUNTS_PO_LIST:'/accounts-po-list',
 } as const

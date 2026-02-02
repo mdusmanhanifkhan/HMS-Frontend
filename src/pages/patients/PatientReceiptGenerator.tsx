@@ -190,17 +190,26 @@ const PatientReceiptGenerator = () => {
     calculateTotals(updated, discount)
   }
 
+  // const calculateTotals = (items: CartItem[], discountValue: number) => {
+  //   const total = items.reduce((sum, item) => sum + item.procedure.fee, 0)
+  //   const final = total - (total * discountValue) / 100
+  //   setTotalFee(total)
+  //   setFinalFee(final)
+  // }
   const calculateTotals = (items: CartItem[], discountValue: number) => {
     const total = items.reduce((sum, item) => sum + item.procedure.fee, 0)
-    const final = total - (total * discountValue) / 100
+
+    const safeDiscount = Math.min(discountValue, total) // prevent negative
+    const final = total - safeDiscount
+
     setTotalFee(total)
     setFinalFee(final)
   }
- 
 
-  const handleDiscountChange = (value: number) => {
-    setDiscount(value)
-    calculateTotals(cart, value)
+  const handleDiscountChange = (value: string) => {
+    const numericValue = value === '' ? 0 : Number(value)
+    setDiscount(numericValue)
+    calculateTotals(cart, numericValue)
   }
 
   /* ---------- SUBMIT API ---------- */
@@ -212,7 +221,7 @@ const PatientReceiptGenerator = () => {
       return
     }
 
-    setLoading(true) 
+    setLoading(true)
     setError('')
     setSuccess('')
 
@@ -435,13 +444,13 @@ const PatientReceiptGenerator = () => {
           {/* Discount */}
           <div className="mt-2 col-span-full ">
             <GroupInput className="max-w-80">
-              <Label>Discount (%)</Label>
+              <Label>Discount Amount</Label>
               <Input
                 type="number"
                 min={0}
-                max={100}
                 value={discount}
-                onChange={(e) => handleDiscountChange(Number(e.target.value))}
+                onChange={(e) => handleDiscountChange(e.target.value)}
+                placeholder="Enter discount amount"
               />
             </GroupInput>
           </div>
@@ -474,7 +483,7 @@ const PatientReceiptGenerator = () => {
 
           <div className="mt-2 text-right col-span-full">
             <p>Total Fee: {totalFee}</p>
-            <p>Discount: {discount}%</p>
+            <p>Discount Rs : {discount}</p>
             <p className="font-bold">Final Fee: {finalFee}</p>
           </div>
 

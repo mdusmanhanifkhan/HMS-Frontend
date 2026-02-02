@@ -245,7 +245,7 @@ const ReceiptTemplate = ({
         <!-- Totals -->
         <div class="totals-box">
           <div class="amount-row"><span>Total Amount:</span><span>${totalFee}</span></div>
-          <div class="amount-row"><span>Discount:</span><span>${discount} %</span></div>
+          <div class="amount-row"><span>Discount:</span><span>${discount}</span></div>
           <div class="amount-row bold" style="font-size: 14px;">
             <span>Net Amount:</span><span>Rs. ${finalFee}</span>
           </div>
@@ -259,8 +259,7 @@ const ReceiptTemplate = ({
         <div class="line"></div>
 
         <!-- OPD Free Note -->
-        <div class="urdu-text">
-          تمام طبی او پی ڈی خدمات 31 جنوری 2026 تک ہیلپنگ ہینڈ کے تعاون سے مفت ہیں۔
+        <div class="urdu-text">تمام طبی او پی ڈی خدمات 31 مارچ 2026 تک ہیلپنگ ہینڈ کے تعاون سے مفت ہیں۔
         </div>
 
         <div class="center" style="margin-top: 15px;">

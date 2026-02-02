@@ -47,6 +47,13 @@ import AddCategory from '../pages/pharmacy/category/AddCategory.tsx'
 import AddDosageForm from '../pages/pharmacy/dosage-form/AddDosageForm.tsx'
 import { AddInvoice } from '../pages/pharmacy/invoice/AddInvoice.tsx'
 import AddIndent from '../pages/pharmacy/indent/AddIndent.tsx'
+import Indent from '../pages/pharmacy/indent/index.tsx'
+import PurchaseOrder from '../pages/pharmacy/purchase-roder/index.tsx'
+import CreatePurchaseOrder from '../pages/pharmacy/purchase-roder/CreatePurchaseOrder.tsx'
+import POListApprovel from '../pages/pharmacy/purchase-roder/POListApprovel.tsx'
+import POApprovel from '../pages/pharmacy/purchase-roder/POApprovel.tsx'
+import AccountsPurchaseOrderList from '../pages/accounts/purchase-order/AccountsPurchaseOrderList.tsx'
+import PurchaseOrderPayment from '../pages/accounts/purchase-order/PurchaseOrderPayment.tsx'
 
 export const router = createBrowserRouter([
   {
@@ -187,8 +194,36 @@ export const router = createBrowserRouter([
         element: <AddDosageForm />,
       },
       {
+        path: '/indent',
+        element: <Indent />,
+      },
+      {
         path: '/indent/add',
         element: <AddIndent />,
+      },
+      {
+        path: routePaths.PURCHASE_ORDER,
+        element: <PurchaseOrder />,
+      },
+      {
+        path: `${routePaths.ADD_PURCHASE_ORDER}/:id`,
+        element: <CreatePurchaseOrder />,
+      },
+      {
+        path: `${routePaths.PURCHASE_ORDER_APPROVEL}`,
+        element: <POListApprovel />,
+      },
+      {
+        path: `${routePaths.PURCHASE_ORDER_APPROVEL}/:id`,
+        element: <POApprovel />,
+      },
+      {
+        path: `${routePaths.ACCOUNTS_PO_APPROVEL}/:id`,
+        element: <PurchaseOrderPayment />,
+      },
+      {
+        path: `${routePaths.ACCOUNTS_PO_LIST}`,
+        element: <AccountsPurchaseOrderList />,
       },
 
     ],

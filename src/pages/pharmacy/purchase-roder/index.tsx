@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import Loading from '../../../components/loading/Loading'
 import Button from '../../../components/button/Button'
+import { routePaths } from '../../../constants/routePaths'
+import { useNavigate } from 'react-router-dom'
 
 interface Option {
   id: number
@@ -50,12 +52,14 @@ interface Indent {
   items: IndentItem[]
 }
 
-const IndentList = () => {
+const PurchaseOrder = () => {
   const [indents, setIndents] = useState<Indent[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
   const API_BASE = import.meta.env.VITE_API_BASE_URL
   const token = localStorage.getItem('token')
+
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchIndents = async () => {
@@ -73,9 +77,8 @@ const IndentList = () => {
           const errData = await res.json()
           throw new Error(errData.message || 'Failed to fetch indents')
         }
-        const data =
-          await res.json()
-        setIndents(data || []) 
+        const data = await res.json()
+        setIndents(data || [])
       } catch (err: unknown) {
         if (err instanceof Error) setError(err.message)
         else setError('Something went wrong')
@@ -122,7 +125,7 @@ const IndentList = () => {
           </div>
 
           {/* Add Indent Button */}
-          <Button asLink={true} to={'/indent/add'}>
+          <Button asLink={true} to={routePaths.ADD_PURCHASE_ORDER}>
             + Create Indent
           </Button>
         </div>
@@ -141,6 +144,7 @@ const IndentList = () => {
               <th className="px-6 py-4">Remarks</th>
               <th className="px-6 py-4">Indent Items</th>
               <th className="px-6 py-4">Requested Qty</th>
+              <th className="px-6 py-4">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -231,6 +235,31 @@ const IndentList = () => {
                       '-'
                     )}
                   </td>
+                  <td className="px-6 py-4">
+                    <button
+                      onClick={() => navigate(`${routePaths.ADD_PURCHASE_ORDER}/${indent.id}`)}
+                      className="p-2 rounded-full hover:bg-gray-300 transition"
+                      title="Create Purchase Order"
+                    >
+                      {/* Clipboard + Plus SVG (perfect for PO action) */}
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <rect x="9" y="2" width="6" height="4" rx="1" ry="1" />
+                        <path d="M9 4H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-4" />
+                        <line x1="12" y1="11" x2="12" y2="17" />
+                        <line x1="9" y1="14" x2="15" y2="14" />
+                      </svg>
+                    </button>
+                  </td>
                 </tr>
               ))}
           </tbody>
@@ -240,4 +269,4 @@ const IndentList = () => {
   )
 }
 
-export default IndentList
+export default PurchaseOrder
