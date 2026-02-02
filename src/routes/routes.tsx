@@ -190,7 +190,7 @@ export const SidebarRoutes = [
   {
     name: 'Financial Report',
     link: routePaths.FINANCE_REPORT,
-    permission: 'canViewReports',
+    // permission: 'canViewReports',
     icon: (
       <svg
         className="w-[18px] h-[18px]"
@@ -214,7 +214,7 @@ export const SidebarRoutes = [
   {
     name: 'Patient Report',
     link: routePaths.PATIENT_REPORT,
-    permission: 'canViewReports',
+   // permission: 'canViewReports',
     icon: (
       <svg
         className="w-[18px] h-[18px]"
