@@ -75,7 +75,7 @@ const FinancialReport = () => {
   }
 
   /* ---------------- DERIVED FILTER DATA ---------------- */
-  const derivedUsers = data.map((u) => ({
+  const derivedUsers = data?.map((u) => ({
     id: u.userId,
     name: u.userName,
   }))
