@@ -318,8 +318,8 @@ export const SidebarRoutes = [
   //   ),
   // },
   // {
-  //   name: 'Add Invoice',
-  //   link: routePaths.ADD_INVOICE,
+  //   name: 'GRN',
+  //   link: routePaths.GRN,
   //   icon: (
   //      <svg
   //       className="w-4 h-4"

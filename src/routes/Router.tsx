@@ -45,7 +45,6 @@ import Medicine from '../pages/pharmacy/medicine/index.tsx'
 import Stock from '../pages/pharmacy/stock/index.tsx'
 import AddCategory from '../pages/pharmacy/category/AddCategory.tsx'
 import AddDosageForm from '../pages/pharmacy/dosage-form/AddDosageForm.tsx'
-import { AddInvoice } from '../pages/pharmacy/invoice/AddInvoice.tsx'
 import AddIndent from '../pages/pharmacy/indent/AddIndent.tsx'
 import Indent from '../pages/pharmacy/indent/index.tsx'
 import PurchaseOrder from '../pages/pharmacy/purchase-roder/index.tsx'
@@ -54,6 +53,9 @@ import POListApprovel from '../pages/pharmacy/purchase-roder/POListApprovel.tsx'
 import POApprovel from '../pages/pharmacy/purchase-roder/POApprovel.tsx'
 import AccountsPurchaseOrderList from '../pages/accounts/purchase-order/AccountsPurchaseOrderList.tsx'
 import PurchaseOrderPayment from '../pages/accounts/purchase-order/PurchaseOrderPayment.tsx'
+import AddGrn from '../pages/pharmacy/grn/AddGrn.tsx'
+import ApprovedPOListGrn from '../pages/pharmacy/grn/ApprovedPOListGrn.tsx'
+import EditDistributor from '../pages/pharmacy/distributor/EditDistributor.tsx'
 
 export const router = createBrowserRouter([
   {
@@ -158,8 +160,20 @@ export const router = createBrowserRouter([
         element: <AddDistributor />,
       },
       {
+        path: `${routePaths.EDIT_DISTRIBUTOR}/:id`,
+        element: <EditDistributor />,
+      },
+      {
         path: routePaths.COMPANY,
         element: <Company />,
+      },
+      {
+        path: routePaths.ADD_COMPANY,
+        element: <AddCompany />,
+      },
+      {
+        path: `${routePaths.COMPANY}/:id`,
+        element: <AddCompany />,
       },
       {
         path: routePaths.ADD_COMPANY,
@@ -174,8 +188,12 @@ export const router = createBrowserRouter([
         element: <AddMedicine />,
       },
       {
-        path: routePaths.ADD_INVOICE,
-        element: <AddInvoice />,
+        path: routePaths.GRN,
+        element: <ApprovedPOListGrn />,
+      },
+      {
+        path: `${routePaths.ADD_GRN}/:id`,
+        element: <AddGrn />,
       },
       {
         path: routePaths.STOCK,

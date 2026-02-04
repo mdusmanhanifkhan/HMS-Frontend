@@ -50,6 +50,7 @@ export const routePaths = {
   
   DISTRIBUTOR:'/distributor',
   ADD_DISTRIBUTOR:'/distributor/add',
+  EDIT_DISTRIBUTOR:'/distributor',
   COMPANY:'/company',
   ADD_COMPANY:'/company/add',
   ADD_INVOICE:'/invoice/add',
@@ -66,4 +67,6 @@ export const routePaths = {
   PURCHASE_ORDER_APPROVEL:'/purchase-order-approvel',
   ACCOUNTS_PO_APPROVEL:'/accounts-po-approvel',
   ACCOUNTS_PO_LIST:'/accounts-po-list',
+  GRN:'/grn',
+  ADD_GRN:'/grn/add',
 } as const
