@@ -163,36 +163,36 @@ const Company = () => {
             {!loading &&
               !error &&
               filteredCompanies.length > 0 &&
-              filteredCompanies.map((proc) => (
+              filteredCompanies.map((comp) => (
                 <tr
-                  key={proc.id}
+                  key={comp.id}
                   className="bg-[#DFDEDE] border-b border-gray-200"
                 >
                   <td className="px-6 py-4 font-medium text-gray-900">
-                    {proc.id}
+                    {comp.id}
                   </td>
-                  <td className="px-6 py-4">{proc.name}</td>
-                  <td className="px-6 py-4">{proc.shortCode || '-'}</td>
-                  <td className="px-6 py-4">{proc.contactPerson || '-'}</td>
+                  <td className="px-6 py-4">{comp.name}</td>
+                  <td className="px-6 py-4">{comp.shortCode || '-'}</td>
+                  <td className="px-6 py-4">{comp.contactPerson || '-'}</td>
                   <td className="px-6 py-4">
-                    {proc.description?.length && proc.description.length > 45
-                      ? `${proc.description.substring(0, 45)}...`
-                      : proc.description || '-'}
+                    {comp.description?.length && comp.description.length > 45
+                      ? `${comp.description.substring(0, 45)}...`
+                      : comp.description || '-'}
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-1">
                       <span
                         className={`w-[10px] h-[10px] rounded-full ${
-                          proc.isActive ? 'bg-[#00cc00]' : 'bg-[#cc0000]'
+                          comp.isActive ? 'bg-[#00cc00]' : 'bg-[#cc0000]'
                         } block`}
                       ></span>
-                      {proc.isActive ? 'Active' : 'Inactive'}
+                      {comp.isActive ? 'Active' : 'Inactive'}
                     </div>
                   </td>
                   <td className="px-6 py-4 flex items-center gap-2">
                     {/* Edit */}
                     <Link
-                      to={`${routePaths.EDIT_PROCEDURE}/${proc.id}`}
+                      to={`${routePaths.COMPANY}/${comp.id}`}
                       className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200"
                     >
                       <svg
