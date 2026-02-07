@@ -48,6 +48,9 @@ interface Indent {
   createdAt: string
   updatedAt: string
   items: IndentItem[]
+  createdByUser: {
+    name: string
+  }
 }
 
 const IndentList = () => {
@@ -73,9 +76,8 @@ const IndentList = () => {
           const errData = await res.json()
           throw new Error(errData.message || 'Failed to fetch indents')
         }
-        const data =
-          await res.json()
-        setIndents(data || []) 
+        const data = await res.json()
+        setIndents(data || [])
       } catch (err: unknown) {
         if (err instanceof Error) setError(err.message)
         else setError('Something went wrong')
@@ -182,7 +184,7 @@ const IndentList = () => {
                   <td className="px-6 py-4">
                     {new Date(indent.indentDate).toLocaleDateString()}
                   </td>
-                  <td className="px-6 py-4">{indent.requestedBy}</td>
+                  <td className="px-6 py-4">{indent?.createdByUser?.name}</td>
                   <td className="px-6 py-4">{indent.departmentId}</td>
                   <td className="px-6 py-4">
                     <span

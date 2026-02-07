@@ -332,7 +332,7 @@ const CreatePurchaseOrder = () => {
         ))}
 
         <div className="text-right text-lg font-bold">
-          Grand Total: ₹ {grandTotal.toFixed(2)}
+          Grand Total: Rs. {grandTotal.toFixed(2)}
         </div>
 
         <Button type="submit" disabled={submitting}>

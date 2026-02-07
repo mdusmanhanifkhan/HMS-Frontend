@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { GroupInput } from '../../../components/input/GroupInput'
 import { Label } from '../../../components/input/Label'
 import { Input } from '../../../components/input/Input'
+import Loading from '../../../components/loading/Loading'
 import Button from '../../../components/button/Button'
 
 interface StockItem {
@@ -22,6 +23,7 @@ interface StockItem {
 
 const Stock = () => {
   const [stockList, setStockList] = useState<StockItem[]>([])
+  const [filteredStock, setFilteredStock] = useState<StockItem[]>([])
   const [filters, setFilters] = useState({
     medicine: '',
     batchNo: '',
@@ -31,31 +33,17 @@ const Stock = () => {
   const API_BASE = import.meta.env.VITE_API_BASE_URL
   const token = localStorage.getItem('token')
 
+  // Fetch stock from API (once)
   const fetchStock = async () => {
     setLoading(true)
     try {
-      // 1. Construct query parameters
-      const params = new URLSearchParams()
-      if (filters.medicine) params.append('medicineName', filters.medicine)
-      if (filters.batchNo) params.append('batchNo', filters.batchNo)
-      if (filters.expiry) params.append('expiryFilter', filters.expiry)
-
-      // 2. Use API_BASE and append params
-      // Note: Use a template literal to combine the base URL and endpoint
-      const url = `${API_BASE}/api/stock-list?${params.toString()}`
-
-      // 3. Include Authorization header with Bearer token
-      const res = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+      const res = await fetch(`${API_BASE}/api/stock-list`, {
+        headers: { Authorization: `Bearer ${token}` },
       })
-
       const data = await res.json()
       if (data.success) {
         setStockList(data.data)
+        setFilteredStock(data.data)
       } else {
         console.error('Fetch failed:', data.message)
       }
@@ -70,6 +58,35 @@ const Stock = () => {
     fetchStock()
   }, [])
 
+  // Client-side filtering
+  useEffect(() => {
+    let filtered = [...stockList]
+
+    if (filters.medicine)
+      filtered = filtered.filter((item) =>
+        item.medicine?.name
+          .toLowerCase()
+          .includes(filters.medicine.toLowerCase())
+      )
+
+    if (filters.batchNo)
+      filtered = filtered.filter((item) =>
+        item.batchNo.toLowerCase().includes(filters.batchNo.toLowerCase())
+      )
+
+    const today = new Date()
+    if (filters.expiry === 'near') {
+      filtered = filtered.filter((item) => {
+        const expiry = new Date(item.expiryDate)
+        return expiry > today && expiry <= new Date(today.getTime() + 90 * 24 * 60 * 60 * 1000)
+      })
+    } else if (filters.expiry === 'expired') {
+      filtered = filtered.filter((item) => new Date(item.expiryDate) < today)
+    }
+
+    setFilteredStock(filtered)
+  }, [filters, stockList])
+
   return (
     <div className="flex flex-col gap-6">
       {/* Header */}
@@ -78,7 +95,7 @@ const Stock = () => {
       </div>
 
       {/* FILTER SECTION */}
-      <div className="grid grid-cols-4 gap-4 max-w-[1200px] bg-gray-50 p-4 rounded-lg">
+      <div className="grid grid-cols-4 gap-4 max-w-[1200px] bg-gray-50 p-4 rounded-lg items-end">
         <GroupInput>
           <Label>Medicine</Label>
           <Input
@@ -114,61 +131,65 @@ const Stock = () => {
           </select>
         </GroupInput>
 
-        <div className="col-span-full flex gap-3">
-          <Button type="button" onClick={fetchStock}>
-            Search
-          </Button>
+        <div className="flex gap-3">
           <Button
             type="button"
-            onClick={() => {
+            onClick={() =>
               setFilters({ medicine: '', batchNo: '', expiry: '' })
-              fetchStock()
-            }}
+            }
           >
-            Reset
+            Reset Filters
           </Button>
         </div>
       </div>
 
       {/* STOCK TABLE */}
-      <div className="overflow-x-auto border rounded-lg">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-100">
+      <div className="relative overflow-x-auto shadow-lg rounded-lg">
+        <table className="w-full text-sm text-left">
+          <thead className="text-xs text-white uppercase bg-dark">
             <tr>
-              <th className="p-2 border">#</th>
-              <th className="p-2 border">Medicine</th>
-              <th className="p-2 border">Company</th>
-              <th className="p-2 border">Batch No</th>
-              <th className="p-2 border">Expiry</th>
-              <th className="p-2 border">Packing</th>
-              <th className="p-2 border">Qty In Stock</th>
-              <th className="p-2 border">Purchase Price</th>
-              <th className="p-2 border">Sale Price</th>
-              <th className="p-2 border">Status</th>
+              <th className="px-6 py-4">#</th>
+              <th className="px-6 py-4">Medicine</th>
+              <th className="px-6 py-4">Company</th>
+              <th className="px-6 py-4">Batch No</th>
+              <th className="px-6 py-4">Expiry</th>
+              <th className="px-6 py-4">Packing</th>
+              <th className="px-6 py-4">Qty In Stock</th>
+              <th className="px-6 py-4">Purchase Price</th>
+              <th className="px-6 py-4">Sale Price</th>
+              <th className="px-6 py-4">Status</th>
             </tr>
           </thead>
+
           <tbody>
-            {loading ? (
+            {loading && (
               <tr>
-                <td colSpan={10} className="text-center p-4">
-                  Loading...
+                <td colSpan={10}>
+                  <div className="flex justify-center py-4">
+                    <Loading />
+                  </div>
                 </td>
               </tr>
-            ) : stockList.length === 0 ? (
+            )}
+
+            {!loading && filteredStock.length === 0 && (
               <tr>
-                <td colSpan={10} className="text-center p-4">
+                <td colSpan={10} className="py-6 text-center">
                   No stock found
                 </td>
               </tr>
-            ) : (
-              stockList.map((item, index) => {
+            )}
+
+            {!loading &&
+              filteredStock.map((item, index) => {
                 const today = new Date()
                 const expiry = new Date(item.expiryDate)
                 let status = 'Normal'
                 let statusColor = 'bg-green-100 text-green-700'
+
                 if (item.balanceQty <= 0) {
                   status = 'Out of Stock'
-                  statusColor = 'bg-red-100 text-red-700'
+                  statusColor = 'bg-[#FFB8B8] text-red-700'
                 } else if (
                   expiry < today ||
                   expiry <= new Date(today.getTime() + 90 * 24 * 60 * 60 * 1000)
@@ -180,42 +201,33 @@ const Stock = () => {
                 return (
                   <tr
                     key={item.id}
-                    className={
-                      status === 'Near Expiry'
-                        ? 'bg-yellow-50'
-                        : status === 'Out of Stock'
-                          ? 'bg-red-50'
-                          : ''
-                    }
+                    className={`bg-[#DFDEDE] border-b border-gray-200 ${statusColor}`}
                   >
-                    <td className="p-2 border">{index + 1}</td>
-                    <td className="p-2 border">{item.medicine?.name}</td>
-                    <td className="p-2 border">
+                    <td className="px-6 py-4 font-medium text-gray-900">
+                      {index + 1}
+                    </td>
+                    <td className="px-6 py-4">{item.medicine?.name}</td>
+                    <td className="px-6 py-4">
                       {item.medicine?.companyName || '-'}
                     </td>
-                    <td className="p-2 border">{item.batchNo}</td>
-                    <td className="p-2 border">
-                      {expiry.toLocaleDateString()}
-                    </td>
-                    <td className="p-2 border">
+                    <td className="px-6 py-4">{item.batchNo}</td>
+                    <td className="px-6 py-4">{expiry.toLocaleDateString()}</td>
+                    <td className="px-6 py-4">
                       {item.medicine?.packing || '-'}
                     </td>
-                    <td className="p-2 border text-center font-semibold">
+                    <td className="px-6 py-4 text-center font-semibold">
                       {item.balanceQty}
                     </td>
-                    <td className="p-2 border">{item.rate.toFixed(2)}</td>
-                    <td className="p-2 border">
+                    <td className="px-6 py-4">{item.rate.toFixed(2)}</td>
+                    <td className="px-6 py-4">
                       {item.medicine?.salePrice?.toFixed(2) || '-'}
                     </td>
-                    <td className="p-2 border">
-                      <span className={`px-2 py-1 rounded ${statusColor}`}>
-                        {status}
-                      </span>
+                    <td className="px-6 py-4">
+                      <span className={`px-2 py-1 rounded`}>{status}</span>
                     </td>
                   </tr>
                 )
-              })
-            )}
+              })}
           </tbody>
         </table>
       </div>
