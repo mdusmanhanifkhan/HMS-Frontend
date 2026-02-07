@@ -28,27 +28,17 @@ type MedicineItem = {
 /* ================= COMPONENT ================= */
 
 const Medicine = () => {
+  const [allMedicines, setAllMedicines] = useState<MedicineItem[]>([])
   const [medicines, setMedicines] = useState<MedicineItem[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
 
   const [searchTerm, setSearchTerm] = useState<string>('')
-  const [debouncedSearch, setDebouncedSearch] = useState<string>('')
 
   const API_BASE = import.meta.env.VITE_API_BASE_URL as string
   const token = localStorage.getItem('token')
 
-  /* ================= DEBOUNCE SEARCH ================= */
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(searchTerm.trim())
-    }, 500)
-
-    return () => clearTimeout(timer)
-  }, [searchTerm])
-
-  /* ================= FETCH MEDICINES ================= */
+  /* ================= FETCH MEDICINES (ONCE) ================= */
 
   useEffect(() => {
     const controller = new AbortController()
@@ -58,13 +48,7 @@ const Medicine = () => {
         setLoading(true)
         setError(null)
 
-        const url = debouncedSearch
-          ? `${API_BASE}/api/medicines/search?query=${encodeURIComponent(
-              debouncedSearch
-            )}`
-          : `${API_BASE}/api/medicine`
-
-        const res = await fetch(url, {
+        const res = await fetch(`${API_BASE}/api/medicine`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -77,16 +61,14 @@ const Medicine = () => {
         }
 
         const json: { data?: MedicineItem[] } = await res.json()
+
+        setAllMedicines(json.data ?? [])
         setMedicines(json.data ?? [])
       } catch (err) {
         if (err instanceof DOMException && err.name === 'AbortError') return
 
-        if (err instanceof Error) {
-          setError(err.message)
-        } else {
-          setError('Something went wrong')
-        }
-
+        setError(err instanceof Error ? err.message : 'Something went wrong')
+        setAllMedicines([])
         setMedicines([])
       } finally {
         setLoading(false)
@@ -94,9 +76,28 @@ const Medicine = () => {
     }
 
     fetchMedicines()
-
     return () => controller.abort()
-  }, [debouncedSearch, API_BASE, token])
+  }, [API_BASE, token])
+
+  /* ================= FRONTEND SEARCH FILTER ================= */
+
+  useEffect(() => {
+    const term = searchTerm.trim().toLowerCase()
+
+    if (!term) {
+      setMedicines(allMedicines)
+      return
+    }
+
+    const filtered = allMedicines.filter(
+      (med) =>
+        med.name.toLowerCase().includes(term) ||
+        med.category?.name?.toLowerCase().includes(term) ||
+        med.dosageForm?.name?.toLowerCase().includes(term)
+    )
+
+    setMedicines(filtered)
+  }, [searchTerm, allMedicines])
 
   /* ================= UI ================= */
 
@@ -108,16 +109,37 @@ const Medicine = () => {
 
         <div className="flex items-center gap-5 min-w-100">
           {/* Search */}
-          <div className="flex items-center gap-2 py-1.5 w-full rounded-lg border px-2">
-            <svg width="16" height="16" viewBox="0 0 20 20">
-              <circle cx="7.5" cy="7.5" r="7.5" stroke="black" />
-              <path d="M18 18l-5.2-5.2" stroke="black" />
+          <div className="flex items-center gap-2 py-1.5 w-full rounded-lg border px-2 border-gray">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 20 20"
+            >
+              <g
+                stroke="none"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <g
+                  stroke="#000"
+                  strokeWidth="2"
+                  transform="translate(-1687 -1941)"
+                >
+                  <g transform="translate(1688 1942)">
+                    <circle cx="7.5" cy="7.5" r="7.5"></circle>
+                    <path d="M18 18l-5.2-5.2"></path>
+                  </g>
+                </g>
+              </g>
             </svg>
 
             <Input
               type="text"
               placeholder="Search medicine..."
               variant="none"
+              className="outline-none"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -177,17 +199,13 @@ const Medicine = () => {
               medicines.map((med) => (
                 <tr
                   key={med.id}
-                  className="bg-[#DFDEDE] border-b hover:bg-gray-200 transition-colors"
+                  className="bg-[#DFDEDE] border-b  transition-colors"
                 >
                   <td className="px-6 py-3 font-medium">{med.id}</td>
 
-                  <td className="px-6 py-3 font-semibold">
-                    {med.name}
-                  </td>
+                  <td className="px-6 py-3 font-semibold">{med.name}</td>
 
-                  <td className="px-6 py-3">
-                    {med.dosageForm?.name ?? '-'}
-                  </td>
+                  <td className="px-6 py-3">{med.dosageForm?.name ?? '-'}</td>
 
                   <td className="px-6 py-3">
                     <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">

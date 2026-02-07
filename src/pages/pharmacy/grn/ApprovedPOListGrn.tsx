@@ -34,6 +34,7 @@ interface PO {
   approvedAt?: string | null
   pdfUrl?: string | null
   items: POItem[]
+  grns: []
 }
 
 /* -------------------- Component -------------------- */
@@ -113,24 +114,25 @@ const ApprovedPOListGrn = () => {
       </span>
     )
   }
-  const handleDownloadPDF = async (pdfUrl: string, fileName: string) => {
-    try {
-      const fullUrl = `${API_BASE}${pdfUrl}` // full HTTP path
-      const response = await fetch(fullUrl)
-      if (!response.ok) throw new Error('Failed to fetch PDF')
+ const handleDownloadPDF = async (pdfUrl: string, fileName: string) => {
+  try {
+    const fullUrl = `${API_BASE}${pdfUrl}`; // http://localhost:5000/generated/uploads/po/PO-00004.pdf
+    const response = await fetch(fullUrl);
+    if (!response.ok) throw new Error('Failed to fetch PDF');
 
-      const blob = await response.blob()
-      const link = document.createElement('a')
-      link.href = window.URL.createObjectURL(blob)
-      link.download = fileName
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-    } catch (err) {
-      console.error(err)
-      alert('Failed to download PDF')
-    }
+    const blob = await response.blob();
+    const link = document.createElement('a');
+    link.href = window.URL.createObjectURL(blob);
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch (err) {
+    console.error(err);
+    alert('Failed to download PDF');
   }
+};
+
 
   /* -------------------- Render -------------------- */
   return (
@@ -138,9 +140,7 @@ const ApprovedPOListGrn = () => {
       {/* Header */}
       <div className="flex justify-between items-center w-full border-b pb-3">
         <p className="text-xl font-semibold">Purchase Orders Approval</p>
-        <Button asLink to={routePaths.ADD_PURCHASE_ORDER}>
-          + Create PO
-        </Button>
+       
       </div>
 
       {/* Table */}
@@ -154,7 +154,7 @@ const ApprovedPOListGrn = () => {
               <th className="px-6 py-4">Payment Type</th>
               <th className="px-6 py-4">Net Amount</th>
               <th className="px-6 py-4">Status</th>
-              <th className="px-6 py-4">Action</th>
+              <th className="ps-6 pe-8 py-4 text-end ">Action</th>
             </tr>
           </thead>
 
@@ -188,50 +188,62 @@ const ApprovedPOListGrn = () => {
 
             {/* POs */}
             {!loading &&
-              pos.map((po) => (
-                <tr
-                  key={po.id}
-                  className="bg-[#DFDEDE] border-b border-gray-200"
-                >
-                  <td className="px-6 py-4">{po.poNo}</td>
-                  <td className="px-6 py-4">
-                    {new Date(po.poDate).toLocaleDateString()}
-                  </td>
-                  <td className="px-6 py-4">{po.distributor.name}</td>
-                  <td className="px-6 py-4">{po.paymentType}</td>
-                  <td className="px-6 py-4">Rs {po.netAmount.toFixed(2)}</td>
-                  <td className="px-6 py-4">{renderStatus(po.status)}</td>
-                  <td className="px-6 py-4 flex gap-2">
-                    {/* Approve button */}
-                    {po.status !== 'APPROVED' && (
-                      <button
-                        onClick={() => handleApprove(po.id)}
-                        className="p-2 rounded-md bg-green-500 text-green transition"
-                      >
-                        Approve
-                      </button>
-                    )}
+              pos.map((po) => {
+                // Condition for showing "Create GRN" button
+                const showCreateGRN =
+                  ['PAID', 'PARTIALPAID', 'PAIDLATER'].includes(po.status) &&
+                  (!po?.grns || po?.grns.length === 0)
 
-                    {/* WhatsApp button */}
-                    {/* WhatsApp / Download button */}
-                    {po.status === 'APPROVED' && po.pdfUrl && (
-                      <button
-                        onClick={() =>
-                          handleDownloadPDF(po.pdfUrl!, `PO-${po.poNo}.pdf`)
-                        }
-                        className="p-2 rounded-md bg-green-500 text-white flex items-center gap-1 transition"
-                      >
-                        Download
-                      </button>
-                    )}
-                    {po.status === 'APPROVED' && (
-                      <Button onClick={() => navigate(`${routePaths.ADD_GRN}/${po.id}`)}>
-                        Create GRN
-                      </Button>
-                    )}
-                  </td>
-                </tr>
-              ))}
+                return (
+                  <tr
+                    key={po.id}
+                    className="bg-[#DFDEDE] border-b border-gray-200"
+                  >
+                    <td className="px-6 py-4">{po.poNo}</td>
+                    <td className="px-6 py-4">
+                      {new Date(po.poDate).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4">{po.distributor.name}</td>
+                    <td className="px-6 py-4">{po.paymentType}</td>
+                    <td className="px-6 py-4">Rs {po.netAmount.toFixed(2)}</td>
+                    <td className="px-6 py-4">{renderStatus(po.status)}</td>
+                    <td className="px-6 py-4 flex gap-2 justify-end">
+                      {/* Approve button */}
+                      {po.status !== 'APPROVED' && (
+                        <button
+                          onClick={() => handleApprove(po.id)}
+                          className="p-2 rounded-md bg-green-500 text-white transition"
+                        >
+                          Approve
+                        </button>
+                      )}
+
+                      {/* Download PDF */}
+                      {po.status === 'APPROVED' && po.pdfUrl && (
+                        <button
+                          onClick={() =>
+                            handleDownloadPDF(po.pdfUrl!, `PO-${po.poNo}.pdf`)
+                          }
+                          className="p-2 rounded-md bg-blue-500 text-white transition"
+                        >
+                          Download
+                        </button>
+                      )}
+
+                      {/* Create GRN (only when PAID/partial paid/paid later and no GRNs exist) */}
+                      {showCreateGRN && (
+                        <Button
+                          onClick={() =>
+                            navigate(`${routePaths.ADD_GRN}/${po.id}`)
+                          }
+                        >
+                          Create GRN
+                        </Button>
+                      )}
+                    </td>
+                  </tr>
+                )
+              })}
           </tbody>
         </table>
       </div>

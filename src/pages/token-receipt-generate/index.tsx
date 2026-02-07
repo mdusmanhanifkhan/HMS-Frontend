@@ -250,9 +250,15 @@ const PatientReceiptGenerator = () => {
     calculateTotals(updated, discount)
   }
 
+  // const calculateTotals = (items: CartItem[], discountValue: number) => {
+  //   const total = items.reduce((sum, item) => sum + item.procedure.fee, 0)
+  //   const final = total - (total * discountValue) / 100
+  //   setTotalFee(total)
+  //   setFinalFee(final)
+  // }
   const calculateTotals = (items: CartItem[], discountValue: number) => {
     const total = items.reduce((sum, item) => sum + item.procedure.fee, 0)
-    const final = total - (total * discountValue) / 100
+    const final = Math.max(total - discountValue, 0) // prevent negative
     setTotalFee(total)
     setFinalFee(final)
   }
@@ -477,11 +483,11 @@ const PatientReceiptGenerator = () => {
           {/* Discount */}
           <div className="mt-2 col-span-full ">
             <GroupInput className="max-w-80">
-              <Label>Discount (%)</Label>
+              <Label>Discount Amount</Label>
               <Input
                 type="number"
                 min={0}
-                max={100}
+                max={totalFee}
                 value={discount}
                 onChange={(e) => handleDiscountChange(Number(e.target.value))}
               />
@@ -516,7 +522,7 @@ const PatientReceiptGenerator = () => {
 
           <div className="mt-2 text-right col-span-full">
             <p>Total Fee: {totalFee}</p>
-            <p>Discount: {discount}%</p>
+            <p>Discount: {discount}</p>
             <p className="font-bold">Final Fee: {finalFee}</p>
           </div>
 

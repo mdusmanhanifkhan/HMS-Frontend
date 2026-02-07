@@ -43,6 +43,7 @@ import AddMedicine from '../pages/pharmacy/medicine/AddMedicine.tsx'
 import SalesInvoice from '../pages/pharmacy/sale/index.tsx'
 import Medicine from '../pages/pharmacy/medicine/index.tsx'
 import Stock from '../pages/pharmacy/stock/index.tsx'
+import Category from '../pages/pharmacy/category/index.tsx'
 import AddCategory from '../pages/pharmacy/category/AddCategory.tsx'
 import AddDosageForm from '../pages/pharmacy/dosage-form/AddDosageForm.tsx'
 import AddIndent from '../pages/pharmacy/indent/AddIndent.tsx'
@@ -56,6 +57,8 @@ import PurchaseOrderPayment from '../pages/accounts/purchase-order/PurchaseOrder
 import AddGrn from '../pages/pharmacy/grn/AddGrn.tsx'
 import ApprovedPOListGrn from '../pages/pharmacy/grn/ApprovedPOListGrn.tsx'
 import EditDistributor from '../pages/pharmacy/distributor/EditDistributor.tsx'
+import EditCategory from '../pages/pharmacy/category/EditCategory.tsx'
+import DosageForm from '../pages/pharmacy/dosage-form/index.tsx'
 
 export const router = createBrowserRouter([
   {
@@ -204,8 +207,20 @@ export const router = createBrowserRouter([
         element: <SalesInvoice />,
       },
       {
+        path: routePaths.CATEGORY,
+        element: <Category />,
+      },
+      {
         path: routePaths.ADD_CATEGORY,
         element: <AddCategory />,
+      },
+      {
+        path: `${routePaths.CATEGORY}/:id`,
+        element: <EditCategory />,
+      },
+      {
+        path: routePaths.DOSAGE_FORM,
+        element: <DosageForm />,
       },
       {
         path: routePaths.ADD_DOSAGE_FORM,

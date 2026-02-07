@@ -34,18 +34,22 @@
       opt.name.toLowerCase().includes(search.toLowerCase())
     )
 
-    const getDisplayValue = (): string => {
-      if (search) return search
+const getDisplayValue = (): string => {
+  // If user is typing (input is focused), always show the current search text
+  if (isFocused) {
+    return search
+  }
 
-      if (multiple) {
-        if (Array.isArray(selected) && selected.length > 0) {
-          return selected.map((s) => s.name).join(', ')
-        }
-        return ''
-      }
-
-      return (selected as Option | null)?.name ?? ''
+  if (multiple) {
+    if (Array.isArray(selected) && selected.length > 0) {
+      return selected.map((s) => s.name).join(', ')
     }
+    return ''
+  }
+
+  return (selected as Option | null)?.name ?? ''
+}
+
 
     // 🔹 Keyboard handling
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

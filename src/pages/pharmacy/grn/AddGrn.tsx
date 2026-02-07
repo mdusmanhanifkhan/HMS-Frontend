@@ -28,22 +28,17 @@ type GRNItem = {
   medicineId: number
   medicineName: string
   unit: string
-
   orderedQty: number
   acceptedQty: number
   bonusQty: number
   balanceQty: number
-
   batchNo: string
   expiryDate: string
-
   previousRate: number
   purchaseRate: number
   saleRate: number
-
   discountPercent: number
   taxPercent: number
-
   amount: number
 }
 
@@ -70,14 +65,15 @@ export default function AddGrn() {
 
   const [po, setPo] = useState<PO | null>(null)
   const [items, setItems] = useState<GRNItem[]>([])
-
-  /* -------- HEADER STATE -------- */
   const [grnNo, setGrnNo] = useState('')
   const [grnDate, setGrnDate] = useState('')
   const [invoiceNo, setInvoiceNo] = useState('')
   const [remarks, setRemarks] = useState('')
   const [loading, setLoading] = useState(false)
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const [message, setMessage] = useState<{
+    type: 'success' | 'error'
+    text: string
+  } | null>(null)
 
   /* ================= FETCH PO ================= */
   useEffect(() => {
@@ -90,28 +86,22 @@ export default function AddGrn() {
 
       setPo(poData)
 
-      /* ---- MAP PO ITEMS → GRN ITEMS ---- */
       setItems(
         poData.items.map((item) => ({
           medicineId: item.medicineId,
           medicineName: item.medicine.name,
           unit: item.medicine.unitPacking ?? '-',
-
           orderedQty: item.orderedQty,
           acceptedQty: 0,
           bonusQty: 0,
           balanceQty: item.orderedQty,
-
           batchNo: '',
           expiryDate: '',
-
           previousRate: item.rate,
           purchaseRate: item.rate,
           saleRate: 0,
-
           discountPercent: item.discountPercent,
           taxPercent: item.taxPercent,
-
           amount: 0,
         }))
       )
@@ -121,21 +111,19 @@ export default function AddGrn() {
   }, [id])
 
   /* ================= UPDATE ITEM ================= */
-  const updateItem = <K extends keyof GRNItem>(index: number, field: K, value: GRNItem[K]) => {
+  const updateItem = <K extends keyof GRNItem>(
+    index: number,
+    field: K,
+    value: GRNItem[K]
+  ) => {
     const copy = [...items]
     const item = copy[index]
-
-    // Assign value with type safety
     item[field] = value
-
-    // Recalculate balance and amount
     item.balanceQty = item.orderedQty - item.acceptedQty
     item.amount = item.acceptedQty * item.purchaseRate
-
     setItems(copy)
   }
 
-  /* ================= TOTAL ================= */
   const grnTotal = items.reduce((sum, i) => sum + i.amount, 0)
 
   /* ================= SUBMIT ================= */
@@ -143,44 +131,13 @@ export default function AddGrn() {
     e.preventDefault()
     if (!po) return
 
-    // Validation
     if (!grnNo || !grnDate) {
-      setMessage({ type: 'error', text: 'GRN No and GRN Date are required.' })
-      return
-    }
-
-    if (items.some(i => i.acceptedQty < 0 || i.purchaseRate < 0 || i.saleRate < 0)) {
-      setMessage({ type: 'error', text: 'Invalid item quantities or rates.' })
+      setMessage({ type: 'error', text: 'GRN No and GRN Date are required' })
       return
     }
 
     setLoading(true)
     setMessage(null)
-
-    const payload = {
-      grnNo,
-      grnDate,
-      poId: po.id,
-      poNo: po.poNo,
-      poDate: po.poDate,
-      distributorId: po.distributorId,
-      departmentId: po.departmentId ?? null,
-      invoiceNo,
-      remarks,
-      items: items.map((i) => ({
-        medicineId: i.medicineId,
-        orderedQty: i.orderedQty,
-        previouslyReceivedQty: 0,
-        receivedQty: i.acceptedQty,
-        bonusQty: i.bonusQty,
-        batchNo: i.batchNo,
-        expiryDate: i.expiryDate,
-        rate: i.purchaseRate,
-        saleRate: i.saleRate,
-        discountPercent: i.discountPercent,
-        taxPercent: i.taxPercent,
-      })),
-    }
 
     try {
       const res = await fetch(`${API_BASE}/api/grn`, {
@@ -189,34 +146,58 @@ export default function AddGrn() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          grnNo,
+          grnDate,
+          poId: po.id,
+          poNo: po.poNo,
+          poDate: po.poDate,
+          distributorId: po.distributorId,
+          departmentId: po.departmentId ?? null,
+          invoiceNo,
+          remarks,
+          items: items.map((i) => ({
+            medicineId: i.medicineId,
+            orderedQty: i.orderedQty,
+            receivedQty: i.acceptedQty,
+            bonusQty: i.bonusQty,
+            batchNo: i.batchNo,
+            expiryDate: i.expiryDate,
+            rate: i.purchaseRate,
+            saleRate: i.saleRate,
+            discountPercent: i.discountPercent,
+            taxPercent: i.taxPercent,
+          })),
+        }),
       })
 
       const json = await res.json()
 
-      if (!res.ok) {
-        setMessage({ type: 'error', text: json.message || 'Failed to create GRN.' })
+      if (!res.ok) throw new Error(json.message)
+      setMessage({ type: 'success', text: 'GRN created successfully' })
+      setTimeout(() => navigate(routePaths.GRN), 1200)
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setMessage({ type: 'error', text: err.message })
       } else {
-        setMessage({ type: 'success', text: 'GRN created successfully!' })
-        setTimeout(() => navigate(routePaths.GRN), 1500)
+        setMessage({ type: 'error', text: 'Failed to save GRN' })
       }
-    } catch (error) {
-      console.error('GRN creation error:', error)
-      setMessage({ type: 'error', text: 'Network or server error.' })
     } finally {
       setLoading(false)
     }
   }
 
-  if (!po) return <p>Loading GRN...</p>
+  if (!po) return <p>Loading...</p>
 
   /* ================= UI ================= */
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-      <h2 className="text-xl font-semibold">Add GRN</h2>
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {/* HEADER CARD */}
+      <div className="bg-white rounded-xl shadow p-6 grid grid-cols-4 gap-4">
+        <h2 className="col-span-4 text-xl font-semibold">
+          Goods Receipt Note (GRN)
+        </h2>
 
-      {/* ================= HEADER ================= */}
-      <div className="grid grid-cols-4 gap-4">
         <GroupInput>
           <Label>GRN No</Label>
           <Input value={grnNo} onChange={(e) => setGrnNo(e.target.value)} />
@@ -224,7 +205,11 @@ export default function AddGrn() {
 
         <GroupInput>
           <Label>GRN Date</Label>
-          <Input type="date" value={grnDate} onChange={(e) => setGrnDate(e.target.value)} />
+          <Input
+            type="date"
+            value={grnDate}
+            onChange={(e) => setGrnDate(e.target.value)}
+          />
         </GroupInput>
 
         <GroupInput>
@@ -233,125 +218,134 @@ export default function AddGrn() {
         </GroupInput>
 
         <GroupInput>
-          <Label>PO Date</Label>
-          <Input value={po.poDate.slice(0, 10)} disabled />
-        </GroupInput>
-
-        <GroupInput>
           <Label>Distributor</Label>
           <Input value={po.distributor.name} disabled />
         </GroupInput>
 
-        <GroupInput>
-          <Label>DC / Invoice No</Label>
-          <Input value={invoiceNo} onChange={(e) => setInvoiceNo(e.target.value)} />
+        <GroupInput className="col-span-2">
+          <Label>Invoice / DC No</Label>
+          <Input
+            value={invoiceNo}
+            onChange={(e) => setInvoiceNo(e.target.value)}
+          />
         </GroupInput>
 
         <GroupInput className="col-span-4">
           <Label>Remarks</Label>
-          <TextArea value={remarks} onChange={(e) => setRemarks(e.target.value)} />
+          <TextArea
+            rows={2}
+            value={remarks}
+            onChange={(e) => setRemarks(e.target.value)}
+          />
         </GroupInput>
       </div>
 
-      {/* ================= ITEMS ================= */}
-      <table className="w-full border text-sm">
-        <thead>
-          <tr>
-            <th>Item</th>
-            <th>Unit</th>
-            <th>Ordered</th>
-            <th>Accepted</th>
-            <th>Bonus</th>
-            <th>Balance</th>
-            <th>Batch</th>
-            <th>Expiry</th>
-            <th>Prev Rate</th>
-            <th>Purchase Rate</th>
-            <th>Sale Rate</th>
-            <th>Amount</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {items.map((item, i) => (
-            <tr key={i}>
-              <td>{item.medicineName}</td>
-              <td>{item.unit}</td>
-              <td>{item.orderedQty}</td>
-
-              <td>
-                <Input
-                  type="number"
-                  value={item.acceptedQty}
-                  onChange={(e) =>
-                    updateItem(i, 'acceptedQty', +e.target.value)
-                  }
-                />
-              </td>
-
-              <td>
-                <Input
-                  type="number"
-                  value={item.bonusQty}
-                  onChange={(e) =>
-                    updateItem(i, 'bonusQty', +e.target.value)
-                  }
-                />
-              </td>
-
-              <td>{item.balanceQty}</td>
-
-              <td>
-                <Input
-                  value={item.batchNo}
-                  onChange={(e) =>
-                    updateItem(i, 'batchNo', e.target.value)
-                  }
-                />
-              </td>
-
-              <td>
-                <Input
-                  type="date"
-                  value={item.expiryDate}
-                  onChange={(e) =>
-                    updateItem(i, 'expiryDate', e.target.value)
-                  }
-                />
-              </td>
-
-              <td>{item.previousRate}</td>
-
-              <td>
-                <Input
-                  type="number"
-                  value={item.purchaseRate}
-                  onChange={(e) =>
-                    updateItem(i, 'purchaseRate', +e.target.value)
-                  }
-                />
-              </td>
-
-              <td>
-                <Input
-                  type="number"
-                  value={item.saleRate}
-                  onChange={(e) =>
-                    updateItem(i, 'saleRate', +e.target.value)
-                  }
-                />
-              </td>
-
-              <td>{item.amount}</td>
+      {/* ITEMS TABLE */}
+      <div className="bg-white rounded-xl shadow overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead className="bg-gray-100">
+            <tr>
+              {[
+                'Item',
+                'Unit',
+                'Ordered',
+                'Accepted',
+                'Bonus',
+                'Balance',
+                'Batch',
+                'Expiry',
+                'Prev',
+                'Purchase',
+                'Sale',
+                'Amount',
+              ].map((h) => (
+                <th key={h} className="px-3 py-2 text-left">
+                  {h}
+                </th>
+              ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
 
-      {/* ================= FOOTER ================= */}
-      <div className="flex justify-between items-center">
-        <div className="font-semibold">
-          GRN Total: {grnTotal}
+          <tbody>
+            {items.map((item, i) => (
+              <tr key={i} className="border-t hover:bg-gray-50">
+                <td className="px-3">{item.medicineName}</td>
+                <td className="px-3">{item.unit}</td>
+                <td className="px-3">{item.orderedQty}</td>
+
+                <td className="px-3">
+                  <Input
+                    type="number"
+                    min={0}
+                    value={item.acceptedQty}
+                    onChange={(e) =>
+                      updateItem(i, 'acceptedQty', +e.target.value)
+                    }
+                    className='rounded-none'
+                  />
+                </td>
+
+                <td className="px-3">
+                  <Input
+                    type="number"
+                    min={0}
+                    value={item.bonusQty}
+                    onChange={(e) => updateItem(i, 'bonusQty', +e.target.value)}
+                  />
+                </td>
+
+                <td className="px-3 text-gray-500">{item.balanceQty}</td>
+
+                <td className="px-3">
+                  <Input
+                    value={item.batchNo}
+                    onChange={(e) => updateItem(i, 'batchNo', e.target.value)}
+                  />
+                </td>
+
+                <td className="px-3">
+                  <Input
+                    type="date"
+                    value={item.expiryDate}
+                    onChange={(e) =>
+                      updateItem(i, 'expiryDate', e.target.value)
+                    }
+                  />
+                </td>
+
+                <td className="px-3 text-gray-500">{item.previousRate}</td>
+
+                <td className="px-3">
+                  <Input
+                    type="number"
+                    min={0}
+                    value={item.purchaseRate}
+                    onChange={(e) =>
+                      updateItem(i, 'purchaseRate', +e.target.value)
+                    }
+                  />
+                </td>
+
+                <td className="px-3">
+                  <Input
+                    type="number"
+                    min={0}
+                    value={item.saleRate}
+                    onChange={(e) => updateItem(i, 'saleRate', +e.target.value)}
+                  />
+                </td>
+
+                <td className="px-3 font-semibold">{item.amount}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* FOOTER */}
+      <div className="flex justify-between items-center bg-white p-4 rounded-xl shadow">
+        <div className="text-lg font-semibold">
+          Total: {grnTotal.toFixed(2)}
         </div>
 
         <Button type="submit" disabled={loading}>
@@ -360,9 +354,15 @@ export default function AddGrn() {
       </div>
 
       {message && (
-        <p className={message.type === 'success' ? 'text-green-600' : 'text-red-600'}>
+        <div
+          className={`p-3 rounded ${
+            message.type === 'success'
+              ? 'bg-green-100 text-green-700'
+              : 'bg-red-100 text-red-700'
+          }`}
+        >
           {message.text}
-        </p>
+        </div>
       )}
     </form>
   )
