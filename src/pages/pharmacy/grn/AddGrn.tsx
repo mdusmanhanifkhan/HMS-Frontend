@@ -372,10 +372,9 @@
 
 
 
-const AddGrn = () => {
+
+export const AddGrn = () => {
   return (
     <div>AddGrn</div>
   )
 }
-
-export default AddGrn

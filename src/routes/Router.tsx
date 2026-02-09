@@ -54,7 +54,6 @@ import POListApprovel from '../pages/pharmacy/purchase-roder/POListApprovel.tsx'
 import POApprovel from '../pages/pharmacy/purchase-roder/POApprovel.tsx'
 import AccountsPurchaseOrderList from '../pages/accounts/purchase-order/AccountsPurchaseOrderList.tsx'
 import PurchaseOrderPayment from '../pages/accounts/purchase-order/PurchaseOrderPayment.tsx'
-import AddGrn from '../pages/pharmacy/grn/AddGrn.tsx'
 import ApprovedPOListGrn from '../pages/pharmacy/grn/ApprovedPOListGrn.tsx'
 import EditDistributor from '../pages/pharmacy/distributor/EditDistributor.tsx'
 import EditCategory from '../pages/pharmacy/category/EditCategory.tsx'
@@ -65,6 +64,10 @@ import EditUnit from '../pages/pharmacy/unit/EditUnit.tsx'
 import GenericName from '../pages/pharmacy/generic-name/index.tsx'
 import AddGenericName from '../pages/pharmacy/generic-name/AddGenericName.tsx'
 import Download from '../pages/download/Download.tsx'
+import Organization from '../pages/opd/organization/index.tsx'
+import AddOrganization from '../pages/opd/organization/AddOrganization.tsx'
+import Setting from '../pages/setting/Setting.tsx'
+import { AddGrn } from '../pages/pharmacy/grn/AddGrn.tsx'
 
 export const router = createBrowserRouter([
   {
@@ -147,7 +150,7 @@ export const router = createBrowserRouter([
       { path: routePaths.REPORTS, element: <ComingSoon /> },
       { path: routePaths.USERS_MANAGEMENT, element: <UserManagement /> },
       { path: routePaths.CREATE_USER, element: <CreateUser /> },
-      { path: routePaths.SETTINGS, element: <ComingSoon /> },
+      { path: routePaths.SETTINGS, element: <Setting /> },
       {
         path: routePaths.FINANCE_REPORT,
         element: <FinancialReport />,
@@ -283,6 +286,14 @@ export const router = createBrowserRouter([
       {
         path: `${routePaths.ADD_GENERIC_NAME}`,
         element: <AddGenericName />,
+      },
+      {
+        path: `${routePaths.ORGANIZATION}`,
+        element: <Organization />,
+      },
+      {
+        path: `${routePaths.ADD_ORGANIZATION}`,
+        element: <AddOrganization />,
       },
       {
         path: `/download`,
