@@ -45,7 +45,7 @@ const Organization = () => {
       }
 
       const data = await res.json()
-      setOrganizations(data.data || data || [])
+      setOrganizations(data.organizations || data || [])
     } catch (err: unknown) {
       if (err instanceof Error) setError(err.message)
       else setError('Something went wrong')

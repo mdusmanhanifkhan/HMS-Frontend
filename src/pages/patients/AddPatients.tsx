@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import * as Yup from 'yup'
 import Button from '../../components/button/Button'
 import { GroupInput } from '../../components/input/GroupInput'
@@ -38,8 +38,10 @@ const patientSchema = Yup.object().shape({
     .required('Age is required'),
   maritalStatus: Yup.string().required('Marital status is required'),
 })
+
 const AddPatients = () => {
   const navigate = useNavigate()
+  const NONE_ORG_ID = 2
 
   const API_BASE = import.meta.env.VITE_API_BASE_URL
   const token = localStorage.getItem('token')
@@ -66,6 +68,14 @@ const AddPatients = () => {
   const [submitAction, setSubmitAction] = useState<'save' | 'saveAndPrint'>(
     'save'
   )
+
+  const [organizations, setOrganizations] = useState<
+    { id: number; name: string }[]
+  >([])
+
+  const [selectedOrganizationId, setSelectedOrganizationId] = useState<
+    number | null
+  >(null)
 
   const formatPhoneNumber = (value: string): string => {
     const digits = value.replace(/\D/g, '').slice(0, 11)
@@ -104,6 +114,29 @@ const AddPatients = () => {
     setGeneralError(null)
   }
 
+  useEffect(() => {
+    const fetchOrganizations = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/organization`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+
+        const data = await res.json()
+
+        console.log(data)
+        if (res.ok) {
+          setOrganizations(data?.organizations || [])
+        }
+      } catch (err) {
+        console.error('Failed to fetch organizations', err)
+      }
+    }
+
+    fetchOrganizations()
+  }, [])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSuccess(null)
@@ -116,6 +149,7 @@ const AddPatients = () => {
         phoneNumber: form.phoneNumber?.replace(/\D/g, ''),
         cnicNumber: form.cnicNumber?.replace(/\D/g, ''),
         createdByUserId: 1,
+        organizationId: selectedOrganizationId ?? NONE_ORG_ID,
       }
       await patientSchema.validate(cleanForm, { abortEarly: false })
       setErrors({})
@@ -361,6 +395,27 @@ const AddPatients = () => {
           {errors.cnicNumber && (
             <p className="text-red text-sm">{errors.cnicNumber}</p>
           )}
+        </GroupInput>
+        <GroupInput>
+          <Label required="required">Organization</Label>
+          <Dropdown
+            options={organizations.map((org) => ({
+              id: org.id,
+              name: org.name,
+            }))}
+            selected={
+              selectedOrganizationId
+                ? {
+                    id: selectedOrganizationId,
+                    name:
+                      organizations.find((o) => o.id === selectedOrganizationId)
+                        ?.name || '',
+                  }
+                : null
+            }
+            onSelect={(opt) => setSelectedOrganizationId(Number(opt.id))}
+            placeholder="Select organization"
+          />
         </GroupInput>
 
         <GroupInput className="col-span-2">
