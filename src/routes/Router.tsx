@@ -64,6 +64,7 @@ import Unit from '../pages/pharmacy/unit/index.tsx'
 import EditUnit from '../pages/pharmacy/unit/EditUnit.tsx'
 import GenericName from '../pages/pharmacy/generic-name/index.tsx'
 import AddGenericName from '../pages/pharmacy/generic-name/AddGenericName.tsx'
+import Download from '../pages/download/Download.tsx'
 
 export const router = createBrowserRouter([
   {
@@ -282,6 +283,10 @@ export const router = createBrowserRouter([
       {
         path: `${routePaths.ADD_GENERIC_NAME}`,
         element: <AddGenericName />,
+      },
+      {
+        path: `/download`,
+        element: <Download />,
       },
 
     ],

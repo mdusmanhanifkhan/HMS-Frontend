@@ -13,7 +13,7 @@ export const SidebarRoutes = [
   {
     name: 'Patient',
     link: routePaths.PATIENTS,
-    permission: 'canManagePatients',
+    // permission: 'canManagePatients',
     icon: (
       <svg
         className="w-[15px] h-[15px]"
@@ -32,7 +32,7 @@ export const SidebarRoutes = [
   {
     name: 'Token',
     link: routePaths.TOKEN,
-    permission: 'canManageToken',
+    // permission: 'canManageToken',
     icon: (
       <svg
         className="w-[15px] h-[15px]"
@@ -52,7 +52,7 @@ export const SidebarRoutes = [
   {
     name: 'Patient History',
     link: routePaths.PATIENT_HISTORY,
-    permission: 'canManagePatientsHistory',
+    // permission: 'canManagePatientsHistory',
     icon: (
       <svg
         className="w-[15px] h-[15px]"
@@ -172,7 +172,7 @@ export const SidebarRoutes = [
   {
     name: 'Welfare Management',
     link: routePaths.WELFARE_MANAGEMENT,
-    permission: 'canManageWelfare',
+    // permission: 'canManageWelfare',
     icon: (
       <svg
         className="w-[18px] h-[18px]"
@@ -236,270 +236,270 @@ export const SidebarRoutes = [
     ),
   },
 // Pharmacy Module
-  {
-    name: 'Distributor',
-    link: routePaths.DISTRIBUTOR,
-    permission: 'canManagePharma',
-    icon: (
-      <svg
-        className="w-4 h-4"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        viewBox="0 0 24 24"
-      >
-        <circle cx="12" cy="12" r="10" />
-        <path d="M12 8v4l3 3" />
-      </svg>
-    ),
-  },
-  {
-    name: 'Company',
-    link: routePaths.COMPANY,
-    permission: 'canManagePharma',
-    icon: (
-      <svg
-        className="w-4 h-4"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        viewBox="0 0 24 24"
-      >
-        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-        <path d="M3 9h18M9 21V9" />
-      </svg>
-    ),
-  },
-  {
-    name: 'Medicine',
-    link: routePaths.MEDICINE,
-    permission: 'canManagePharma',
-    icon: (
-      <svg
-        className="w-4 h-4"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        viewBox="0 0 24 24"
-      >
-        <rect x="9" y="2" width="6" height="20" rx="2" ry="2" />
-        <path d="M2 12h20" />
-      </svg>
-    ),
-  },
-  {
-    name: 'GRN',
-    link: routePaths.GRN,
-    permission: 'canManagePharma',
-    icon: (
-      <svg
-        className="w-4 h-4"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        viewBox="0 0 24 24"
-      >
-        <path d="M12 5v14M5 12h14" />
-        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-      </svg>
-    ),
-  },
-  {
-    name: 'Stock',
-    link: routePaths.STOCK,
-    permission: 'canManagePharma',
-    icon: (
-      <svg
-        className="w-4 h-4"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        viewBox="0 0 24 24"
-      >
-        <path d="M4 6h16M4 12h16M4 18h16" />
-      </svg>
-    ),
-  },
-  {
-    name: 'Sale',
-    link: routePaths.SALE_INVOICE,
-    permission: 'canManagePharma',
-    icon: (
-      <svg
-        className="w-4 h-4"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        viewBox="0 0 24 24"
-      >
-        <circle cx="12" cy="12" r="10" />
-        <path d="M12 8v4l3 3" />
-      </svg>
-    ),
-  },
-  {
-    name: 'Category',
-    link: routePaths.CATEGORY,
-    permission: 'canManagePharma',
-    icon: (
-      <svg
-        className="w-4 h-4"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        viewBox="0 0 24 24"
-      >
-        <circle cx="12" cy="12" r="10" />
-        <path d="M12 6v12M6 12h12" />
-      </svg>
-    ),
-  },
-  {
-    name: 'Unit',
-    link: routePaths.UNIT,
-    permission: 'canManagePharma',
-    icon: (
-      <svg
-        className="w-4 h-4"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        viewBox="0 0 24 24"
-      >
-        <circle cx="12" cy="12" r="10" />
-        <path d="M12 6v12M6 12h12" />
-      </svg>
-    ),
-  },
-  {
-    name: 'Generic Name',
-    link: routePaths.GENERIC_NAME,
-    permission: 'canManagePharma',
-    icon: (
-      <svg
-        className="w-4 h-4"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        viewBox="0 0 24 24"
-      >
-        <circle cx="12" cy="12" r="10" />
-        <path d="M12 6v12M6 12h12" />
-      </svg>
-    ),
-  },
-  {
-    name: 'DosageForm',
-    link: routePaths.DOSAGE_FORM,
-    permission: 'canManagePharma',
-    icon: (
-      <svg
-        className="w-4 h-4"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        viewBox="0 0 24 24"
-      >
-        <rect x="4" y="4" width="16" height="16" rx="2" ry="2" />
-        <path d="M4 8h16M8 4v16" />
-      </svg>
-    ),
-  },
-  {
-    name: 'Indent',
-    link: routePaths.INDENT,
-    permission: 'canManagePharma',
-    icon: (
-      <svg
-        className="w-4 h-4"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        viewBox="0 0 24 24"
-      >
-        <path d="M3 6h18M3 12h18M3 18h18" />
-      </svg>
-    ),
-  },
+  // {
+  //   name: 'Distributor',
+  //   link: routePaths.DISTRIBUTOR,
+  //   permission: 'canManagePharma',
+  //   icon: (
+  //     <svg
+  //       className="w-4 h-4"
+  //       fill="none"
+  //       stroke="currentColor"
+  //       strokeWidth="2"
+  //       strokeLinecap="round"
+  //       strokeLinejoin="round"
+  //       viewBox="0 0 24 24"
+  //     >
+  //       <circle cx="12" cy="12" r="10" />
+  //       <path d="M12 8v4l3 3" />
+  //     </svg>
+  //   ),
+  // },
+  // {
+  //   name: 'Company',
+  //   link: routePaths.COMPANY,
+  //   permission: 'canManagePharma',
+  //   icon: (
+  //     <svg
+  //       className="w-4 h-4"
+  //       fill="none"
+  //       stroke="currentColor"
+  //       strokeWidth="2"
+  //       strokeLinecap="round"
+  //       strokeLinejoin="round"
+  //       viewBox="0 0 24 24"
+  //     >
+  //       <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+  //       <path d="M3 9h18M9 21V9" />
+  //     </svg>
+  //   ),
+  // },
+  // {
+  //   name: 'Medicine',
+  //   link: routePaths.MEDICINE,
+  //   permission: 'canManagePharma',
+  //   icon: (
+  //     <svg
+  //       className="w-4 h-4"
+  //       fill="none"
+  //       stroke="currentColor"
+  //       strokeWidth="2"
+  //       strokeLinecap="round"
+  //       strokeLinejoin="round"
+  //       viewBox="0 0 24 24"
+  //     >
+  //       <rect x="9" y="2" width="6" height="20" rx="2" ry="2" />
+  //       <path d="M2 12h20" />
+  //     </svg>
+  //   ),
+  // },
+  // {
+  //   name: 'GRN',
+  //   link: routePaths.GRN,
+  //   permission: 'canManagePharma',
+  //   icon: (
+  //     <svg
+  //       className="w-4 h-4"
+  //       fill="none"
+  //       stroke="currentColor"
+  //       strokeWidth="2"
+  //       strokeLinecap="round"
+  //       strokeLinejoin="round"
+  //       viewBox="0 0 24 24"
+  //     >
+  //       <path d="M12 5v14M5 12h14" />
+  //       <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+  //     </svg>
+  //   ),
+  // },
+  // {
+  //   name: 'Stock',
+  //   link: routePaths.STOCK,
+  //   permission: 'canManagePharma',
+  //   icon: (
+  //     <svg
+  //       className="w-4 h-4"
+  //       fill="none"
+  //       stroke="currentColor"
+  //       strokeWidth="2"
+  //       strokeLinecap="round"
+  //       strokeLinejoin="round"
+  //       viewBox="0 0 24 24"
+  //     >
+  //       <path d="M4 6h16M4 12h16M4 18h16" />
+  //     </svg>
+  //   ),
+  // },
+  // {
+  //   name: 'Sale',
+  //   link: routePaths.SALE_INVOICE,
+  //   permission: 'canManagePharma',
+  //   icon: (
+  //     <svg
+  //       className="w-4 h-4"
+  //       fill="none"
+  //       stroke="currentColor"
+  //       strokeWidth="2"
+  //       strokeLinecap="round"
+  //       strokeLinejoin="round"
+  //       viewBox="0 0 24 24"
+  //     >
+  //       <circle cx="12" cy="12" r="10" />
+  //       <path d="M12 8v4l3 3" />
+  //     </svg>
+  //   ),
+  // },
+  // {
+  //   name: 'Category',
+  //   link: routePaths.CATEGORY,
+  //   permission: 'canManagePharma',
+  //   icon: (
+  //     <svg
+  //       className="w-4 h-4"
+  //       fill="none"
+  //       stroke="currentColor"
+  //       strokeWidth="2"
+  //       strokeLinecap="round"
+  //       strokeLinejoin="round"
+  //       viewBox="0 0 24 24"
+  //     >
+  //       <circle cx="12" cy="12" r="10" />
+  //       <path d="M12 6v12M6 12h12" />
+  //     </svg>
+  //   ),
+  // },
+  // {
+  //   name: 'Unit',
+  //   link: routePaths.UNIT,
+  //   permission: 'canManagePharma',
+  //   icon: (
+  //     <svg
+  //       className="w-4 h-4"
+  //       fill="none"
+  //       stroke="currentColor"
+  //       strokeWidth="2"
+  //       strokeLinecap="round"
+  //       strokeLinejoin="round"
+  //       viewBox="0 0 24 24"
+  //     >
+  //       <circle cx="12" cy="12" r="10" />
+  //       <path d="M12 6v12M6 12h12" />
+  //     </svg>
+  //   ),
+  // },
+  // {
+  //   name: 'Generic Name',
+  //   link: routePaths.GENERIC_NAME,
+  //   permission: 'canManagePharma',
+  //   icon: (
+  //     <svg
+  //       className="w-4 h-4"
+  //       fill="none"
+  //       stroke="currentColor"
+  //       strokeWidth="2"
+  //       strokeLinecap="round"
+  //       strokeLinejoin="round"
+  //       viewBox="0 0 24 24"
+  //     >
+  //       <circle cx="12" cy="12" r="10" />
+  //       <path d="M12 6v12M6 12h12" />
+  //     </svg>
+  //   ),
+  // },
+  // {
+  //   name: 'DosageForm',
+  //   link: routePaths.DOSAGE_FORM,
+  //   permission: 'canManagePharma',
+  //   icon: (
+  //     <svg
+  //       className="w-4 h-4"
+  //       fill="none"
+  //       stroke="currentColor"
+  //       strokeWidth="2"
+  //       strokeLinecap="round"
+  //       strokeLinejoin="round"
+  //       viewBox="0 0 24 24"
+  //     >
+  //       <rect x="4" y="4" width="16" height="16" rx="2" ry="2" />
+  //       <path d="M4 8h16M8 4v16" />
+  //     </svg>
+  //   ),
+  // },
+  // {
+  //   name: 'Indent',
+  //   link: routePaths.INDENT,
+  //   permission: 'canManagePharma',
+  //   icon: (
+  //     <svg
+  //       className="w-4 h-4"
+  //       fill="none"
+  //       stroke="currentColor"
+  //       strokeWidth="2"
+  //       strokeLinecap="round"
+  //       strokeLinejoin="round"
+  //       viewBox="0 0 24 24"
+  //     >
+  //       <path d="M3 6h18M3 12h18M3 18h18" />
+  //     </svg>
+  //   ),
+  // },
 
-  {
-    name: 'Purchase Order',
-    link: routePaths.PURCHASE_ORDER,
-    permission: 'canManagePharma',
-    icon: (
-      <svg
-        className="w-4 h-4"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        viewBox="0 0 24 24"
-      >
-        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-        <path d="M3 9h18M3 15h18" />
-      </svg>
-    ),
-  },
-  {
-    name: 'PO Approvel',
-    link: routePaths.PURCHASE_ORDER_APPROVEL,
-    permission: 'canManagePharma',
-    icon: (
-      <svg
-        className="w-4 h-4"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        viewBox="0 0 24 24"
-      >
-        <path d="M9 12l2 2 4-4M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
-      </svg>
-    ),
-  },
-  {
-    name: 'Account',
-    link: routePaths.ACCOUNTS_PO_LIST,
-    permission: 'canManagePharma',
-    icon: (
-      <svg
-        className="w-[15px] h-[15px]"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <circle cx="12" cy="12" r="3" />
-        <path d="M19.4 15a1.8 1.8 0 0 0 .3 2l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.8 1.8 0 0 0-2-.3 1.8 1.8 0 0 0-1 1.6V21a2 2 0 1 1-4 0v-.2a1.8 1.8 0 0 0-1-1.6 1.8 1.8 0 0 0-2 .3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.8 1.8 0 0 0 .3-2 1.8 1.8 0 0 0-1.6-1H3a2 2 0 1 1 0-4h.2a1.8 1.8 0 0 0 1.6-1 1.8 1.8 0 0 0-.3-2l-.1-.1A2 2 0 1 1 7.2 3.2l.1.1a1.8 1.8 0 0 0 2 .3A1.8 1.8 0 0 0 10.4 2.1V2a2 2 0 1 1 4 0v.2a1.8 1.8 0 0 0 1 1.6 1.8 1.8 0 0 0 2-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.8 1.8 0 0 0-.3 2c.2.6.8 1.1 1.6 1.1H21a2 2 0 1 1 0 4h-.2c-.8 0-1.4.5-1.4 1.1z" />
-      </svg>
-    ),
-  },
+  // {
+  //   name: 'Purchase Order',
+  //   link: routePaths.PURCHASE_ORDER,
+  //   permission: 'canManagePharma',
+  //   icon: (
+  //     <svg
+  //       className="w-4 h-4"
+  //       fill="none"
+  //       stroke="currentColor"
+  //       strokeWidth="2"
+  //       strokeLinecap="round"
+  //       strokeLinejoin="round"
+  //       viewBox="0 0 24 24"
+  //     >
+  //       <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+  //       <path d="M3 9h18M3 15h18" />
+  //     </svg>
+  //   ),
+  // },
+  // {
+  //   name: 'PO Approvel',
+  //   link: routePaths.PURCHASE_ORDER_APPROVEL,
+  //   permission: 'canManagePharma',
+  //   icon: (
+  //     <svg
+  //       className="w-4 h-4"
+  //       fill="none"
+  //       stroke="currentColor"
+  //       strokeWidth="2"
+  //       strokeLinecap="round"
+  //       strokeLinejoin="round"
+  //       viewBox="0 0 24 24"
+  //     >
+  //       <path d="M9 12l2 2 4-4M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
+  //     </svg>
+  //   ),
+  // },
+  // {
+  //   name: 'Account',
+  //   link: routePaths.ACCOUNTS_PO_LIST,
+  //   permission: 'canManagePharma',
+  //   icon: (
+  //     <svg
+  //       className="w-[15px] h-[15px]"
+  //       viewBox="0 0 24 24"
+  //       fill="none"
+  //       stroke="currentColor"
+  //       strokeWidth="2"
+  //       strokeLinecap="round"
+  //       strokeLinejoin="round"
+  //     >
+  //       <circle cx="12" cy="12" r="3" />
+  //       <path d="M19.4 15a1.8 1.8 0 0 0 .3 2l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.8 1.8 0 0 0-2-.3 1.8 1.8 0 0 0-1 1.6V21a2 2 0 1 1-4 0v-.2a1.8 1.8 0 0 0-1-1.6 1.8 1.8 0 0 0-2 .3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.8 1.8 0 0 0 .3-2 1.8 1.8 0 0 0-1.6-1H3a2 2 0 1 1 0-4h.2a1.8 1.8 0 0 0 1.6-1 1.8 1.8 0 0 0-.3-2l-.1-.1A2 2 0 1 1 7.2 3.2l.1.1a1.8 1.8 0 0 0 2 .3A1.8 1.8 0 0 0 10.4 2.1V2a2 2 0 1 1 4 0v.2a1.8 1.8 0 0 0 1 1.6 1.8 1.8 0 0 0 2-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.8 1.8 0 0 0-.3 2c.2.6.8 1.1 1.6 1.1H21a2 2 0 1 1 0 4h-.2c-.8 0-1.4.5-1.4 1.1z" />
+  //     </svg>
+  //   ),
+  // },
     {
     name: 'Billing & Receipts',
     link: routePaths.BILLING,
