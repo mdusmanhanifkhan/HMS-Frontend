@@ -369,6 +369,44 @@ export const SidebarRoutes = [
     ),
   },
   {
+    name: 'Unit',
+    link: routePaths.UNIT,
+    permission: 'canManagePharma',
+    icon: (
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        viewBox="0 0 24 24"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <path d="M12 6v12M6 12h12" />
+      </svg>
+    ),
+  },
+  {
+    name: 'Generic Name',
+    link: routePaths.GENERIC_NAME,
+    permission: 'canManagePharma',
+    icon: (
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        viewBox="0 0 24 24"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <path d="M12 6v12M6 12h12" />
+      </svg>
+    ),
+  },
+  {
     name: 'DosageForm',
     link: routePaths.DOSAGE_FORM,
     permission: 'canManagePharma',

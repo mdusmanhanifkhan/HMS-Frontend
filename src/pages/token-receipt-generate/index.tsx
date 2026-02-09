@@ -82,6 +82,7 @@ const PatientReceiptGenerator = () => {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
+  const [discountError, setDiscountError] = useState<string | null>(null)
 
   /* ---------- FETCH DEPARTMENTS & TREE ---------- */
   useEffect(() => {
@@ -262,8 +263,15 @@ const PatientReceiptGenerator = () => {
     setTotalFee(total)
     setFinalFee(final)
   }
-
   const handleDiscountChange = (value: number) => {
+    if (value > totalFee) {
+      setDiscountError('Discount amount cannot be more than total amount')
+      setDiscount(totalFee)
+      calculateTotals(cart, totalFee)
+      return
+    }
+
+    setDiscountError(null)
     setDiscount(value)
     calculateTotals(cart, value)
   }
@@ -387,6 +395,10 @@ const PatientReceiptGenerator = () => {
     <div className="p-4">
       <h2 className="text-xl font-semibold mb-4">Patient Receipt Generator</h2>
       {error && <p className="text-red mb-2">{error}</p>}
+      {discountError && (
+        <p className="text-red text-sm mt-1">{discountError}</p>
+      )}
+
       {success && <SuccessMessage msg={success} />}
 
       <div className="flex items-center gap-3">

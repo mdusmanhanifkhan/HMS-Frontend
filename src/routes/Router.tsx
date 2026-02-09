@@ -59,6 +59,11 @@ import ApprovedPOListGrn from '../pages/pharmacy/grn/ApprovedPOListGrn.tsx'
 import EditDistributor from '../pages/pharmacy/distributor/EditDistributor.tsx'
 import EditCategory from '../pages/pharmacy/category/EditCategory.tsx'
 import DosageForm from '../pages/pharmacy/dosage-form/index.tsx'
+import AddUnit from '../pages/pharmacy/unit/AddUnit.tsx'
+import Unit from '../pages/pharmacy/unit/index.tsx'
+import EditUnit from '../pages/pharmacy/unit/EditUnit.tsx'
+import GenericName from '../pages/pharmacy/generic-name/index.tsx'
+import AddGenericName from '../pages/pharmacy/generic-name/AddGenericName.tsx'
 
 export const router = createBrowserRouter([
   {
@@ -257,6 +262,26 @@ export const router = createBrowserRouter([
       {
         path: `${routePaths.ACCOUNTS_PO_LIST}`,
         element: <AccountsPurchaseOrderList />,
+      },
+      {
+        path: `${routePaths.UNIT}`,
+        element: <Unit />,
+      },
+      {
+        path: `${routePaths.ADD_UNIT}`,
+        element: <AddUnit />,
+      },
+      {
+        path: `${routePaths.EDIT_UNIT}/:id`,
+        element: <EditUnit />,
+      },
+      {
+        path: `${routePaths.GENERIC_NAME}`,
+        element: <GenericName />,
+      },
+      {
+        path: `${routePaths.ADD_GENERIC_NAME}`,
+        element: <AddGenericName />,
       },
 
     ],

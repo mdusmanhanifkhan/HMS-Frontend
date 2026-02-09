@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { Input } from '../../../components/input/Input'
 import { Label } from '../../../components/input/Label'
 import Dropdown from '../../../components/input/Dropdown'
@@ -16,6 +16,8 @@ interface Option {
 
 interface Medicine extends Option {
   genericNameId: number
+  dosageFormId: number
+  unitId: number
 }
 type Generic = Option
 type Distributor = Option
@@ -25,6 +27,9 @@ interface IndentItem {
   genericNameId: number
   requestedQty: number
   medicineId: number | null
+  dosageForm?: { id: number; name: string }
+  unit?: { id: number; unit: string; label: string }
+  selected?: boolean
 }
 
 interface Indent {
@@ -66,7 +71,7 @@ const token = localStorage.getItem('token')
 
 const CreatePurchaseOrder = () => {
   const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
 
   const [indent, setIndent] = useState<Indent | null>(null)
   const [medicines, setMedicines] = useState<Medicine[]>([])
@@ -95,7 +100,10 @@ const CreatePurchaseOrder = () => {
     })
       .then((res) => res.json())
       .then((data: Indent) => {
-        setIndent(data)
+        setIndent({
+          ...data,
+          items: data.items.map((item) => ({ ...item, selected: false })),
+        })
         setForm((prev) => ({
           ...prev,
           indentId: data.id,
@@ -167,38 +175,90 @@ const CreatePurchaseOrder = () => {
     })
   }
 
+  const toggleSelectItem = (index: number) => {
+    if (!indent) return
+    const newItems = [...indent.items]
+    newItems[index].selected = !newItems[index].selected
+    setIndent({ ...indent, items: newItems })
+  }
+
   const grandTotal = form.items.reduce((sum, i) => sum + i.totalAmount, 0)
 
   /* ================= SUBMIT ================= */
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault()
-    if (submitting) return
-    setSubmitting(true)
-    setError(null)
+const handleSubmit = async (e: FormEvent) => {
+  e.preventDefault()
+  if (submitting || !indent) return
 
-    try {
-      const res = await fetch(`${API_BASE}/api/create-po`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(form),
-      })
+  setSubmitting(true)
+  setError(null)
 
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.message || 'Failed to create PO')
+  // Only include selected items
+  const selectedItems = form.items.filter(
+    (_, index) => indent.items[index].selected
+  )
 
-      // Success: redirect
-      navigate(routePaths.PURCHASE_ORDER)
-    } catch (err: unknown) {
-      if (err instanceof Error) setError(err.message)
-      else setError('Something went wrong')
-    } finally {
-      setSubmitting(false)
-    }
+  if (selectedItems.length === 0) {
+    setError('Please select at least one item to create PO')
+    setSubmitting(false)
+    return
   }
+
+  try {
+    // Create PO for selected items
+    const res = await fetch(`${API_BASE}/api/create-po`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        poNo: form.poNo,
+        distributorId: form.distributorId,
+        indentId: indent.id, // same indent
+        remarks: form.remarks,
+        paymentType: form.paymentType,
+        items: selectedItems,
+      }),
+    })
+
+    const data = await res.json()
+    if (!res.ok) throw new Error(data.message || 'Failed to create PO')
+
+    // ✅ Re-fetch the same indent to get remaining items
+    const indentRes = await fetch(`${API_BASE}/api/indent/${indent.id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+
+    const updatedIndent: Indent = await indentRes.json()
+
+    // Update state with remaining items
+    setIndent({
+      ...updatedIndent,
+      items: updatedIndent.items.map((i) => ({ ...i, selected: false })),
+    })
+
+    setForm((prev) => ({
+      ...prev,
+      distributorId: null, // reset distributor for next selection
+      items: updatedIndent.items.map((item) => ({
+        indentItemId: item.id,
+        medicineId: null,
+        orderedQty: item.requestedQty,
+        rate: 0,
+        discountPercent: 0,
+        taxPercent: 0,
+        totalAmount: 0,
+      })),
+    }))
+  } catch (err: unknown) {
+    if (err instanceof Error) setError(err.message)
+    else setError('Something went wrong')
+  } finally {
+    setSubmitting(false)
+  }
+}
+
 
   /* ================= UI ================= */
 
@@ -211,22 +271,6 @@ const CreatePurchaseOrder = () => {
         <Button asLink to={routePaths.PURCHASE_ORDER}>
           ← Back
         </Button>
-      </div>
-
-      {/* INDENT INFO */}
-      <div className="grid grid-cols-4 gap-4 bg-gray-50 p-4 rounded mb-4">
-        <div>
-          <b>Indent No:</b> {indent.indentNo}
-        </div>
-        <div>
-          <b>Date:</b> {new Date(indent.indentDate).toLocaleDateString()}
-        </div>
-        <div>
-          <b>Status:</b> {indent.status}
-        </div>
-        <div>
-          <b>Remarks:</b> {indent.remarks || '-'}
-        </div>
       </div>
 
       {/* DISTRIBUTOR */}
@@ -249,87 +293,110 @@ const CreatePurchaseOrder = () => {
 
       {/* ITEMS */}
       <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-        {form.items.map((item, index) => (
-          <div key={item.indentItemId} className="grid grid-cols-16 gap-2">
-            {/* GENERIC NAME */}
-            <div className="col-span-3">
-              <Label>Generic Name</Label>
-              <Input
-                value={
-                  generics.find(
-                    (g) => g.id === indent.items[index].genericNameId
-                  )?.name || ''
-                }
-                disabled
-              />
-            </div>
+        {form.items.map((item, index) => {
+          const indentItem = indent.items[index]
+          const medicine = medicines.find((m) => m.id === item.medicineId)
 
-            {/* MEDICINE */}
-            <div className="col-span-4">
-              <Label>Medicine</Label>
-              <Dropdown
-                options={medicines.filter(
-                  (m) => m.genericNameId === indent.items[index].genericNameId
-                )}
-                selected={
-                  medicines.find((m) => m.id === item.medicineId) ?? null
-                }
-                onSelect={(opt) =>
-                  updateItem(index, 'medicineId', Number(opt.id))
-                }
-              />
-            </div>
+          return (
+            <div key={item.indentItemId} className="grid grid-cols-18 gap-2 items-center">
+              {/* SELECT ITEM */}
+              <div className="col-span-1 flex justify-center">
+                <input
+                  type="checkbox"
+                  checked={indentItem.selected || false}
+                  onChange={() => toggleSelectItem(index)}
+                />
+              </div>
 
-            {/* QTY */}
-            <div className="col-span-2">
-              <Label>Qty</Label>
-              <Input
-                type="number"
-                value={item.orderedQty}
-                onChange={(e) =>
-                  updateItem(index, 'orderedQty', +e.target.value)
-                }
-              />
-            </div>
+              {/* GENERIC NAME */}
+              <div className="col-span-3">
+                <Label>Generic Name</Label>
+                <Input
+                  value={
+                    generics.find((g) => g.id === indentItem.genericNameId)?.name ||
+                    ''
+                  }
+                  disabled
+                />
+              </div>
 
-            {/* RATE */}
-            <div className="col-span-2">
-              <Label>Rate</Label>
-              <Input
-                type="number"
-                onChange={(e) => updateItem(index, 'rate', +e.target.value)}
-              />
-            </div>
+              {/* MEDICINE */}
+              <div className="col-span-3">
+                <Label>Medicine</Label>
+                <Dropdown
+                  options={medicines.filter(
+                    (m) => m.genericNameId === indentItem.genericNameId
+                  )}
+                  selected={medicine ?? null}
+                  onSelect={(opt) =>
+                    updateItem(index, 'medicineId', Number(opt.id))
+                  }
+                />
+              </div>
 
-            {/* DISCOUNT */}
-            <div className="col-span-2">
-              <Label>Disc %</Label>
-              <Input
-                type="number"
-                onChange={(e) =>
-                  updateItem(index, 'discountPercent', +e.target.value)
-                }
-              />
-            </div>
+              {/* DOSAGE FORM (read-only) */}
+              <div className="col-span-2">
+                <Label>Dosage Form</Label>
+                <Input value={indentItem.dosageForm?.name || ''} disabled />
+              </div>
 
-            {/* TAX */}
-            <div className="col-span-2">
-              <Label>Tax %</Label>
-              <Input
-                type="number"
-                onChange={(e) =>
-                  updateItem(index, 'taxPercent', +e.target.value)
-                }
-              />
-            </div>
+              {/* UNIT (read-only) */}
+              <div className="col-span-1">
+                <Label>Unit</Label>
+                <Input value={indentItem.unit?.label || ''} disabled />
+              </div>
 
-            {/* TOTAL */}
-            <div className="col-span-1">
-              <Label>Total</Label>
-              <Input value={item.totalAmount} disabled />
+              {/* QTY */}
+              <div className="col-span-1">
+                <Label>Qty</Label>
+                <Input
+                  type="number"
+                  value={item.orderedQty}
+                  onChange={(e) =>
+                    updateItem(index, 'orderedQty', +e.target.value)
+                  }
+                />
+              </div>
+
+              {/* RATE */}
+              <div className="col-span-1">
+                <Label>Rate</Label>
+                <Input
+                  type="number"
+                  onChange={(e) => updateItem(index, 'rate', +e.target.value)}
+                />
+              </div>
+
+              {/* DISCOUNT */}
+              <div className="col-span-1">
+                <Label>Disc %</Label>
+                <Input
+                  type="number"
+                  onChange={(e) =>
+                    updateItem(index, 'discountPercent', +e.target.value)
+                  }
+                />
+              </div>
+
+              {/* TAX */}
+              <div className="col-span-1">
+                <Label>Tax %</Label>
+                <Input
+                  type="number"
+                  onChange={(e) =>
+                    updateItem(index, 'taxPercent', +e.target.value)
+                  }
+                />
+              </div>
+
+              {/* TOTAL */}
+              <div className="col-span-2">
+                <Label>Total</Label>
+                <Input value={item.totalAmount} disabled />
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
 
         <div className="text-right text-lg font-bold">
           Grand Total: Rs. {grandTotal.toFixed(2)}
