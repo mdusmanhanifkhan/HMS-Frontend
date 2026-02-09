@@ -75,4 +75,7 @@ export const routePaths = {
   GENERIC_NAME:'/generic-name',
   ADD_GENERIC_NAME:'/generic-name/add',
   EDIT_GENERIC_NAME:'/generic-name/edit',
+  ORGANIZATION:'/organization',
+  ADD_ORGANIZATION:'/organization/add',
+  EDIT_ORGANIZATION:'/organization/edit'
 } as const
