@@ -69,4 +69,10 @@ export const routePaths = {
   ACCOUNTS_PO_LIST:'/accounts-po-list',
   GRN:'/grn',
   ADD_GRN:'/grn/add',
+  UNIT:'/unit',
+  ADD_UNIT:'/unit/add',
+  EDIT_UNIT:'/unit/edit',
+  GENERIC_NAME:'/generic-name',
+  ADD_GENERIC_NAME:'/generic-name/add',
+  EDIT_GENERIC_NAME:'/generic-name/edit',
 } as const

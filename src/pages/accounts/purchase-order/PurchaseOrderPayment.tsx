@@ -45,6 +45,14 @@ const accountOptions = [
   { id: 'OTHER', name: 'OTHER' },
 ]
 
+// ✅ Payment status dropdown options
+const paymentStatusOptions: Option[] = [
+  { id: 'FULL_AFTER_RECEIVE', name: 'Full payment after receiving goods' },
+  { id: 'ADVANCE', name: 'Advance payment before delivery' },
+  { id: 'PARTIAL_50_AFTER_RECEIVE', name: '50% payment now, 50% after receiving goods' },
+  { id: 'WITHIN_30_DAYS', name: 'Payment within 30 days of delivery' },
+]
+
 const PurchaseOrderPayment = () => {
   const { id: poId } = useParams<{ id: string }>()
   const [po, setPo] = useState<PurchaseOrder | null>(null)
@@ -55,6 +63,7 @@ const PurchaseOrderPayment = () => {
   const [debit, setDebit] = useState<number | ''>('')
   const [credit, setCredit] = useState<number | ''>('')
   const [accountType, setAccountType] = useState<Option | null>(null)
+  const [paymentStatus, setPaymentStatus] = useState<Option | null>(null)
   const [accountRefId, setAccountRefId] = useState<string | undefined>('')
   const [approvedBy, setApprovedBy] = useState<string>('')
   const [remarks, setRemarks] = useState<string>('')
@@ -101,6 +110,11 @@ const PurchaseOrderPayment = () => {
       return
     }
 
+    if (!paymentStatus) {
+      setMessage('Payment Status is required')
+      return
+    }
+
     try {
       setLoading(true)
       const res = await fetch(`${API_BASE}/api/ledger-entry`, {
@@ -115,6 +129,7 @@ const PurchaseOrderPayment = () => {
           debit,
           credit,
           accountType: accountType.name,
+          paymentStatus: paymentStatus.name,
           accountRefId: accountRefId || null,
           approvedBy,
           remarks,
@@ -130,6 +145,7 @@ const PurchaseOrderPayment = () => {
       setDebit(po?.totalAmount || '')
       setCredit(0)
       setAccountType(null)
+      setPaymentStatus(null)
       setAccountRefId('')
       setApprovedBy('')
       setRemarks('')
@@ -212,6 +228,17 @@ const PurchaseOrderPayment = () => {
             selected={accountType}
             onSelect={(opt) => setAccountType(opt)}
             placeholder="Select account type..."
+          />
+        </GroupInput>
+
+        {/* ✅ Payment Status */}
+        <GroupInput>
+          <Label htmlFor="paymentStatus">Payment Status</Label>
+          <Dropdown
+            options={paymentStatusOptions}
+            selected={paymentStatus}
+            onSelect={(opt) => setPaymentStatus(opt)}
+            placeholder="Select payment status..."
           />
         </GroupInput>
 

@@ -23,6 +23,9 @@ type MedicineItem = {
   isActive: boolean
   dosageForm?: DosageForm | null
   category?: Category | null
+  unit?: {
+    label: string
+  }
 }
 
 /* ================= COMPONENT ================= */
@@ -203,7 +206,9 @@ const Medicine = () => {
                 >
                   <td className="px-6 py-3 font-medium">{med.id}</td>
 
-                  <td className="px-6 py-3 font-semibold">{med.name}</td>
+                  <td className="px-6 py-3 font-semibold">
+                    {med.name} {med?.unit?.label}
+                  </td>
 
                   <td className="px-6 py-3">{med.dosageForm?.name ?? '-'}</td>
 
