@@ -1,5 +1,3 @@
-
-
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Button from '../../components/button/Button'
@@ -7,46 +5,55 @@ import { routePaths } from '../../constants/routePaths'
 import Loading from '../../components/loading/Loading'
 import { Input } from '../../components/input/Input'
 
-interface Department {
+/* ================= TYPES ================= */
+
+interface Role {
   id: number
   name: string
 }
 
-interface Procedure {
+interface User {
   id: number
   name: string
-  shortCode?: string
-  description?: string
+  email: string
+  role?: Role
   status: boolean
-  department?: Department
 }
 
-const UserManagement = () => {
-  const [procedures, setProcedures] = useState<Procedure[]>([])
+interface ApiResponse {
+  success: boolean
+  users: User[]
+}
+
+/* ================= COMPONENT ================= */
+
+const UserManagement: React.FC = () => {
+  const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState<string>('')
   const [debouncedSearch, setDebouncedSearch] = useState<string>('')
+
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false)
-  const [procedureToDelete, setProcedureToDelete] = useState<Procedure | null>(null)
+  const [userToDelete, setUserToDelete] = useState<User | null>(null)
 
   const API_BASE = import.meta.env.VITE_API_BASE_URL
   const token = localStorage.getItem('token')
 
-  if (!token) console.error('No token found. Users must login first.')
-
-  // Debounce search input
+  /* ================= DEBOUNCE ================= */
   useEffect(() => {
-    const handler = setTimeout(() => {
+    const timer = setTimeout(() => {
       setDebouncedSearch(searchTerm)
     }, 500)
-    return () => clearTimeout(handler)
+
+    return () => clearTimeout(timer)
   }, [searchTerm])
 
-  // Fetch procedures
+  /* ================= FETCH USERS ================= */
   useEffect(() => {
     const controller = new AbortController()
-    const fetchProcedures = async () => {
+
+    const fetchUsers = async () => {
       if (!token) {
         setError('Authentication token missing')
         return
@@ -56,64 +63,73 @@ const UserManagement = () => {
         setLoading(true)
         setError(null)
 
-        let url = `${API_BASE}/api/procedures`
+        let url = `${API_BASE}/api/users`
+
         if (debouncedSearch.trim()) {
-          url = `${API_BASE}/api/procedures/search?query=${encodeURIComponent(debouncedSearch)}`
+          url = `${API_BASE}/api/users/search?query=${encodeURIComponent(
+            debouncedSearch
+          )}`
         }
 
         const res = await fetch(url, {
           signal: controller.signal,
-          headers: { Authorization: `Bearer ${token}` }, // ✅ add token here
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         })
+
         if (!res.ok) {
-          const errData = await res.json()
-          throw new Error(errData.message || 'Failed to fetch procedures')
+          const err = await res.json()
+          throw new Error(err.message || 'Failed to fetch users')
         }
 
-        const data: { status: number; message: string; data: Procedure[] } = await res.json()
-        setProcedures(data.data || [])
+        const data: ApiResponse = await res.json()
+
+        setUsers(data.users || [])
       } catch (err: unknown) {
-        if (err instanceof Error) {
-          if (err.name !== 'AbortError') {
-            setError(err.message || 'Something went wrong')
-            setProcedures([])
-          }
-        } else {
-          setError('Something went wrong')
-          setProcedures([])
+        if (err instanceof Error && err.name !== 'AbortError') {
+          setError(err.message)
+          setUsers([])
         }
       } finally {
         setLoading(false)
       }
     }
 
-    fetchProcedures()
+    fetchUsers()
     return () => controller.abort()
   }, [debouncedSearch, token])
 
-  // Open delete modal
-  const handleDeleteClick = (proc: Procedure) => {
-    setProcedureToDelete(proc)
+  /* ================= DELETE ================= */
+  const handleDeleteClick = (user: User) => {
+    setUserToDelete(user)
     setDeleteModalOpen(true)
   }
 
-  // Confirm delete
   const confirmDelete = async () => {
-    if (!procedureToDelete || !token) return
+    if (!userToDelete || !token) return
 
     try {
       setLoading(true)
-      const res = await fetch(`${API_BASE}/api/procedures/${procedureToDelete.id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` }, // ✅ add token here
-      })
+
+      const res = await fetch(
+        `${API_BASE}/api/users/${userToDelete.id}`,
+        {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+
       if (!res.ok) {
-        const errData = await res.json()
-        throw new Error(errData.message || 'Failed to delete procedure')
+        const err = await res.json()
+        throw new Error(err.message || 'Delete failed')
       }
-      setProcedures(prev => prev.filter(p => p.id !== procedureToDelete.id))
+
+      setUsers(prev => prev.filter(u => u.id !== userToDelete.id))
       setDeleteModalOpen(false)
-      setProcedureToDelete(null)
+      setUserToDelete(null)
     } catch (err: unknown) {
       if (err instanceof Error) setError(err.message)
       else setError('Something went wrong')
@@ -121,143 +137,104 @@ const UserManagement = () => {
       setLoading(false)
     }
   }
+
+  /* ================= UI ================= */
+
   return (
-    <div className="flex flex-col gap-10 relative">
-      {/* Header */}
-      <div className="flex justify-between items-center w-full border-b pb-3">
+    <div className="flex flex-col gap-10">
+
+      {/* HEADER */}
+      <div className="flex justify-between items-center border-b pb-3">
         <p className="text-xl font-semibold">User Management</p>
-        <div className="flex items-center gap-5 min-w-100">
-          {/* Search Input */}
-          <div className="flex items-center gap-2 py-1.5 w-full rounded-lg border px-2 border-gray placeholder:text-gray-100 placeholder:font-light">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 20 20"
-              id="search"
-            >
-              <g
-                stroke="none"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <g
-                  stroke="#000"
-                  strokeWidth="2"
-                  transform="translate(-1687 -1941)"
-                >
-                  <g transform="translate(1688 1942)">
-                    <circle cx="7.5" cy="7.5" r="7.5"></circle>
-                    <path d="M18 18l-5.2-5.2"></path>
-                  </g>
-                </g>
-              </g>
-            </svg>
+
+        <div className="flex gap-4 min-w-[400px]">
+
+          {/* SEARCH */}
+          <div className="flex items-center border rounded-lg px-2 w-full">
             <Input
               type="text"
-              placeholder="Search User..."
+              placeholder="Search user..."
               variant="none"
-              className="outline-none "
+              className="outline-none w-full"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
 
-          {/* Add Procedure Button */}
+          {/* CREATE */}
           <Link to={routePaths.CREATE_USER}>
             <Button>+ Create User</Button>
           </Link>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="relative overflow-x-auto shadow-lg rounded-lg">
-        <table className="w-full text-sm text-left rtl:text-right">
-          <thead className="text-xs text-white uppercase bg-dark">
+      {/* TABLE */}
+      <div className="overflow-x-auto shadow rounded-lg">
+        <table className="w-full text-sm">
+          <thead className="bg-dark text-white">
             <tr>
-              <th className="px-6 py-3">ID</th>
-              <th className="px-6 py-3">User Name</th>
-              <th className="px-6 py-3">User Email</th>
-              <th className="px-6 py-3">Action</th>
+              <th className="text-start px-6 py-3">ID</th>
+              <th className="text-start px-6 py-3">Name</th>
+              <th className="text-start px-6 py-3">Email</th>
+              <th className="text-start px-6 py-3">Role</th>
+              <th className="text-start px-6 py-3">Status</th>
+              <th className="text-start px-6 py-3">Action</th>
             </tr>
           </thead>
+
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={7} className="px-6 py-6 text-center">
+                <td colSpan={6} className="text-center py-6">
                   <Loading />
                 </td>
               </tr>
             ) : error ? (
               <tr>
-                <td colSpan={7} className="px-6 py-6 text-center text-red-500">
+                <td colSpan={6} className="text-red-500 text-center py-6">
                   {error}
                 </td>
               </tr>
-            ) : procedures.length === 0 ? (
+            ) : users.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-6 py-6 text-center text-gray-500">
-                  No procedures found.{' '}
-                  <Link
-                    to={routePaths.ADD_PROCEDURE}
-                    className="text-blue-600 underline"
-                  >
-                    Add a procedure
-                  </Link>
+                <td colSpan={6} className="text-center py-6 text-gray-500">
+                  No users found
                 </td>
               </tr>
             ) : (
-              procedures.map((proc) => (
-                <tr
-                  key={proc.id}
-                  className="bg-[#DFDEDE] border-b border-gray-200"
-                >
-                  <td className="px-6 py-4 font-medium text-gray-900">
-                    {proc.id}
-                  </td>
-                  <td className="px-6 py-4">{proc.name}</td>
-                
-                  
+              users.map(user => (
+                <tr key={user.id} className="border-b bg-gray-50">
+                  <td className="px-6 py-4">{user.id}</td>
+                  <td className="px-6 py-4">{user.name}</td>
+                  <td className="px-6 py-4">{user.email}</td>
+
+                  {/* ROLE */}
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-1">
-                      <span
-                        className={`w-[10px] h-[10px] rounded-full ${
-                          proc.status ? 'bg-[#00cc00]' : 'bg-[#cc0000]'
-                        } block`}
-                      ></span>
-                      {proc.status ? 'Active' : 'Inactive'}
-                    </div>
+                    {user.role?.name || '-'}
                   </td>
-                  <td className="px-6 py-4 flex items-center gap-2">
-                    {/* Edit */}
-                    <Link
-                      to={`${routePaths.EDIT_PROCEDURE}/${proc.id}`}
-                      className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200"
+
+                  {/* STATUS */}
+                  <td className="px-6 py-4">
+                    <span
+                      className={`px-2 py-1 rounded text-xs ${
+                        user.status
+                          ? 'bg-green-100 text-green-700'
+                          : 'bg-red-100 text-red-700'
+                      }`}
                     >
-                      <svg
-                        className="w-[18px] h-[18px] text-white group-hover:text-dark"
-                        viewBox="0 0 12 12"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <use href="/assets/svg/edit-icon.svg#edit-icon" />
-                      </svg>
-                    </Link>
-                    {/* Delete */}
-                    <button
-                      onClick={() => handleDeleteClick(proc)}
-                      className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200"
-                    >
-                      <svg
-                        className="w-[18px] h-[18px] text-white group-hover:text-[#cc0000]"
-                        viewBox="0 0 12 12"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <use href="/assets/svg/delete-icon.svg#delete-icon" />
-                      </svg>
-                    </button>
+                      {user.status ? 'Active' : 'Inactive'}
+                    </span>
+                  </td>
+
+                  {/* ACTION */}
+                  <td className="px-6 py-4 flex gap-2">
+                    {/* <Link to={`${routePaths.EDIT_USER}/${user.id}`}>
+                      <Button>Edit</Button>
+                    </Link> */}
+
+                    <Button onClick={() => handleDeleteClick(user)}>
+                      Delete
+                    </Button>
                   </td>
                 </tr>
               ))
@@ -266,19 +243,17 @@ const UserManagement = () => {
         </table>
       </div>
 
-      {/* Delete Confirmation Modal */}
-      {deleteModalOpen && procedureToDelete && (
-        <div className="fixed inset-0 flex items-center justify-center bg-[#0000008a] z-50">
-          <div className="bg-white p-6 rounded-md w-80 text-center">
-            <p className="mb-4">
-              Are you sure you want to delete <strong>{procedureToDelete.name}</strong>?
+      {/* DELETE MODAL */}
+      {deleteModalOpen && userToDelete && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg w-80 text-center">
+            <p>
+              Delete <strong>{userToDelete.name}</strong>?
             </p>
-            <div className="flex justify-center gap-4">
-              <Button onClick={confirmDelete}>Yes, Delete</Button>
-              <Button
-                onClick={() => setDeleteModalOpen(false)}
-                className="bg-gray-300 text-black"
-              >
+
+            <div className="flex justify-center gap-4 mt-4">
+              <Button onClick={confirmDelete}>Yes</Button>
+              <Button onClick={() => setDeleteModalOpen(false)}>
                 Cancel
               </Button>
             </div>

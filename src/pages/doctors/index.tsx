@@ -101,16 +101,23 @@ const Doctors = () => {
     } catch (err: unknown) {
       if (err instanceof Error) setDeleteError(err.message)
       else setDeleteError('Something went wrong')
-    } 
+    }
   }
 
   return (
     <div className="flex flex-col gap-10 relative">
       <div className="flex justify-between items-center w-full border-b pb-3">
         <p className="text-xl font-semibold">Doctor Management</p>
-        <Link to={routePaths.ADD_DOCTOR}>
-          <Button>+ Add Doctor</Button>
-        </Link>
+
+        <div className="flex items-center gap-5">
+          <Button asLink={true} to={routePaths.BULK_ADD_DOCTOR} >
+            + Bulk Upload Doctors
+          </Button>
+
+          <Button asLink={true} to={routePaths.ADD_DOCTOR}>
+            + Add Doctor
+          </Button>
+        </div>
       </div>
 
       <div className="relative overflow-x-auto shadow-lg rounded-lg">

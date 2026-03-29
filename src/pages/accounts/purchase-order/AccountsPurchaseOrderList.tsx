@@ -82,9 +82,11 @@ const AccountsPurchaseOrderList = () => {
       case 'PROCESSING':
         return 'text-blue-500'
       case 'APPROVED':
-        return 'text-green'
+        return 'text-yellow-100'
       case 'REJECTED':
         return 'text-red'
+      case 'APPROVED_AND_FORWARD_TO_ACCOUNTS':
+        return 'text-yellow-100'
       default:
         return 'text-gray-200'
     }
@@ -144,37 +146,51 @@ const AccountsPurchaseOrderList = () => {
             {!loading &&
               !error &&
               purchaseOrders.map((po) => (
-                <tr key={po.id} className="bg-[#DFDEDE] border-b border-gray-200">
+                <tr
+                  key={po.id}
+                  className="bg-[#DFDEDE] border-b border-gray-200"
+                >
                   <td className="px-6 py-4">{po.id}</td>
                   <td className="px-6 py-4">{po.poNo}</td>
-                  <td className="px-6 py-4">{new Date(po.poDate).toLocaleDateString()}</td>
-                  <td className="px-6 py-4">{po.distributor?.name || 'N/A'}</td>
-                  <td className={`px-6 py-4 text-sm font-semibold ${getStatusColor(po.status)}`}>
-                    {po.status}
-                  </td>
-                  <td className="px-6 py-4">{po.totalAmount}</td>
-                
                   <td className="px-6 py-4">
-                    {
-                      po?.status == "PAID" ? <p className='text-green'>Successfully Paid</p>:
-                    <button
-                      onClick={() => navigate(`${routePaths.ACCOUNTS_PO_APPROVEL}/${po.id}`)}
-                      className="p-2 rounded-full hover:bg-gray-300 transition"
-                      title="View / Edit PO"
-                    >
-                      <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        viewBox="0 0 24 24"
+                    {new Date(po.poDate).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4">{po.distributor?.name || 'N/A'}</td>
+                  <td
+                    className={`px-6 py-4 text-sm font-semibold ${getStatusColor(po.status)}`}
+                  >
+                    {po.status === 'APPROVED' ||
+                    po.status === 'APPROVED_AND_FORWARD_TO_ACCOUNTS'
+                      ? 'PENDING'
+                      : po.status}
+                  </td>
+                  <td className="px-6 py-4">Rs. {po.totalAmount}</td>
+
+                  <td className="px-6 py-4">
+                    {po?.status == 'PAID' ? (
+                      <p className="text-green">Successfully Paid</p>
+                    ) : (
+                      <Button
+                        onClick={() =>
+                          navigate(
+                            `${routePaths.ACCOUNTS_PO_APPROVEL}/${po.id}`
+                          )
+                        }
+                        title="Action"
                       >
-                        <path d="M15 12H9m12 0a9 9 0 1 0-18 0 9 9 0 0 0 18 0z" />
-                      </svg>
-                    </button>
-                    }
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M15 12H9m12 0a9 9 0 1 0-18 0 9 9 0 0 0 18 0z" />
+                        </svg>
+                      </Button>
+                    )}
                   </td>
                 </tr>
               ))}

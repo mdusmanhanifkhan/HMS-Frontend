@@ -150,7 +150,7 @@ useEffect(() => {
   const visibleCards =
     userRole === 'superadmin'
       ? cards
-      : cards.filter((card) => card.title === 'Patients')
+      :[]
 
   return (
     <div className="min-h-screen ">

@@ -33,29 +33,37 @@ interface Medicine {
   description?: string
   isActive: boolean
 }
+interface User {
+  id: number
+  name: string
+}
 
 interface Indent {
   id: number
   indentNo: string
   indentDate: string
-  requestedBy: number
-  departmentId: number
-  createdBy?: number | null
+  requestedBy: User
+  department?: {
+    id: number
+    name: string
+  }
+  approvedBy?: User | null
   status: string
-  approvedBy?: number | null
-  approvedAt?: string | null
   remarks?: string
   createdAt: string
   updatedAt: string
   items: IndentItem[]
-  createdByUser: {
-    name: string
-  }
+}
+
+interface User {
+  id: number
+  name: string
 }
 
 const IndentList = () => {
   const [indents, setIndents] = useState<Indent[]>([])
   const [loading, setLoading] = useState<boolean>(false)
+  const [search, setSearch] = useState('')
   const [error, setError] = useState<string | null>(null)
   const API_BASE = import.meta.env.VITE_API_BASE_URL
   const token = localStorage.getItem('token')
@@ -69,7 +77,7 @@ const IndentList = () => {
 
       try {
         setLoading(true)
-        const res = await fetch(`${API_BASE}/api/indent`, {
+        const res = await fetch(`${API_BASE}/api/indent-pagi`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         if (!res.ok) {
@@ -77,7 +85,7 @@ const IndentList = () => {
           throw new Error(errData.message || 'Failed to fetch indents')
         }
         const data = await res.json()
-        setIndents(data || [])
+        setIndents(data.data || [])
       } catch (err: unknown) {
         if (err instanceof Error) setError(err.message)
         else setError('Something went wrong')
@@ -89,19 +97,27 @@ const IndentList = () => {
     fetchIndents()
   }, [token])
 
+  console.log(indents)
+
+  const filteredIndents = indents?.filter(
+    (indent) =>
+      indent.indentNo?.toLowerCase().includes(search.toLowerCase()) ||
+      indent.status.toLowerCase().includes(search.toLowerCase()) ||
+      indent.requestedBy?.name?.toLowerCase().includes(search.toLowerCase())
+  )
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center w-full border-b pb-3">
         <p className="text-xl font-semibold">Indent Management</p>
         <div className="flex items-center gap-5 min-w-100">
           {/* Search Input */}
-          <div className="flex items-center gap-2 py-1.5 w-full rounded-lg border px-2 border-gray placeholder:text-gray-100 placeholder:font-light">
+          <div className="flex items-center gap-2 py-1.5 w-full rounded-lg border px-2 border-gray">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
               height="16"
               viewBox="0 0 20 20"
-              id="search"
             >
               <g
                 stroke="none"
@@ -121,6 +137,14 @@ const IndentList = () => {
                 </g>
               </g>
             </svg>
+
+            <input
+              type="text"
+              placeholder="Search indent..."
+              className="outline-none w-full"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
           </div>
 
           {/* Add Indent Button */}
@@ -141,8 +165,6 @@ const IndentList = () => {
               <th className="px-6 py-4">Department</th>
               <th className="px-6 py-4">Status</th>
               <th className="px-6 py-4">Remarks</th>
-              <th className="px-6 py-4">Indent Items</th>
-              <th className="px-6 py-4">Requested Qty</th>
             </tr>
           </thead>
           <tbody>
@@ -164,7 +186,7 @@ const IndentList = () => {
               </tr>
             )}
 
-            {!loading && !error && indents.length === 0 && (
+            {!loading && !error && filteredIndents.length === 0 && (
               <tr>
                 <td colSpan={9} className="py-6 text-center">
                   No indents found.
@@ -174,7 +196,7 @@ const IndentList = () => {
 
             {!loading &&
               !error &&
-              indents.map((indent) => (
+              filteredIndents.map((indent) => (
                 <tr
                   key={indent.id}
                   className="bg-[#DFDEDE] border-b border-gray-200"
@@ -184,14 +206,14 @@ const IndentList = () => {
                   <td className="px-6 py-4">
                     {new Date(indent.indentDate).toLocaleDateString()}
                   </td>
-                  <td className="px-6 py-4">{indent?.createdByUser?.name}</td>
-                  <td className="px-6 py-4">{indent.departmentId}</td>
+                  <td className="px-6 py-4">{indent?.requestedBy?.name}</td>
+                  <td className="px-6 py-4">{indent?.department?.name}</td>
                   <td className="px-6 py-4">
                     <span
                       className={`px-2 py-1 rounded-full text-white text-sm font-semibold ${
                         indent.status === 'PENDING'
                           ? 'bg-yellow-100'
-                          : indent.status === 'PROCESSING'
+                          : indent.status === 'OPEN'
                             ? 'bg-blue-500'
                             : indent.status === 'APPROVED'
                               ? 'bg-green'
@@ -205,34 +227,6 @@ const IndentList = () => {
                   </td>
 
                   <td className="px-6 py-4">{indent.remarks || '-'}</td>
-
-                  {/* Column for Generic Names */}
-                  <td className="px-6 py-4">
-                    {indent.items.length > 0 ? (
-                      <ul className="list-disc pl-5">
-                        {indent.items.map((item) => (
-                          <li key={item.id}>
-                            {item.genericName?.name || 'N/A'}
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      '-'
-                    )}
-                  </td>
-
-                  {/* Column for Requested Quantities */}
-                  <td className="px-6 py-4">
-                    {indent.items.length > 0 ? (
-                      <ul className="list-disc pl-5">
-                        {indent.items.map((item) => (
-                          <li key={item.id}>{item.requestedQty}</li>
-                        ))}
-                      </ul>
-                    ) : (
-                      '-'
-                    )}
-                  </td>
                 </tr>
               ))}
           </tbody>

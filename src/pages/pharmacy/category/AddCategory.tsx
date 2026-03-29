@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import type { FormEvent } from 'react'
+
 import { Label } from '../../../components/input/Label'
 import Button from '../../../components/button/Button'
 import { routePaths } from '../../../constants/routePaths'
@@ -7,17 +9,17 @@ import ToggleButton from '../../../components/button/ToggleButton'
 import { Input } from '../../../components/input/Input'
 import SuccessMessage from '../../../components/error-handling/SuccessMessage'
 
-interface CategoryForm {
+interface DosageFormData {
   name: string
-  description?: string
-  isActive: boolean
+  code: string
+  status: boolean
 }
 
-const AddCategory = () => {
-  const [form, setForm] = useState<CategoryForm>({
+const AddDosageForm = () => {
+  const [form, setForm] = useState<DosageFormData>({
     name: '',
-    description: '',
-    isActive: true,
+    code: '',
+    status: true,
   })
 
   const [loading, setLoading] = useState(false)
@@ -27,46 +29,49 @@ const AddCategory = () => {
   const API_BASE = import.meta.env.VITE_API_BASE_URL
   const token = localStorage.getItem('token')
 
-  // handle input change
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { id, value } = e.target
-    setForm((prev) => ({ ...prev, [id]: value }))
-  }
-
-  // handle toggle
+  // Toggle Status
   const handleToggle = () => {
-    setForm((prev) => ({ ...prev, isActive: !prev.isActive }))
+    setForm((prev) => ({ ...prev, status: !prev.status }))
   }
 
-  // handle form submit
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Submit
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setError('')
     setSuccess('')
 
-    if (!form.name) {
-      setError('Category Name is required')
+    if (!form.name.trim()) {
+      setError('Dosage Form Name is required')
       return
     }
 
     setLoading(true)
     try {
-      const res = await fetch(`${API_BASE}/api/medicine-category`, {
+      const res = await fetch(`${API_BASE}/api/dosage-forms`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          Authorization: token ? `Bearer ${token}` : '',
         },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          name: form.name.trim(),
+          code: form.code.trim(),
+          status: form.status,
+        }),
       })
 
+      const data = await res.json()
+
       if (!res.ok) {
-        const data = await res.json()
         throw new Error(data?.message || 'Something went wrong')
       }
 
-      setSuccess('Category added successfully!')
-      setForm({ name: '', description: '', isActive: true })
+      setSuccess('Dosage form added successfully!')
+      setForm({
+        name: '',
+        code: '',
+        status: true,
+      })
     } catch (err: unknown) {
       if (err instanceof Error) setError(err.message)
       else setError('Something went wrong')
@@ -79,13 +84,13 @@ const AddCategory = () => {
     <form className="flex flex-col gap-10" onSubmit={handleSubmit}>
       {/* Header */}
       <div className="flex justify-between items-center border-b pb-3">
-        <p className="text-xl font-semibold w-full">Add Medicine Category</p>
-        <Button to={routePaths.CATEGORY} asLink>
+        <p className="text-xl font-semibold w-full">Add Dosage Form</p>
+        <Button to={routePaths.DOSAGE_FORM} asLink>
           Back
         </Button>
       </div>
 
-      {/* Error / Success Messages */}
+      {/* Messages */}
       {error && <p className="text-red-600 font-medium">{error}</p>}
       {success && <SuccessMessage msg={success} />}
 
@@ -94,28 +99,36 @@ const AddCategory = () => {
         {/* Status */}
         <GroupInput className="col-span-full">
           <Label>Status</Label>
-          <ToggleButton id="isActive" checked={form.isActive} onChange={handleToggle} />
+          <ToggleButton
+            id="status"
+            checked={form.status}
+            onChange={handleToggle}
+          />
         </GroupInput>
 
         {/* Name */}
         <GroupInput className="col-span-full">
-          <Label required='true'>Name</Label>
+          <Label required="true">Name</Label>
           <Input
             id="name"
             value={form.name}
-            onChange={handleChange}
-            placeholder="Enter Category Name"
+            onChange={(e) =>
+              setForm((prev) => ({ ...prev, name: e.target.value }))
+            }
+            placeholder="Enter Dosage Form (e.g. Tablet)"
           />
         </GroupInput>
 
-        {/* Description */}
+        {/* Code */}
         <GroupInput className="col-span-full">
-          <Label>Description</Label>
+          <Label>Code</Label>
           <Input
-            id="description"
-            value={form.description}
-            onChange={handleChange}
-            placeholder="Optional description"
+            id="code"
+            value={form.code}
+            onChange={(e) =>
+              setForm((prev) => ({ ...prev, code: e.target.value }))
+            }
+            placeholder="Enter Code (e.g. TAB)"
           />
         </GroupInput>
       </div>
@@ -123,11 +136,18 @@ const AddCategory = () => {
       {/* ACTION BUTTONS */}
       <div className="flex gap-4">
         <Button type="submit" disabled={loading}>
-          {loading ? 'Saving...' : 'Save Category'}
+          {loading ? 'Saving...' : 'Save Dosage Form'}
         </Button>
+
         <Button
           type="reset"
-          onClick={() => setForm({ name: '', description: '', isActive: true })}
+          onClick={() =>
+            setForm({
+              name: '',
+              code: '',
+              status: true,
+            })
+          }
         >
           Clear
         </Button>
@@ -136,4 +156,4 @@ const AddCategory = () => {
   )
 }
 
-export default AddCategory
+export default AddDosageForm

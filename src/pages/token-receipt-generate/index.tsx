@@ -89,7 +89,7 @@ const PatientReceiptGenerator = () => {
     const fetchDepartments = async () => {
       try {
         const res = await fetch(
-          `${API_BASE}/api/department-doctor-procedure-tree`,
+          `${API_BASE}/api/other-department-doctor-procedure-tree`,
           {
             headers: {
               Authorization: token ? `Bearer ${token}` : '',
@@ -327,7 +327,8 @@ const PatientReceiptGenerator = () => {
         totalFee,
         finalFee,
         discount,
-        // tokenNo,
+        tokenNumber: data.data.tokenNumber,
+        receiptNo: data.data.receiptNo,
       })
 
       const printWindow = window.open('', '_blank')

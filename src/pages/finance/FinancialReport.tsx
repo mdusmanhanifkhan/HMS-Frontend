@@ -2,41 +2,32 @@ import { useEffect, useState } from 'react'
 import Loading from '../../components/loading/Loading'
 
 /* ---------------- TYPES ---------------- */
-type DepartmentItem = {
+type DepartmentRevenue = {
   department: string
-  fee: number
+  revenue: number
 }
 
-type RecordItem = {
-  recordId: number
-  date: string
-  patient: string
-  totalFee: number
-  departments: DepartmentItem[]
+type ReceptionRevenue = {
+  user: string
+  revenue: number
 }
 
-type UserReport = {
-  userId: number
-  userName: string
-  totalRevenue: number
-  records: RecordItem[]
-}
-
-type FinancialReportResponse = {
-  success: boolean
-  users: UserReport[]
+type ApiResponse = {
+  departments: DepartmentRevenue[]
+  receptions: ReceptionRevenue[]
 }
 
 /* ---------------- COMPONENT ---------------- */
 const FinancialReport = () => {
-  const [data, setData] = useState<UserReport[]>([])
+  const [departments, setDepartments] = useState<DepartmentRevenue[]>([])
+  const [receptions, setReceptions] = useState<ReceptionRevenue[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
-  const [userId, setUserId] = useState('')
-  const [departmentName, setDepartmentName] = useState('')
+  const [userFilter, setUserFilter] = useState('')
+  const [departmentFilter, setDepartmentFilter] = useState('')
 
   const API_BASE = import.meta.env.VITE_API_BASE_URL
   const token = localStorage.getItem('token')
@@ -50,8 +41,8 @@ const FinancialReport = () => {
       const params = new URLSearchParams()
       if (startDate) params.append('startDate', startDate)
       if (endDate) params.append('endDate', endDate)
-      if (userId) params.append('userId', userId)
-      if (departmentName) params.append('departmentName', departmentName)
+      if (userFilter) params.append('user', userFilter)
+      if (departmentFilter) params.append('department', departmentFilter)
 
       const res = await fetch(`${API_BASE}/api/financial-report?${params.toString()}`, {
         headers: {
@@ -64,8 +55,10 @@ const FinancialReport = () => {
         throw new Error(err.message || 'Failed to fetch report')
       }
 
-      const json: FinancialReportResponse = await res.json()
-      setData(json.users || [])
+      const json: ApiResponse = await res.json()
+
+      setDepartments(json.departments || [])
+      setReceptions(json.receptions || [])
     } catch (err: unknown) {
       if (err instanceof Error) setError(err.message)
       else setError('Something went wrong')
@@ -74,18 +67,13 @@ const FinancialReport = () => {
     }
   }
 
-  /* ---------------- DERIVED FILTER DATA ---------------- */
-  const derivedUsers = data?.map((u) => ({
-    id: u.userId,
-    name: u.userName,
-  }))
+  /* ---------------- DERIVED FILTER OPTIONS ---------------- */
+  const userOptions = Array.from(
+    new Set(receptions.map((r) => r.user))
+  )
 
-  const derivedDepartments = Array.from(
-    new Map(
-      data
-        .flatMap((u) => u.records.flatMap((r) => r.departments))
-        .map((d) => [d.department, d])
-    ).values()
+  const departmentOptions = Array.from(
+    new Set(departments.map((d) => d.department))
   )
 
   /* ---------------- INITIAL FETCH ---------------- */
@@ -95,10 +83,8 @@ const FinancialReport = () => {
 
   /* ---------------- JSX ---------------- */
   return (
-    <div className="flex flex-col gap-6">
-      <h1 className="text-xl font-semibold underline">
-        Financial Report (User-wise)
-      </h1>
+    <div className="flex flex-col gap-6 p-4">
+      <h1 className="text-xl font-semibold underline">Financial Report</h1>
 
       {/* ---------------- FILTERS ---------------- */}
       <div className="flex gap-4 items-end flex-wrap">
@@ -128,14 +114,14 @@ const FinancialReport = () => {
         <div>
           <label className="text-sm font-medium">User</label>
           <select
-            value={userId}
-            onChange={(e) => setUserId(e.target.value)}
+            value={userFilter}
+            onChange={(e) => setUserFilter(e.target.value)}
             className="border px-3 py-1 rounded-md"
           >
             <option value="">All Users</option>
-            {derivedUsers.map((u) => (
-              <option key={u.id} value={u.id}>
-                {u.name}
+            {userOptions.map((user) => (
+              <option key={user} value={user}>
+                {user}
               </option>
             ))}
           </select>
@@ -145,14 +131,14 @@ const FinancialReport = () => {
         <div>
           <label className="text-sm font-medium">Department</label>
           <select
-            value={departmentName}
-            onChange={(e) => setDepartmentName(e.target.value)}
+            value={departmentFilter}
+            onChange={(e) => setDepartmentFilter(e.target.value)}
             className="border px-3 py-1 rounded-md"
           >
             <option value="">All Departments</option>
-            {derivedDepartments.map((d) => (
-              <option key={d.department} value={d.department}>
-                {d.department}
+            {departmentOptions.map((dept) => (
+              <option key={dept} value={dept}>
+                {dept}
               </option>
             ))}
           </select>
@@ -169,62 +155,44 @@ const FinancialReport = () => {
       {/* ---------------- STATES ---------------- */}
       {loading && <Loading />}
       {error && <p className="text-red-500">{error}</p>}
-      {!loading && !error && data.length === 0 && (
+      {!loading && !error && departments.length === 0 && receptions.length === 0 && (
         <p className="text-gray-500">No records found</p>
       )}
 
-      {/* ---------------- DATA ---------------- */}
+      {/* ---------------- USER-WISE REVENUE ---------------- */}
       <div className="flex flex-col gap-6">
-        {data.map((user) => (
-          <div
-            key={user.userId}
-            className="bg-white rounded-xl p-5 shadow-[0_0_3px_4px_#dfdede]"
-          >
-            {/* User Header */}
-            <div className="flex justify-between items-center border-b pb-2 mb-3">
-              <h2 className="text-lg font-semibold">{user.userName}</h2>
-              <p className="text-xl font-bold text-green-600">
-                Rs: {user.totalRevenue}
-              </p>
+        {receptions
+          .filter((r) => !userFilter || r.user === userFilter)
+          .map((r) => (
+            <div
+              key={r.user}
+              className="bg-white rounded-xl p-5 shadow-[0_0_3px_4px_#dfdede]"
+            >
+              <div className="flex justify-between items-center border-b pb-2 mb-3">
+                <h2 className="text-lg font-semibold">{r.user}</h2>
+                <p className="text-xl font-bold text-green-600">
+                  Rs: {r.revenue}
+                </p>
+              </div>
             </div>
+          ))}
+      </div>
 
-            {/* Records */}
-            <div className="flex flex-col gap-3">
-              {user.records.map((rec) => (
-                <div
-                  key={rec.recordId}
-                  className="border rounded-lg p-4 bg-gray-50"
-                >
-                  <div className="flex justify-between mb-2">
-                    <p className="font-medium">
-                      Patient: <span className="font-semibold">{rec.patient}</span>
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {new Date(rec.date).toLocaleString()}
-                    </p>
-                  </div>
-
-                  <div className="flex justify-between items-center">
-                    <div className="flex gap-2 flex-wrap">
-                      {rec.departments.map((d, idx) => (
-                        <span
-                          key={idx}
-                          className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded"
-                        >
-                          {d.department}: Rs {d.fee}
-                        </span>
-                      ))}
-                    </div>
-
-                    <p className="font-semibold text-blue-600">
-                      Rs: {rec.totalFee}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
+      {/* ---------------- DEPARTMENT-WISE REVENUE ---------------- */}
+      <div className="mt-6">
+        <h2 className="text-lg font-semibold">Department Revenue</h2>
+        <div className="flex gap-4 mt-2 flex-wrap">
+          {departments
+            .filter((d) => !departmentFilter || d.department === departmentFilter)
+            .map((d) => (
+              <div
+                key={d.department}
+                className="px-3 py-1 bg-blue-100 text-blue-700 rounded"
+              >
+                {d.department}: Rs {d.revenue}
+              </div>
+            ))}
+        </div>
       </div>
     </div>
   )

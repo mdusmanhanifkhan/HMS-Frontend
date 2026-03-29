@@ -1,6 +1,6 @@
 import ComingSoon from "../../ComingSoon"
 
-const EditDistributor = () => {
+const EditSupplier = () => {
   return (
     <div>
         <ComingSoon/>
@@ -8,4 +8,4 @@ const EditDistributor = () => {
   )
 }
 
-export default EditDistributor
+export default EditSupplier

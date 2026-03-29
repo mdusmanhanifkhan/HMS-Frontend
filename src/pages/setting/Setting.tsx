@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Button from "../../components/button/Button";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 const token = localStorage.getItem("token") || "";
@@ -118,13 +119,13 @@ const Setting: React.FC = () => {
                 value={inputPrice}
                 onChange={(e) => setInputPrice(Number(e.target.value))}
               />
-              <button
+              <Button
                 className="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50"
                 disabled={loading}
                 onClick={handleUpdatePrice}
               >
                 {loading ? "Updating..." : "Update Price"}
-              </button>
+              </Button>
             </div>
             {message && <p className="mt-2 text-green-600">{message}</p>}
           </div>

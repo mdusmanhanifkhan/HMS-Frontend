@@ -5,20 +5,35 @@ import { Input } from '../../../components/input/Input'
 import Loading from '../../../components/loading/Loading'
 import Button from '../../../components/button/Button'
 
-interface StockItem {
+interface Batch {
   id: number
   batchNo: string
   expiryDate: string
+  transactionType: string
   qtyIn: number
+  qtyOut: number
   rate: number
+  discountPercent: number | null
+  discountAmount: number | null
+  saleRate: number
+  valueIn: number
+  valueOut: number
   balanceQty: number
-  medicine: {
-    id: number
-    name: string
-    companyName?: string
-    packing?: string
-    salePrice?: number
-  }
+  balanceValue: number
+  customerDiscountPercent: number | null
+  customerDiscountAmount: number | null
+  sku:string
+}
+
+interface Medicine {
+  id: number
+  name: string
+  categoryId: number
+  dosageFormId: number
+  unitId: number
+  companyId: number
+  genericNameId: number
+  batches: Batch[]
 }
 
 interface Filters {
@@ -28,8 +43,8 @@ interface Filters {
 }
 
 const Stock = () => {
-  const [stockList, setStockList] = useState<StockItem[]>([])
-  const [filteredStock, setFilteredStock] = useState<StockItem[]>([])
+  const [stockList, setStockList] = useState<Medicine[]>([])
+  const [filteredStock, setFilteredStock] = useState<Medicine[]>([])
   const [filters, setFilters] = useState<Filters>({
     medicine: '',
     batchNo: '',
@@ -65,46 +80,55 @@ const Stock = () => {
 
   // Client-side filtering
   useEffect(() => {
-    let filtered = stockList.filter((item) => item.balanceQty > 0) // hide zero stock
+    let filtered = stockList
+      .map((med) => ({
+        ...med,
+        batches: med.batches.filter((b) => b.balanceQty > 0),
+      }))
+      .filter((med) => med.batches.length > 0) // remove medicines with no batches
 
     if (filters.medicine) {
-      filtered = filtered.filter((item) =>
-        item.medicine.name.toLowerCase().includes(filters.medicine.toLowerCase())
+      filtered = filtered.filter((med) =>
+        med.name.toLowerCase().includes(filters.medicine.toLowerCase())
       )
     }
 
     if (filters.batchNo) {
-      filtered = filtered.filter((item) =>
-        item.batchNo.toLowerCase().includes(filters.batchNo.toLowerCase())
-      )
+      filtered = filtered
+        .map((med) => ({
+          ...med,
+          batches: med.batches.filter((b) =>
+            b.batchNo.toLowerCase().includes(filters.batchNo.toLowerCase())
+          ),
+        }))
+        .filter((med) => med.batches.length > 0)
     }
 
     const today = new Date()
     if (filters.expiry === 'near') {
-      filtered = filtered.filter((item) => {
-        const expiry = new Date(item.expiryDate)
-        return expiry > today && expiry <= new Date(today.getTime() + 90 * 24 * 60 * 60 * 1000)
-      })
+      filtered = filtered
+        .map((med) => ({
+          ...med,
+          batches: med.batches.filter((b) => {
+            const expiry = new Date(b.expiryDate)
+            return (
+              expiry > today &&
+              expiry <= new Date(today.getTime() + 90 * 24 * 60 * 60 * 1000)
+            )
+          }),
+        }))
+        .filter((med) => med.batches.length > 0)
     } else if (filters.expiry === 'expired') {
-      filtered = filtered.filter((item) => new Date(item.expiryDate) < today)
+      filtered = filtered
+        .map((med) => ({
+          ...med,
+          batches: med.batches.filter((b) => new Date(b.expiryDate) < today),
+        }))
+        .filter((med) => med.batches.length > 0)
     }
 
     setFilteredStock(filtered)
   }, [filters, stockList])
-
-  // Group stock by medicine
-  const groupedStock = filteredStock.reduce<Record<number, StockItem & { batches: StockItem[] }>>(
-    (acc, item) => {
-      if (!acc[item.medicine.id]) {
-        acc[item.medicine.id] = { ...item, batches: [] }
-      }
-      acc[item.medicine.id].batches.push(item)
-      return acc
-    },
-    {}
-  )
-
-  const groupedStockList = Object.values(groupedStock)
 
   return (
     <div className="flex flex-col gap-6">
@@ -169,91 +193,94 @@ const Stock = () => {
             <tr>
               <th className="px-6 py-4">#</th>
               <th className="px-6 py-4">Medicine</th>
-              <th className="px-6 py-4">Company</th>
+              {/* <th className="px-6 py-4">DosageFormn</th> */}
               <th className="px-6 py-4">Batch No</th>
               <th className="px-6 py-4">Expiry</th>
-              <th className="px-6 py-4">Packing</th>
-              <th className="px-6 py-4">Qty In Stock</th>
-              <th className="px-6 py-4">Purchase Price</th>
-              <th className="px-6 py-4">Sale Price</th>
+              <th className="px-6 py-4">Qty</th>
+              {/* <th className="px-6 py-4">Balance Qty</th> */}
+              <th className="px-6 py-4">Purchase Rate</th>
+              {/* <th className="px-6 py-4">Discount %</th>
+              <th className="px-6 py-4">Discount Amount</th> */}
+              <th className="px-6 py-4">Sale Rate</th>
               <th className="px-6 py-4">Status</th>
             </tr>
           </thead>
 
-         <tbody>
-  {loading && (
-    <tr>
-      <td colSpan={10}>
-        <div className="flex justify-center py-4">
-          <Loading />
-        </div>
-      </td>
-    </tr>
-  )}
-
-  {!loading && groupedStockList.length === 0 && (
-    <tr>
-      <td colSpan={10} className="py-6 text-center">
-        No stock found
-      </td>
-    </tr>
-  )}
-
-  {!loading &&
-    groupedStockList.map((med, index) => {
-      const totalQty = med.batches.reduce((sum, b) => sum + b.balanceQty, 0)
-      
-      // Filter out batches with zero balance
-      const validBatches = med.batches.filter((b) => b.balanceQty > 0)
-      if (validBatches.length === 0) return null
-
-      return validBatches.map((b, batchIndex) => {
-        const today = new Date()
-        const expiry = new Date(b.expiryDate)
-        let status = 'Normal'
-        if (expiry <= new Date(today.getTime() + 90 * 24 * 60 * 60 * 1000)) status = 'Near Expiry'
-
-        return (
-          <tr key={b.id} className="border-b hover:bg-gray-50">
-            {batchIndex === 0 && (
-              <>
-                <td className="px-6 py-4 font-medium text-gray-900" rowSpan={validBatches.length}>
-                  {index + 1}
+          <tbody>
+            {loading && (
+              <tr>
+                <td colSpan={15}>
+                  <div className="flex justify-center py-4">
+                    <Loading />
+                  </div>
                 </td>
-                <td className="px-6 py-4" rowSpan={validBatches.length}>
-                  {med.medicine.name}
-                </td>
-                <td className="px-6 py-4" rowSpan={validBatches.length}>
-                  {med.medicine.companyName || '-'}
-                </td>
-                <td className="px-6 py-4">{b.batchNo}</td>
-                <td className="px-6 py-4">{expiry.toLocaleDateString()}</td>
-                <td className="px-6 py-4" rowSpan={validBatches.length}>
-                  {med.medicine.packing || '-'}
-                </td>
-                <td className="px-6 py-4 text-center font-semibold" rowSpan={validBatches.length}>
-                  {totalQty}
-                </td>
-                <td className="px-6 py-4">{b.rate.toFixed(2)}</td>
-                <td className="px-6 py-4">{med.medicine.salePrice?.toFixed(2) || '-'}</td>
-                <td className="px-6 py-4">{status}</td>
-              </>
+              </tr>
             )}
-            {batchIndex > 0 && (
-              <>
-                <td className="px-6 py-4">{b.batchNo}</td>
-                <td className="px-6 py-4">{expiry.toLocaleDateString()}</td>
-                <td className="px-6 py-4">{b.rate.toFixed(2)}</td>
-                <td className="px-6 py-4">{med.medicine.salePrice?.toFixed(2) || '-'}</td>
-                <td className="px-6 py-4">{status}</td>
-              </>
-            )}
-          </tr>
-        )
-      })
-    })}
-</tbody>
 
+            {!loading && filteredStock.length === 0 && (
+              <tr>
+                <td colSpan={15} className="py-6 text-center">
+                  No stock found
+                </td>
+              </tr>
+            )}
+
+            {!loading &&
+              filteredStock.map((med) => {
+                return med.batches.map((b, batchIndex) => {
+                  const today = new Date()
+                  const expiry = new Date(b.expiryDate)
+
+                  let status = 'Normal'
+                  let rowClass = ''
+                  if (b.balanceQty === 0) {
+                    status = 'Stock Zero'
+                    rowClass = 'bg-[#FEE2E2] text-red font-semibold'
+                  } else if (expiry < today) {
+                    status = 'Expired'
+                    rowClass = 'bg-[#FECACA] text-[#B91C1C] font-semibold'
+                  } else if (
+                    expiry <=
+                    new Date(today.getTime() + 90 * 24 * 60 * 60 * 1000)
+                  ) {
+                    status = 'Near Expiry'
+                    rowClass = ' text-[#D97706] font-semibold'
+                  }
+
+                  return (
+                    <tr
+                      key={b.id}
+                      className={`border-b ${rowClass}`}
+                    >
+                      {batchIndex === 0 && (
+                        <>
+                          <td
+                            rowSpan={med.batches.length}
+                            className="px-6 py-4 font-medium bg-white text-dark"
+                          >
+                            {b.id}
+                          </td>
+                          <td
+                            rowSpan={med.batches.length}
+                            className="px-6 py-4 font-medium bg-white text-dark"
+                          >
+                            {b.sku}
+                          </td>
+                        </>
+                      )}
+                      <td className="px-6 py-4">{b.batchNo}</td>
+                      <td className="px-6 py-4">
+                        {expiry.toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4">{b.balanceQty}</td>
+                      <td className="px-6 py-4">{b.rate}</td>
+                      <td className="px-6 py-4">{b.saleRate}</td>
+                      <td className="px-6 py-4">{status}</td>
+                    </tr>
+                  )
+                })
+              })}
+          </tbody>
         </table>
       </div>
     </div>

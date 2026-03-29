@@ -1,79 +1,102 @@
-import { useState } from 'react'
-import { Label } from '../../../components/input/Label'
-import Button from '../../../components/button/Button'
-import { routePaths } from '../../../constants/routePaths'
-import { GroupInput } from '../../../components/input/GroupInput'
-import ToggleButton from '../../../components/button/ToggleButton'
-import { Input } from '../../../components/input/Input'
-import SuccessMessage from '../../../components/error-handling/SuccessMessage'
+import { useState } from "react";
+import type { ChangeEvent, FormEvent } from "react";
 
-interface DosageFormType {
-  name: string
-  description?: string
-  isActive: boolean
-}
+import { Input } from "../../../components/input/Input";
+import { Label } from "../../../components/input/Label";
+import { GroupInput } from "../../../components/input/GroupInput";
+import ToggleButton from "../../../components/button/ToggleButton";
+import Button from "../../../components/button/Button";
+import { routePaths } from "../../../constants/routePaths";
+import SuccessMessage from "../../../components/error-handling/SuccessMessage";
+import ErrorMessage from "../../../components/error-handling/ErrorMessage";
+
+type DosageFormData = {
+  name: string;
+  code: string;
+  status: boolean;
+};
 
 const AddDosageForm = () => {
-  const [form, setForm] = useState<DosageFormType>({
-    name: '',
-    description: '',
-    isActive: true,
-  })
+  const [formData, setFormData] = useState<DosageFormData>({
+    name: "",
+    code: "",
+    status: true,
+  });
 
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
-  const API_BASE = import.meta.env.VITE_API_BASE_URL
-  const token = localStorage.getItem('token')
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
+  const token = localStorage.getItem("token");
 
-  // handle input change
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { id, value } = e.target
-    setForm((prev) => ({ ...prev, [id]: value }))
-  }
+  // ✅ Handle Input
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
 
-  // handle toggle
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // ✅ Toggle Status
   const handleToggle = () => {
-    setForm((prev) => ({ ...prev, isActive: !prev.isActive }))
-  }
+    setFormData((prev) => ({
+      ...prev,
+      status: !prev.status,
+    }));
+  };
 
-  // handle form submit
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setSuccess('')
+  // ✅ Submit
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-    if (!form.name) {
-      setError('Dosage Form Name is required')
-      return
+    setError("");
+    setSuccess("");
+
+    if (!formData.name.trim()) {
+      setError("Dosage form name is required");
+      return;
     }
 
-    setLoading(true)
     try {
+      setLoading(true);
+
       const res = await fetch(`${API_BASE}/api/dosage-form`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
         },
-        body: JSON.stringify(form),
-      })
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          code: formData.code.trim(),
+          status: formData.status,
+        }),
+      });
+
+      const data = await res.json();
 
       if (!res.ok) {
-        const data = await res.json()
-        throw new Error(data?.message || 'Something went wrong')
+        throw new Error(data?.message || "Failed to create dosage form");
       }
 
-      setSuccess('Dosage Form added successfully!')
-      setForm({ name: '', description: '', isActive: true })
+      setSuccess("Dosage form created successfully ✅");
+
+      // Reset
+      setFormData({
+        name: "",
+        code: "",
+        status: true,
+      });
     } catch (err: unknown) {
-      if (err instanceof Error) setError(err.message)
-      else setError('Something went wrong')
+      if (err instanceof Error) setError(err.message);
+      else setError("Something went wrong");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <form className="flex flex-col gap-10" onSubmit={handleSubmit}>
@@ -85,8 +108,8 @@ const AddDosageForm = () => {
         </Button>
       </div>
 
-      {/* Error / Success Messages */}
-      {error && <p className="text-red-600 font-medium">{error}</p>}
+      {/* Messages */}
+      {error && <ErrorMessage msg={error} />}
       {success && <SuccessMessage msg={success} />}
 
       {/* FORM */}
@@ -94,28 +117,32 @@ const AddDosageForm = () => {
         {/* Status */}
         <GroupInput className="col-span-full">
           <Label>Status</Label>
-          <ToggleButton id="isActive" checked={form.isActive} onChange={handleToggle} />
+          <ToggleButton
+            id="status"
+            checked={formData.status}
+            onChange={handleToggle}
+          />
         </GroupInput>
 
         {/* Name */}
         <GroupInput className="col-span-full">
-          <Label required="true">Name</Label>
+          <Label required="true">Form Name</Label>
           <Input
-            id="name"
-            value={form.name}
+            name="name"
+            value={formData.name}
             onChange={handleChange}
-            placeholder="Enter Dosage Form Name (e.g., Tablet, Capsule)"
+            placeholder="Enter Dosage Form (e.g. Tablet)"
           />
         </GroupInput>
 
-        {/* Description */}
+        {/* Code */}
         <GroupInput className="col-span-full">
-          <Label>Description</Label>
+          <Label>Code</Label>
           <Input
-            id="description"
-            value={form.description}
+            name="code"
+            value={formData.code}
             onChange={handleChange}
-            placeholder="Optional description"
+            placeholder="Enter Code (e.g. TAB)"
           />
         </GroupInput>
       </div>
@@ -123,17 +150,24 @@ const AddDosageForm = () => {
       {/* ACTION BUTTONS */}
       <div className="flex gap-4">
         <Button type="submit" disabled={loading}>
-          {loading ? 'Saving...' : 'Save Dosage Form'}
+          {loading ? "Saving..." : "Save Dosage Form"}
         </Button>
+
         <Button
           type="reset"
-          onClick={() => setForm({ name: '', description: '', isActive: true })}
+          onClick={() =>
+            setFormData({
+              name: "",
+              code: "",
+              status: true,
+            })
+          }
         >
           Clear
         </Button>
       </div>
     </form>
-  )
-}
+  );
+};
 
-export default AddDosageForm
+export default AddDosageForm;

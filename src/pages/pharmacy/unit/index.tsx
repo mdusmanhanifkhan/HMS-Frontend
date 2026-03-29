@@ -7,9 +7,7 @@ import Loading from '../../../components/loading/Loading'
 
 interface UnitType {
   id: number
-  value: number
-  unit: string
-  label: string
+  name: string
   status: boolean
 }
 
@@ -27,7 +25,7 @@ const Unit = () => {
       setLoading(true)
       setError(null)
 
-      const res = await fetch(`${API_BASE}/api/unit`, {
+      const res = await fetch(`${API_BASE}/api/strength-unit`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -59,7 +57,7 @@ const Unit = () => {
 
   // 🔎 Search filter (by label or unit)
   const filteredUnits = units.filter((u) =>
-    `${u.label} ${u.unit}`.toLowerCase().includes(search.toLowerCase())
+    `${u.name}`.toLowerCase().includes(search.toLowerCase())
   )
 
   return (
@@ -109,11 +107,9 @@ const Unit = () => {
           <thead className="text-xs text-white uppercase bg-dark">
             <tr>
               <th className="px-6 py-4">ID</th>
-              <th className="px-6 py-4">Value</th>
               <th className="px-6 py-4">Unit</th>
-              <th className="px-6 py-4">Label</th>
-              <th className="px-6 py-4">Status</th>
-              <th className="px-6 py-4">Action</th>
+              <th className="px-6 py-4 text-center">Status</th>
+              <th className="px-6 py-4 text-end">Action</th>
             </tr>
           </thead>
 
@@ -153,11 +149,9 @@ const Unit = () => {
               filteredUnits.map((u) => (
                 <tr key={u.id} className="bg-[#DFDEDE] border-b border-gray-200">
                   <td className="px-6 py-4 font-medium">{u.id}</td>
-                  <td className="px-6 py-4">{u.value}</td>
-                  <td className="px-6 py-4">{u.unit}</td>
-                  <td className="px-6 py-4">{u.label}</td>
+                  <td className="px-6 py-4">{u.name}</td>
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center justify-center gap-1">
                       <span
                         className={`w-[10px] h-[10px] rounded-full ${
                           u.status ? 'bg-[#00cc00]' : 'bg-[#cc0000]'
@@ -166,7 +160,7 @@ const Unit = () => {
                       {u.status ? 'Active' : 'Inactive'}
                     </div>
                   </td>
-                  <td className="px-6 py-4 flex items-center gap-2">
+                  <td className="px-6 py-4 flex items-end justify-end gap-2">
                     {/* Edit */}
                     <Link
                       to={`${routePaths.EDIT_UNIT}/${u.id}`}

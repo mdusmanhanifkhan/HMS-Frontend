@@ -29,6 +29,7 @@ const AddDepartments = () => {
     timeTo: '',
     location: '',
     description: '',
+    type:'OPD'
   }
 
   const [form, setForm] = useState(initialForm)
@@ -72,10 +73,15 @@ const AddDepartments = () => {
       await departmentSchema.validate(form, { abortEarly: false })
       setFieldErrors({})
 
+       const payload = {
+      ...form,
+      type: 'OPD',
+    }
+console.log(payload)
       const res = await fetch(`${API_BASE}/api/department`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' ,   Authorization: `Bearer ${token}`,},
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       })
 
       const resData = await res.json()

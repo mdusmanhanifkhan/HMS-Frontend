@@ -36,22 +36,30 @@ interface Medicine {
   isActive: boolean
 }
 
+interface User {
+  id: number
+  name: string
+}
+
+interface Department {
+  id: number
+  name: string
+}
+
 interface Indent {
   id: number
   indentNo: string
   indentDate: string
-  requestedBy: number
-  departmentId: number
-  createdBy?: number | null
+  requestedBy: User
+  department?: Department
   status: string
-  approvedBy?: number | null
-  approvedAt?: string | null
   remarks?: string
+  approvedBy?: User | null
+  approvedAt?: string | null
   createdAt: string
   updatedAt: string
   items: IndentItem[]
 }
-
 const PurchaseOrder = () => {
   const [indents, setIndents] = useState<Indent[]>([])
   const [loading, setLoading] = useState<boolean>(false)
@@ -93,7 +101,7 @@ const PurchaseOrder = () => {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center w-full border-b pb-3">
-        <p className="text-xl font-semibold">Indent Management</p>
+        <p className="text-xl font-semibold">Purchase Order Management</p>
         <div className="flex items-center gap-5 min-w-100">
           {/* Search Input */}
           <div className="flex items-center gap-2 py-1.5 w-full rounded-lg border px-2 border-gray placeholder:text-gray-100 placeholder:font-light">
@@ -123,11 +131,6 @@ const PurchaseOrder = () => {
               </g>
             </svg>
           </div>
-
-          {/* Add Indent Button */}
-          <Button asLink={true} to={routePaths.ADD_PURCHASE_ORDER}>
-            + Create Indent
-          </Button>
         </div>
       </div>
 
@@ -142,8 +145,6 @@ const PurchaseOrder = () => {
               <th className="px-6 py-4">Department</th>
               <th className="px-6 py-4">Status</th>
               <th className="px-6 py-4">Remarks</th>
-              <th className="px-6 py-4">Indent Items</th>
-              <th className="px-6 py-4">Requested Qty</th>
               <th className="px-6 py-4">Action</th>
             </tr>
           </thead>
@@ -186,20 +187,22 @@ const PurchaseOrder = () => {
                   <td className="px-6 py-4">
                     {new Date(indent.indentDate).toLocaleDateString()}
                   </td>
-                  <td className="px-6 py-4">{indent.requestedBy}</td>
-                  <td className="px-6 py-4">{indent.departmentId}</td>
+                  <td className="px-6 py-4">{indent?.requestedBy?.name}</td>
+                  <td className="px-6 py-4">{indent.department?.name}</td>
                   <td className="px-6 py-4">
                     <span
                       className={`px-2 py-1 rounded-full text-white text-sm font-semibold ${
                         indent.status === 'PENDING'
                           ? 'bg-yellow-100'
-                          : indent.status === 'PROCESSING'
+                          : indent.status === 'OPEN'
                             ? 'bg-blue-500'
                             : indent.status === 'APPROVED'
                               ? 'bg-green'
                               : indent.status === 'REJECTED'
                                 ? 'bg-red'
-                                : 'bg-gray-200'
+                                : indent.status === 'CANCELLED'
+                                  ? 'bg-red'
+                                  : 'bg-gray-200'
                       }`}
                     >
                       {indent.status}
@@ -208,37 +211,14 @@ const PurchaseOrder = () => {
 
                   <td className="px-6 py-4">{indent.remarks || '-'}</td>
 
-                  {/* Column for Generic Names */}
                   <td className="px-6 py-4">
-                    {indent.items.length > 0 ? (
-                      <ul className="list-disc pl-5">
-                        {indent.items.map((item) => (
-                          <li key={item.id}>
-                            {item.genericName?.name || 'N/A'}
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      '-'
-                    )}
-                  </td>
-
-                  {/* Column for Requested Quantities */}
-                  <td className="px-6 py-4">
-                    {indent.items.length > 0 ? (
-                      <ul className="list-disc pl-5">
-                        {indent.items.map((item) => (
-                          <li key={item.id}>{item.requestedQty}</li>
-                        ))}
-                      </ul>
-                    ) : (
-                      '-'
-                    )}
-                  </td>
-                  <td className="px-6 py-4">
-                    <button
-                      onClick={() => navigate(`${routePaths.ADD_PURCHASE_ORDER}/${indent.id}`)}
-                      className="p-2 rounded-full hover:bg-gray-300 transition"
+                    <Button
+                      onClick={() =>
+                        navigate(
+                          `${routePaths.ADD_PURCHASE_ORDER}/${indent.id}`
+                        )
+                      }
+                      className="p-2 transition"
                       title="Create Purchase Order"
                     >
                       {/* Clipboard + Plus SVG (perfect for PO action) */}
@@ -258,7 +238,7 @@ const PurchaseOrder = () => {
                         <line x1="12" y1="11" x2="12" y2="17" />
                         <line x1="9" y1="14" x2="15" y2="14" />
                       </svg>
-                    </button>
+                    </Button>
                   </td>
                 </tr>
               ))}
