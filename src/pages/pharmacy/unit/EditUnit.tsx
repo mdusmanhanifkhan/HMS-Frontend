@@ -10,8 +10,7 @@ import SuccessMessage from '../../../components/error-handling/SuccessMessage'
 import Loading from '../../../components/loading/Loading'
 
 interface UnitForm {
-  value: number | ''
-  unit: string
+  name: string
   status: boolean
 }
 
@@ -19,8 +18,7 @@ const EditUnit = () => {
   const { id } = useParams()
 
   const [form, setForm] = useState<UnitForm>({
-    value: '',
-    unit: '',
+    name: '',
     status: true,
   })
 
@@ -36,7 +34,7 @@ const EditUnit = () => {
   useEffect(() => {
     const fetchUnit = async () => {
       try {
-        const res = await fetch(`${API_BASE}/api/unit/${id}`, {
+        const res = await fetch(`${API_BASE}/api/strength-unit/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -47,9 +45,8 @@ const EditUnit = () => {
         const data = await res.json()
 
         setForm({
-          value: data.value,
-          unit: data.unit,
-          status: data.status,
+          name: data.data.name,
+          status: data.data.status,
         })
       } catch (err: unknown) {
         if (err instanceof Error) setError(err.message)
@@ -67,7 +64,7 @@ const EditUnit = () => {
     const { id, value } = e.target
     setForm((prev) => ({
       ...prev,
-      [id]: id === 'value' ? Number(value) || '' : value,
+      [id]: value,
     }))
   }
 
@@ -82,14 +79,14 @@ const EditUnit = () => {
     setError('')
     setSuccess('')
 
-    if (form.value === '' || !form.unit) {
-      setError('Value and Unit are required')
+    if (!form.name) {
+      setError('Name is required')
       return
     }
 
     setLoading(true)
     try {
-      const res = await fetch(`${API_BASE}/api/unit/${id}`, {
+      const res = await fetch(`${API_BASE}/api/strength-unit/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -140,24 +137,12 @@ const EditUnit = () => {
           <ToggleButton checked={form.status} onChange={handleToggle} />
         </GroupInput>
 
-        {/* Value */}
+        {/* Name */}
         <GroupInput className="col-span-full">
-          <Label required="true">Value</Label>
+          <Label required="true">Name</Label>
           <Input
-            id="value"
-            type="number"
-            value={form.value}
-            onChange={handleChange}
-            placeholder="e.g. 500"
-          />
-        </GroupInput>
-
-        {/* Unit */}
-        <GroupInput className="col-span-full">
-          <Label required="true">Unit</Label>
-          <Input
-            id="unit"
-            value={form.unit}
+            id="name"
+            value={form.name}
             onChange={handleChange}
             placeholder="e.g. mg, ml"
           />

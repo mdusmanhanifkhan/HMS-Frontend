@@ -4,35 +4,40 @@ import { Sidebar } from './components/sidebar/Sidebar'
 import { Topbar } from './components/topbar/Topbar'
 import Container from './layout/Container'
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
+// const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 function App() {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    const token = localStorage.getItem('token');
+    // const token = localStorage.getItem('token');
 
-    try {
-      if (token) {
-        // Call logout API
-        await fetch(`${API_BASE}/api/logout`, {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-      }
-    } catch (err) {
-      console.error('Logout API failed', err);
-    } finally {
-      // Remove localStorage data
-      localStorage.removeItem('token');
+    // try {
+    //   if (token) {
+    //     // Call logout API
+    //     await fetch(`${API_BASE}/api/logout`, {
+    //       method: 'POST',
+    //       headers: {
+    //         Authorization: `Bearer ${token}`,
+    //         'Content-Type': 'application/json',
+    //       },
+    //     });
+    //   }
+    // } catch (err) {
+    //   console.error('Logout API failed', err);
+    // } finally {
+    //   // Remove localStorage data
+    //   localStorage.removeItem('token');
+    //   localStorage.removeItem('user');
+
+    //   // Navigate to login
+    //   navigate('/login', { replace: true });
+    // }
+     localStorage.removeItem('token');
       localStorage.removeItem('user');
 
       // Navigate to login
       navigate('/login', { replace: true });
-    }
   };
 
   return (

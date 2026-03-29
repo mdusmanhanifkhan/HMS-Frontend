@@ -6,45 +6,39 @@ import { Label } from '../../../components/input/Label'
 import Dropdown from '../../../components/input/Dropdown'
 import Button from '../../../components/button/Button'
 import { routePaths } from '../../../constants/routePaths'
+import { GroupInput } from '../../../components/input/GroupInput'
 
 /* ================= TYPES ================= */
 
-interface Option {
+interface Medicine {
+  id: number
+  name: string
+  variants: { id: number; sku: string }[]
+}
+
+interface Supplier {
   id: number
   name: string
 }
 
-interface Medicine extends Option {
-  genericNameId: number
-  dosageFormId: number
-  unitId: number
-}
-type Generic = Option
-type Distributor = Option
-
 interface IndentItem {
   id: number
-  genericNameId: number
+  productId: number | null
+  variantId: number | null
   requestedQty: number
-  medicineId: number | null
-  dosageForm?: { id: number; name: string }
-  unit?: { id: number; unit: string; label: string }
   selected?: boolean
 }
 
 interface Indent {
   id: number
   indentNo: string
-  indentDate: string
-  departmentId: number
-  status: string
-  remarks: string
   items: IndentItem[]
 }
 
 interface POItem {
   indentItemId: number
-  medicineId: number | null
+  productId: number | null
+  variantId: number | null
   orderedQty: number
   rate: number
   discountPercent: number
@@ -54,11 +48,10 @@ interface POItem {
 
 interface POForm {
   poNo: string
-  distributorId: number | null
-  companyId: number | null
-  indentId: number | null
-  remarks: string
+  supplierId: number | null
+  prId: number | null
   paymentType: string
+  remarks: string
   items: POItem[]
 }
 
@@ -71,45 +64,45 @@ const token = localStorage.getItem('token')
 
 const CreatePurchaseOrder = () => {
   const { id } = useParams<{ id: string }>()
-  // const navigate = useNavigate()
-
   const [indent, setIndent] = useState<Indent | null>(null)
   const [medicines, setMedicines] = useState<Medicine[]>([])
-  const [generics, setGenerics] = useState<Generic[]>([])
-  const [distributors, setDistributors] = useState<Distributor[]>([])
+  const [suppliers, setSuppliers] = useState<Supplier[]>([])
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
   const [form, setForm] = useState<POForm>({
     poNo: '',
-    distributorId: null,
-    companyId: null,
-    indentId: null,
+    supplierId: null,
+    prId: null,
+    paymentType: 'FULL_AFTER_RECEIVE',
     remarks: '',
-    paymentType: 'FULL',
     items: [],
   })
 
   /* ================= FETCH INDENT ================= */
-
   useEffect(() => {
     if (!id || !token) return
 
-    fetch(`${API_BASE}/api/indent/${id}`, {
+    fetch(`${API_BASE}/api/indent/${id}/items`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
       .then((data: Indent) => {
         setIndent({
           ...data,
-          items: data.items.map((item) => ({ ...item, selected: false })),
+          items: data.items.map((item) => ({
+            ...item,
+            selected: !!item.productId && !!item.variantId, // ✅ preselect if product & variant exist
+          })),
         })
+
         setForm((prev) => ({
           ...prev,
-          indentId: data.id,
+          prId: data.id,
           items: data.items.map((item) => ({
             indentItemId: item.id,
-            medicineId: null,
+            productId: item.productId,
+            variantId: item.variantId,
             orderedQty: item.requestedQty,
             rate: 0,
             discountPercent: 0,
@@ -122,43 +115,26 @@ const CreatePurchaseOrder = () => {
   }, [id])
 
   /* ================= FETCH MEDICINES ================= */
-
   useEffect(() => {
     if (!token) return
-
-    fetch(`${API_BASE}/api/medicine`, {
+    fetch(`${API_BASE}/api/product`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
       .then((res) => setMedicines(res.data ?? []))
   }, [])
 
-  /* ================= FETCH GENERICS ================= */
-
+  /* ================= FETCH SUPPLIERS ================= */
   useEffect(() => {
     if (!token) return
-
-    fetch(`${API_BASE}/api/generic-name`, {
+    fetch(`${API_BASE}/api/supplier`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
-      .then((res) => setGenerics(res.data ?? []))
-  }, [])
-
-  /* ================= FETCH DISTRIBUTORS ================= */
-
-  useEffect(() => {
-    if (!token) return
-
-    fetch(`${API_BASE}/api/distributor`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => res.json())
-      .then((res) => setDistributors(res.data ?? []))
+      .then((res) => setSuppliers(res.data ?? []))
   }, [])
 
   /* ================= ITEM UPDATE ================= */
-
   const updateItem = (index: number, key: keyof POItem, value: number) => {
     setForm((prev) => {
       const items = [...prev.items]
@@ -168,7 +144,6 @@ const CreatePurchaseOrder = () => {
       const base = i.orderedQty * i.rate
       const discount = base * (i.discountPercent / 100)
       const tax = (base - discount) * (i.taxPercent / 100)
-
       i.totalAmount = +(base - discount + tax).toFixed(2)
 
       return { ...prev, items }
@@ -185,83 +160,116 @@ const CreatePurchaseOrder = () => {
   const grandTotal = form.items.reduce((sum, i) => sum + i.totalAmount, 0)
 
   /* ================= SUBMIT ================= */
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault()
+    if (submitting || !indent) return
 
-const handleSubmit = async (e: FormEvent) => {
-  e.preventDefault()
-  if (submitting || !indent) return
+    setSubmitting(true)
+    setError(null)
 
-  setSubmitting(true)
-  setError(null)
+    const selectedItems = form.items.filter(
+      (_, index) => indent.items[index].selected
+    )
 
-  // Only include selected items
-  const selectedItems = form.items.filter(
-    (_, index) => indent.items[index].selected
-  )
+    if (selectedItems.length === 0) {
+      setError('Please select at least one item to create PO')
+      setSubmitting(false)
+      return
+    }
 
-  if (selectedItems.length === 0) {
-    setError('Please select at least one item to create PO')
-    setSubmitting(false)
-    return
+    try {
+      const res = await fetch(`${API_BASE}/api/create-po`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          poNo: form.poNo || undefined,
+          supplierId: form.supplierId,
+          prId: form.prId,
+          remarks: form.remarks,
+          paymentType: form.paymentType,
+          items: selectedItems,
+        }),
+      })
+
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message || 'Failed to create PO')
+
+      // ============================
+      // ✅ FRONTEND INSTANT UPDATE
+      // ============================
+
+      const selectedIds = selectedItems.map((i) => i.indentItemId)
+
+      // 👉 Remove from indent UI
+      setIndent((prev) => {
+        if (!prev) return prev
+
+        const filteredItems = prev.items.filter(
+          (item) => !selectedIds.includes(item.id)
+        )
+
+        return {
+          ...prev,
+          items: filteredItems,
+        }
+      })
+
+      // 👉 Remove from form
+      setForm((prev) => ({
+        ...prev,
+        supplierId: null,
+        items: prev.items.filter(
+          (item) => !selectedIds.includes(item.indentItemId)
+        ),
+      }))
+
+      // ============================
+      // ✅ OPTIONAL BACKEND SYNC
+      // ============================
+
+      // (Recommended but optional)
+      const indentRes = await fetch(
+        `${API_BASE}/api/indent/${indent.id}/items`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
+
+      const updatedIndent: Indent = await indentRes.json()
+
+      setIndent({
+        ...updatedIndent,
+        items: updatedIndent.items.map((i) => ({
+          ...i,
+          selected: false,
+        })),
+      })
+
+      setForm((prev) => ({
+        ...prev,
+        items: updatedIndent.items.map((item) => ({
+          indentItemId: item.id,
+          productId: item.productId,
+          variantId: item.variantId,
+          orderedQty: item.requestedQty,
+          rate: 0,
+          discountPercent: 0,
+          taxPercent: 0,
+          totalAmount: 0,
+        })),
+      }))
+    } catch (err: unknown) {
+      if (err instanceof Error) setError(err.message)
+      else setError('Something went wrong')
+    } finally {
+      setSubmitting(false)
+    }
   }
-
-  try {
-    // Create PO for selected items
-    const res = await fetch(`${API_BASE}/api/create-po`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        poNo: form.poNo,
-        distributorId: form.distributorId,
-        indentId: indent.id, // same indent
-        remarks: form.remarks,
-        paymentType: form.paymentType,
-        items: selectedItems,
-      }),
-    })
-
-    const data = await res.json()
-    if (!res.ok) throw new Error(data.message || 'Failed to create PO')
-
-    // ✅ Re-fetch the same indent to get remaining items
-    const indentRes = await fetch(`${API_BASE}/api/indent/${indent.id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-
-    const updatedIndent: Indent = await indentRes.json()
-
-    // Update state with remaining items
-    setIndent({
-      ...updatedIndent,
-      items: updatedIndent.items.map((i) => ({ ...i, selected: false })),
-    })
-
-    setForm((prev) => ({
-      ...prev,
-      distributorId: null, // reset distributor for next selection
-      items: updatedIndent.items.map((item) => ({
-        indentItemId: item.id,
-        medicineId: null,
-        orderedQty: item.requestedQty,
-        rate: 0,
-        discountPercent: 0,
-        taxPercent: 0,
-        totalAmount: 0,
-      })),
-    }))
-  } catch (err: unknown) {
-    if (err instanceof Error) setError(err.message)
-    else setError('Something went wrong')
-  } finally {
-    setSubmitting(false)
-  }
-}
-
 
   /* ================= UI ================= */
-
   if (!indent) return <div className="p-6">Loading indent...</div>
 
   return (
@@ -273,18 +281,41 @@ const handleSubmit = async (e: FormEvent) => {
         </Button>
       </div>
 
-      {/* DISTRIBUTOR */}
-      <div className="mb-4 w-1/3">
-        <Label>Select Distributor</Label>
-        <Dropdown
-          options={distributors}
-          selected={
-            distributors.find((d) => d.id === form.distributorId) ?? null
-          }
-          onSelect={(opt) =>
-            setForm((prev) => ({ ...prev, distributorId: Number(opt.id) }))
-          }
-        />
+      {/* SUPPLIER */}
+      <div className="mb-4 flex gap-5 w-full">
+        <GroupInput className="min-w-64">
+          <Label>Select Supplier</Label>
+          <Dropdown
+            options={suppliers}
+            selected={suppliers.find((s) => s.id === form.supplierId) ?? null}
+            onSelect={(opt) =>
+              setForm((prev) => ({ ...prev, supplierId: Number(opt.id) }))
+            }
+          />
+        </GroupInput>
+        {/* ================= PAYMENT TYPE ================= */}
+        <GroupInput className="min-w-64">
+          <Label>Payment Type</Label>
+          <Dropdown
+            options={[
+              { id: 'FULL_AFTER_RECEIVE', name: 'Full After Receive' },
+              { id: 'ADVANCE', name: 'Advance Payment' },
+              { id: 'PARTIAL', name: 'Partial Payment' },
+              { id: 'WITH_IN_30_DAYS', name: 'Payment with in 30 days' },
+            ]}
+            selected={
+              form.paymentType
+                ? {
+                    id: form.paymentType,
+                    name: form.paymentType.replaceAll('_', ' '),
+                  }
+                : null
+            }
+            onSelect={(opt) =>
+              setForm((prev) => ({ ...prev, paymentType: String(opt.id) }))
+            }
+          />
+        </GroupInput>
       </div>
 
       {error && (
@@ -295,10 +326,16 @@ const handleSubmit = async (e: FormEvent) => {
       <form onSubmit={handleSubmit} className="space-y-4 mt-4">
         {form.items.map((item, index) => {
           const indentItem = indent.items[index]
-          const medicine = medicines.find((m) => m.id === item.medicineId)
+          const product = medicines.find((m) => m.id === item.productId)
+          const variants = product?.variants ?? []
+          const selectedVariant =
+            variants.find((v) => v.id === item.variantId) ?? null
 
           return (
-            <div key={item.indentItemId} className="grid grid-cols-18 gap-2 items-center">
+            <div
+              key={item.indentItemId}
+              className="grid grid-cols-18 gap-2 items-center"
+            >
               {/* SELECT ITEM */}
               <div className="col-span-1 flex justify-center">
                 <input
@@ -308,42 +345,35 @@ const handleSubmit = async (e: FormEvent) => {
                 />
               </div>
 
-              {/* GENERIC NAME */}
-              <div className="col-span-3">
-                <Label>Generic Name</Label>
-                <Input
-                  value={
-                    generics.find((g) => g.id === indentItem.genericNameId)?.name ||
-                    ''
-                  }
-                  disabled
-                />
-              </div>
-
-              {/* MEDICINE */}
-              <div className="col-span-3">
-                <Label>Medicine</Label>
+              {/* PRODUCT */}
+              <div className="col-span-4">
+                <Label>Product</Label>
                 <Dropdown
-                  options={medicines.filter(
-                    (m) => m.genericNameId === indentItem.genericNameId
-                  )}
-                  selected={medicine ?? null}
+                  options={medicines}
+                  selected={product ?? null}
                   onSelect={(opt) =>
-                    updateItem(index, 'medicineId', Number(opt.id))
+                    updateItem(index, 'productId', Number(opt.id))
                   }
                 />
               </div>
 
-              {/* DOSAGE FORM (read-only) */}
-              <div className="col-span-2">
-                <Label>Dosage Form</Label>
-                <Input value={indentItem.dosageForm?.name || ''} disabled />
-              </div>
-
-              {/* UNIT (read-only) */}
-              <div className="col-span-1">
-                <Label>Unit</Label>
-                <Input value={indentItem.unit?.label || ''} disabled />
+              {/* VARIANT */}
+              <div className="col-span-3">
+                <Label>Variant</Label>
+                <Dropdown
+                  options={variants.map((v) => ({
+                    ...v,
+                    name: v.sku || 'N/A',
+                  }))} // ✅ use SKU as name
+                  selected={
+                    selectedVariant
+                      ? { ...selectedVariant, name: selectedVariant.sku }
+                      : null
+                  }
+                  onSelect={(opt) =>
+                    updateItem(index, 'variantId', Number(opt.id))
+                  }
+                />
               </div>
 
               {/* QTY */}
@@ -363,6 +393,7 @@ const handleSubmit = async (e: FormEvent) => {
                 <Label>Rate</Label>
                 <Input
                   type="number"
+                  step={'any'}
                   onChange={(e) => updateItem(index, 'rate', +e.target.value)}
                 />
               </div>
@@ -372,6 +403,7 @@ const handleSubmit = async (e: FormEvent) => {
                 <Label>Disc %</Label>
                 <Input
                   type="number"
+                  step={'any'}
                   onChange={(e) =>
                     updateItem(index, 'discountPercent', +e.target.value)
                   }
@@ -380,9 +412,10 @@ const handleSubmit = async (e: FormEvent) => {
 
               {/* TAX */}
               <div className="col-span-1">
-                <Label>Tax %</Label>
+                <Label>GST %</Label>
                 <Input
                   type="number"
+                  step={'any'}
                   onChange={(e) =>
                     updateItem(index, 'taxPercent', +e.target.value)
                   }

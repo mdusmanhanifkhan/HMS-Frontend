@@ -8,8 +8,7 @@ import Loading from '../../../components/loading/Loading'
 interface CategoryType {
   id: number
   name: string
-  description?: string
-  status: boolean
+  isActive: boolean
 }
 
 const Category = () => {
@@ -26,7 +25,8 @@ const Category = () => {
       setLoading(true)
       setError(null)
 
-      const res = await fetch(`${API_BASE}/api/medicine-category`, {
+      // Fetch only parent categories
+      const res = await fetch(`${API_BASE}/api/category`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -65,7 +65,7 @@ const Category = () => {
     <div className="flex flex-col gap-10 relative">
       {/* Header */}
       <div className="flex justify-between items-center w-full border-b pb-3">
-        <p className="text-xl font-semibold">Medicine Categories</p>
+        <p className="text-xl font-semibold">Parent Categories</p>
 
         <div className="flex items-center gap-5 min-w-100">
           {/* Search */}
@@ -97,7 +97,7 @@ const Category = () => {
           </div>
 
           <Button asLink to={routePaths.ADD_CATEGORY}>
-            + Add Category
+            + Add Parent Category
           </Button>
         </div>
       </div>
@@ -109,7 +109,6 @@ const Category = () => {
             <tr>
               <th className="px-6 py-4">ID</th>
               <th className="px-6 py-4">Name</th>
-              <th className="px-6 py-4">Description</th>
               <th className="px-6 py-4">Status</th>
               <th className="px-6 py-4">Action</th>
             </tr>
@@ -119,7 +118,7 @@ const Category = () => {
             {/* Loading */}
             {loading && (
               <tr>
-                <td colSpan={5}>
+                <td colSpan={4}>
                   <div className="flex justify-center py-4">
                     <Loading />
                   </div>
@@ -130,7 +129,7 @@ const Category = () => {
             {/* Error */}
             {!loading && error && (
               <tr>
-                <td colSpan={5} className="py-4 text-center text-red-500">
+                <td colSpan={4} className="py-4 text-center text-red-500">
                   {error}
                 </td>
               </tr>
@@ -139,8 +138,8 @@ const Category = () => {
             {/* Empty */}
             {!loading && !error && filteredCategories.length === 0 && (
               <tr>
-                <td colSpan={5} className="py-6 text-center">
-                  No category found.
+                <td colSpan={4} className="py-6 text-center">
+                  No parent category found.
                 </td>
               </tr>
             )}
@@ -156,18 +155,13 @@ const Category = () => {
                   <td className="px-6 py-4 font-medium">{cat.id}</td>
                   <td className="px-6 py-4">{cat.name}</td>
                   <td className="px-6 py-4">
-                    {cat.description?.length && cat.description.length > 45
-                      ? `${cat.description.substring(0, 45)}...`
-                      : cat.description || '-'}
-                  </td>
-                  <td className="px-6 py-4">
                     <div className="flex items-center gap-1">
                       <span
                         className={`w-[10px] h-[10px] rounded-full ${
-                          cat.status ? 'bg-[#00cc00]' : 'bg-[#cc0000]'
+                          cat.isActive ? 'bg-[#00cc00]' : 'bg-[#cc0000]'
                         }`}
                       />
-                      {cat.status ? 'Active' : 'Inactive'}
+                      {cat.isActive ? 'Active' : 'Inactive'}
                     </div>
                   </td>
                   <td className="px-6 py-4 flex items-center gap-2">
@@ -196,4 +190,3 @@ const Category = () => {
 }
 
 export default Category
-

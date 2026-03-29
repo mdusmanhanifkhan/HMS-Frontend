@@ -8,15 +8,13 @@ import { Input } from '../../../components/input/Input'
 import SuccessMessage from '../../../components/error-handling/SuccessMessage'
 
 interface UnitForm {
-  value: number | ''
-  unit: string
+  name: string
   status: boolean
 }
 
 const AddUnit = () => {
   const [form, setForm] = useState<UnitForm>({
-    value: '',
-    unit: '',
+    name: '',
     status: true,
   })
 
@@ -32,7 +30,7 @@ const AddUnit = () => {
     const { id, value } = e.target
     setForm((prev) => ({
       ...prev,
-      [id]: id === 'value' ? Number(value) || '' : value,
+      [id]: value,
     }))
   }
 
@@ -47,14 +45,14 @@ const AddUnit = () => {
     setError('')
     setSuccess('')
 
-    if (form.value === '' || !form.unit) {
-      setError('Value and Unit are required')
+    if (!form.name) {
+      setError('Unit Name is required')
       return
     }
 
     setLoading(true)
     try {
-      const res = await fetch(`${API_BASE}/api/unit`, {
+      const res = await fetch(`${API_BASE}/api/strength-unit`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -69,7 +67,7 @@ const AddUnit = () => {
       }
 
       setSuccess('Medicine unit added successfully!')
-      setForm({ value: '', unit: '', status: true })
+      setForm({ name: '', status: true })
     } catch (err: unknown) {
       if (err instanceof Error) setError(err.message)
       else setError('Something went wrong')
@@ -100,24 +98,12 @@ const AddUnit = () => {
           <ToggleButton checked={form.status} onChange={handleToggle} />
         </GroupInput>
 
-        {/* Value */}
-        <GroupInput className="col-span-full">
-          <Label required="true">Value</Label>
-          <Input
-            id="value"
-            type="number"
-            value={form.value}
-            onChange={handleChange}
-            placeholder="e.g. 500"
-          />
-        </GroupInput>
-
         {/* Unit */}
         <GroupInput className="col-span-full">
           <Label required="true">Unit</Label>
           <Input
-            id="unit"
-            value={form.unit}
+            id="name"
+            value={form.name}
             onChange={handleChange}
             placeholder="e.g. mg, ml, g"
           />
@@ -131,7 +117,7 @@ const AddUnit = () => {
         </Button>
         <Button
           type="reset"
-          onClick={() => setForm({ value: '', unit: '', status: true })}
+          onClick={() => setForm({ name: '', status: true })}
         >
           Clear
         </Button>

@@ -1,9 +1,9 @@
 import ComingSoon from '../../ComingSoon'
 
-const EditCompany = () => {
+const EditBrand = () => {
   return (
     <div><ComingSoon/></div>
   )
 }
 
-export default EditCompany
+export default EditBrand

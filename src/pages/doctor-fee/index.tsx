@@ -99,16 +99,21 @@ const DoctorFee = () => {
     } catch (error: unknown) {
       if (error instanceof Error) setDeleteError(error.message)
       else setDeleteError('Something went wrong')
-    } 
+    }
   }
 
   return (
     <div className="flex flex-col gap-10">
       <div className="flex justify-between items-center w-full border-b pb-3">
         <p className="text-xl font-semibold">Fee Management</p>
-        <Link to={routePaths.ADD_DOCTOR_FEE}>
-          <Button>+ Add Fee</Button>
-        </Link>
+      <div className='flex items-center gap-5'>
+          <Button asLink={true} to={routePaths.BULK_ADD_DOCTOR_FEE}>
+          + Bulk Upload Fee
+        </Button>
+        <Button asLink={true} to={routePaths.ADD_DOCTOR_FEE}>
+          + Add Fee
+        </Button>
+      </div>
       </div>
 
       {errorMsg && <p className="text-red-500 font-medium">{errorMsg}</p>}

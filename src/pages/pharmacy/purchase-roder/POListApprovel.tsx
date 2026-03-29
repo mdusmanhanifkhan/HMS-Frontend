@@ -26,7 +26,7 @@ interface PO {
   id: number
   poNo: string
   poDate: string
-  distributor: Option
+  supplier: Option
   status: 'OPEN' | 'APPROVED' | 'CANCELLED' | string
   paymentType: string
   netAmount: number
@@ -78,30 +78,33 @@ const POListApprovel = () => {
   }
 
   /* -------------------- WhatsApp Handler -------------------- */
-//   const handleSendWhatsapp = (pdfUrl: string, phone: string) => {
-//     // 1️⃣ Trigger PDF download
-//     const link = document.createElement('a')
-//     link.href = pdfUrl
-//     link.download = pdfUrl.split('/').pop() || 'PO.pdf'
-//     document.body.appendChild(link)
-//     link.click()
-//     document.body.removeChild(link)
+  //   const handleSendWhatsapp = (pdfUrl: string, phone: string) => {
+  //     // 1️⃣ Trigger PDF download
+  //     const link = document.createElement('a')
+  //     link.href = pdfUrl
+  //     link.download = pdfUrl.split('/').pop() || 'PO.pdf'
+  //     document.body.appendChild(link)
+  //     link.click()
+  //     document.body.removeChild(link)
 
-//     // 2️⃣ Open WhatsApp Web with pre-filled message
-//     const message = encodeURIComponent(
-//       `Dear Sir/Madam, please find attached Purchase Order. Download here: ${pdfUrl}`
-//     )
-//     const phoneClean = phone.replace(/[^0-9]/g, '') // remove symbols/spaces
-//     window.open(`https://wa.me/${phoneClean}?text=${message}`, '_blank')
-//   }
+  //     // 2️⃣ Open WhatsApp Web with pre-filled message
+  //     const message = encodeURIComponent(
+  //       `Dear Sir/Madam, please find attached Purchase Order. Download here: ${pdfUrl}`
+  //     )
+  //     const phoneClean = phone.replace(/[^0-9]/g, '') // remove symbols/spaces
+  //     window.open(`https://wa.me/${phoneClean}?text=${message}`, '_blank')
+  //   }
 
   /* -------------------- Helper: Status Badge -------------------- */
   const renderStatus = (status: PO['status']) => {
     const colors: Record<string, string> = {
+      DRAFT: 'bg-purple-500',
       OPEN: 'bg-blue-500',
       APPROVED: 'bg-yellow-100',
-      CANCELLED: 'bg-red-500',
+      CANCELLED: 'bg-red',
       PAID: 'bg-green',
+      APPROVED_AND_FORWARD_TO_ACCOUNTS: 'bg-gray-200',
+      RECEIVED:"bg-teal-500"
     }
     return (
       <span
@@ -197,32 +200,43 @@ const POListApprovel = () => {
                   <td className="px-6 py-4">
                     {new Date(po.poDate).toLocaleDateString()}
                   </td>
-                  <td className="px-6 py-4">{po.distributor.name}</td>
+                  <td className="px-6 py-4">{po.supplier.name}</td>
                   <td className="px-6 py-4">{po.paymentType}</td>
                   <td className="px-6 py-4">Rs {po.netAmount.toFixed(2)}</td>
                   <td className="px-6 py-4">{renderStatus(po.status)}</td>
                   <td className="px-6 py-4 flex gap-2">
                     {/* Approve button */}
-                    {po.status !== 'APPROVED' && (
-                      <button
-                        onClick={() => handleApprove(po.id)}
-                        className="p-2 rounded-md bg-green-500 text-green transition"
-                      >
-                        Approve
-                      </button>
+                    {!po?.pdfUrl && (
+                      <Button onClick={() => handleApprove(po.id)}>
+                        <svg
+                          className="w-[18px] h-[18px] text-white group-hover:text-dark"
+                          viewBox="0 0 12 12"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <use href="/assets/svg/edit-icon.svg#edit-icon" />
+                        </svg>
+                      </Button>
                     )}
 
                     {/* WhatsApp button */}
                     {/* WhatsApp / Download button */}
-                    {po.status === 'APPROVED' && po.pdfUrl && (
-                      <button
+                    {po?.pdfUrl && (
+                      <Button
                         onClick={() =>
                           handleDownloadPDF(po.pdfUrl!, `PO-${po.poNo}.pdf`)
                         }
                         className="p-2 rounded-md bg-green-500 text-white flex items-center gap-1 transition"
                       >
-                        Download
-                      </button>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="-4 0 40 40"
+                          fill="none"
+                          className="w-[18px] h-[18px] text-white group-hover:text-dark"
+                        >
+                          <use href="/assets/svg/pdf-icon.svg#pdf-icon" />
+                        </svg>
+                      </Button>
                     )}
                   </td>
                 </tr>

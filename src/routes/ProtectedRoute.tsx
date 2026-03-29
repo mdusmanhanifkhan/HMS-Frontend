@@ -1,142 +1,45 @@
-// import { useEffect, useState } from "react";
-// import type { ReactNode } from "react";
-// import { Navigate } from "react-router-dom";
-
-// interface ProtectedRouteProps {
-//   children: ReactNode;
-// }
-
-// const API_BASE = import.meta.env.VITE_API_BASE_URL;
-
-// const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-//   const [loading, setLoading] = useState(true);
-//   const [isAuthorized, setIsAuthorized] = useState(false);
-
-//   useEffect(() => {
-//     const token = localStorage.getItem("token");
-//     const user = localStorage.getItem("user");
-
-//     // No token → not authorized
-//     if (!token) {
-//       setIsAuthorized(false);
-//       setLoading(false);
-//       return;
-//     }
-
-//     // User already cached → authorize immediately
-//     if (user) {
-//       setIsAuthorized(true);
-//       setLoading(false);
-//       return;
-//     }
-
-//     // Token exists but user missing → verify token
-//     const checkAuth = async () => {
-//       try {
-//         const res = await fetch(`${API_BASE}/api/me`, {
-//           headers: { Authorization: `Bearer ${token}` },
-//         });
-
-//         if (!res.ok) {
-//           return console.log("unauthorized")
-//         }
-
-//         const data = await res.json();
-//         localStorage.setItem("user", JSON.stringify(data));
-//         setIsAuthorized(true);
-//       } catch {
-//         localStorage.removeItem("token");
-//         localStorage.removeItem("user");
-//         setIsAuthorized(false);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     checkAuth();
-//   }, []);
-
-//   if (loading) {
-//     return <p className="text-center mt-10">Checking authentication...</p>;
-//   }
-
-//   if (!isAuthorized) {
-//     return <Navigate to="/login" replace />;
-//   }
-
-//   return <>{children}</>;
-// };
-
-// export default ProtectedRoute;
-
-
-import { useEffect, useState } from "react";
-import type { ReactNode } from "react";
-import { Navigate } from "react-router-dom";
+import { useEffect, useState } from 'react'
+import type { ReactNode } from 'react'
+import { usePermissions } from '../context/PermissionsContext'
 
 interface ProtectedRouteProps {
-  children: ReactNode;
+  children: ReactNode
+  requiredPermission?: string
 }
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL;
-
-const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const [loading, setLoading] = useState(true);
-  const [isAuthorized, setIsAuthorized] = useState(false);
+const ProtectedRoute = ({
+  children,
+  requiredPermission,
+}: ProtectedRouteProps) => {
+  const { permissions, loading } = usePermissions()
+  const [isAuthorized, setIsAuthorized] = useState(false)
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const user = localStorage.getItem("user");
-
-    if (!token) {
-      setIsAuthorized(false);
-      setLoading(false);
-      return;
+    if (!requiredPermission) {
+      setIsAuthorized(true)
+      return
     }
 
-    if (user) {
-      setIsAuthorized(true);
-      setLoading(false);
-      return;
+    if (!loading) {
+      const hasPermission = permissions.includes(requiredPermission)
+      console.log('CHECK:', requiredPermission, permissions, hasPermission)
+      setIsAuthorized(hasPermission)
     }
-
-    const checkAuth = async () => {
-      try {
-        const res = await fetch(`${API_BASE}/api/me`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (!res.ok) {
-          localStorage.removeItem("token");
-          localStorage.removeItem("user");
-          setIsAuthorized(false)
-          return;
-        }
-
-        const data = await res.json();
-        localStorage.setItem("user", JSON.stringify(data));
-        setIsAuthorized(true);
-      } catch {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        setIsAuthorized(false);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkAuth();
-  }, []);
+  }, [permissions, requiredPermission, loading])
 
   if (loading) {
-    return <p className="text-center mt-10">Checking authentication...</p>;
+    return <p className="text-center mt-10">Checking authentication...</p>
   }
 
   if (!isAuthorized) {
-    return <Navigate to="/login" replace />;
+    return (
+      <p className="text-center mt-20 text-red-600 font-medium text-xl">
+        You do not have permission to view this page.
+      </p>
+    )
   }
 
-  return <>{children}</>;
-};
+  return <>{children}</>
+}
 
-export default ProtectedRoute;
+export default ProtectedRoute

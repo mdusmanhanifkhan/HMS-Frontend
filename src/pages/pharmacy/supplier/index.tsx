@@ -1,80 +1,87 @@
-import { useEffect, useState } from 'react'
-import Button from '../../../components/button/Button'
-import { Input } from '../../../components/input/Input'
-import { routePaths } from '../../../constants/routePaths'
-import { Link } from 'react-router-dom'
-import Loading from '../../../components/loading/Loading'
+// pages/pharmacy/Supplier.tsx
+import { useEffect, useState } from "react";
+import Button from "../../../components/button/Button";
+import { Input } from "../../../components/input/Input";
+import { routePaths } from "../../../constants/routePaths";
+import { Link } from "react-router-dom";
+import Loading from "../../../components/loading/Loading";
 
 interface CompanyType {
-  id: number
-  name: string
-  shortCode?: string
-  location?: string
-  description?: string
-  isActive: boolean
-  contactPerson?: string
+  id: number;
+  name: string;
 }
 
-const Company = () => {
-  const [companies, setCompanies] = useState<CompanyType[]>([])
-  const [loading, setLoading] = useState<boolean>(false)
-  const [error, setError] = useState<string | null>(null)
-  const [search, setSearch] = useState('')
+interface SupplierType {
+  id: number;
+  name: string;
+  contactPerson?: string;
+  phone?: string;
+  email?: string;
+  city?: string;
+  country?: string;
+  openingBalance?: number;
+  creditLimit?: number;
+  paymentTerms?: string;
+  isActive: boolean;
+  companies?: CompanyType[];
+}
 
-  const API_BASE = import.meta.env.VITE_API_BASE_URL
-  const token = localStorage.getItem('token')
+const Supplier = () => {
+  const [suppliers, setSuppliers] = useState<SupplierType[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
 
-  const fetchCompanies = async () => {
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
+  const token = localStorage.getItem("token");
+
+  const fetchSuppliers = async () => {
     try {
-      setLoading(true)
-      setError(null)
+      setLoading(true);
+      setError(null);
 
-      const res = await fetch(`${API_BASE}/api/company`, {
-        method: 'GET',
+      const res = await fetch(`${API_BASE}/api/supplier`, {
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: token ? `Bearer ${token}` : '',
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
         },
-      })
+      });
 
-      // 🔹 Handle auth errors
       if (res.status === 401 || res.status === 403) {
-        throw new Error('Unauthorized. Please login again.')
+        throw new Error("Unauthorized. Please login again.");
       }
 
       if (!res.ok) {
-        throw new Error('Failed to fetch companies')
+        throw new Error("Failed to fetch suppliers");
       }
 
-      const data = await res.json()
-
-      // expected: { success: true, data: [...] }
-      setCompanies(data.data || [])
+      const data = await res.json();
+      setSuppliers(data.data || []);
     } catch (err: unknown) {
       if (err instanceof Error) {
-        setError(err.message)
+        setError(err.message);
       } else {
-        setError('Something went wrong')
+        setError("Something went wrong");
       }
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchCompanies()
-  }, [])
+    fetchSuppliers();
+  }, []);
 
-  // 🔹 Filter by search
-  const filteredCompanies = companies.filter((c) =>
-    c.name.toLowerCase().includes(search.toLowerCase())
-  )
+  const filteredSuppliers = suppliers.filter((s) =>
+    s.name.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="flex flex-col gap-10 relative">
       {/* Header */}
       <div className="flex justify-between items-center w-full border-b pb-3">
-        <p className="text-xl font-semibold">Company Management</p>
+        <p className="text-xl font-semibold">Suppliers Management</p>
         <div className="flex items-center gap-5 min-w-100">
           {/* Search Input */}
           <div className="flex items-center gap-2 py-1.5 w-full rounded-lg border px-2 border-gray">
@@ -84,17 +91,8 @@ const Company = () => {
               height="16"
               viewBox="0 0 20 20"
             >
-              <g
-                stroke="none"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <g
-                  stroke="#000"
-                  strokeWidth="2"
-                  transform="translate(-1687 -1941)"
-                >
+              <g stroke="none" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                <g stroke="#000" strokeWidth="2" transform="translate(-1687 -1941)">
                   <g transform="translate(1688 1942)">
                     <circle cx="7.5" cy="7.5" r="7.5"></circle>
                     <path d="M18 18l-5.2-5.2"></path>
@@ -105,7 +103,7 @@ const Company = () => {
 
             <Input
               type="text"
-              placeholder="Search company..."
+              placeholder="Search supplier..."
               variant="none"
               className="outline-none"
               value={search}
@@ -113,8 +111,8 @@ const Company = () => {
             />
           </div>
 
-          <Button asLink={true} to={routePaths.ADD_COMPANY}>
-            + Add Company
+          <Button asLink={true} to={routePaths.ADD_SUPPLIER}>
+            + Add Supplier
           </Button>
         </div>
       </div>
@@ -126,9 +124,10 @@ const Company = () => {
             <tr>
               <th className="px-6 py-4">ID</th>
               <th className="px-6 py-4">Name</th>
-              <th className="px-6 py-4">Code</th>
               <th className="px-6 py-4">Contact Person</th>
-              <th className="px-6 py-4">Description</th>
+              <th className="px-6 py-4">Phone</th>
+              <th className="px-6 py-4">Email</th>
+              <th className="px-6 py-4">City</th>
               <th className="px-6 py-4">Status</th>
               <th className="px-6 py-4">Action</th>
             </tr>
@@ -144,6 +143,7 @@ const Company = () => {
                 </td>
               </tr>
             )}
+
             {!loading && error && (
               <tr>
                 <td colSpan={8} className="py-4 text-center text-red-500">
@@ -152,47 +152,39 @@ const Company = () => {
               </tr>
             )}
 
-            {!loading && !error && filteredCompanies.length === 0 && (
+            {!loading && !error && filteredSuppliers.length === 0 && (
               <tr>
                 <td colSpan={8} className="py-6 text-center">
-                  No Company found.
+                  No suppliers found.
                 </td>
               </tr>
             )}
 
             {!loading &&
               !error &&
-              filteredCompanies.length > 0 &&
-              filteredCompanies.map((comp) => (
-                <tr
-                  key={comp.id}
-                  className="bg-[#DFDEDE] border-b border-gray-200"
-                >
-                  <td className="px-6 py-4 font-medium text-gray-900">
-                    {comp.id}
-                  </td>
-                  <td className="px-6 py-4">{comp.name}</td>
-                  <td className="px-6 py-4">{comp.shortCode || '-'}</td>
-                  <td className="px-6 py-4">{comp.contactPerson || '-'}</td>
-                  <td className="px-6 py-4">
-                    {comp.description?.length && comp.description.length > 45
-                      ? `${comp.description.substring(0, 45)}...`
-                      : comp.description || '-'}
-                  </td>
+              filteredSuppliers.length > 0 &&
+              filteredSuppliers.map((sup) => (
+                <tr key={sup.id} className="bg-[#DFDEDE] border-b border-gray-200">
+                  <td className="px-6 py-4 font-medium text-gray-900">{sup.id}</td>
+                  <td className="px-6 py-4">{sup.name}</td>
+                  <td className="px-6 py-4">{sup.contactPerson || "-"}</td>
+                  <td className="px-6 py-4">{sup.phone || "-"}</td>
+                  <td className="px-6 py-4">{sup.email || "-"}</td>
+                  <td className="px-6 py-4">{sup.city || "-"}</td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-1">
                       <span
                         className={`w-[10px] h-[10px] rounded-full ${
-                          comp.isActive ? 'bg-[#00cc00]' : 'bg-[#cc0000]'
+                          sup.isActive ? "bg-[#00cc00]" : "bg-[#cc0000]"
                         } block`}
                       ></span>
-                      {comp.isActive ? 'Active' : 'Inactive'}
+                      {sup.isActive ? "Active" : "Inactive"}
                     </div>
                   </td>
                   <td className="px-6 py-4 flex items-center gap-2">
                     {/* Edit */}
                     <Link
-                      to={`${routePaths.COMPANY}/${comp.id}`}
+                      to={`${routePaths.EDIT_SUPPLIER}/${sup.id}`}
                       className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200"
                     >
                       <svg
@@ -204,8 +196,6 @@ const Company = () => {
                         <use href="/assets/svg/edit-icon.svg#edit-icon" />
                       </svg>
                     </Link>
-                    {/* Delete */}
-                 
                   </td>
                 </tr>
               ))}
@@ -213,7 +203,7 @@ const Company = () => {
         </table>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Company
+export default Supplier;

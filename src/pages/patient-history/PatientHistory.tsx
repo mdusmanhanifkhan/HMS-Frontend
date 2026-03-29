@@ -39,6 +39,8 @@ export interface VisitRecord {
   user: {
     name: string
   }
+  tokenNumber:number
+  receiptNo:string
 }
 
 type VisitHistoryResponse = {
@@ -106,7 +108,7 @@ const PatientHistory = () => {
       doctor: item.doctor,
       procedure: {
         ...item.procedure,
-        fee: item.fee, // already number
+        fee: item.fee, 
       },
     }))
 
@@ -125,7 +127,8 @@ const PatientHistory = () => {
       totalFee,
       finalFee,
       discount,
-      // tokenNo,
+      tokenNumber: record.tokenNumber,
+      receiptNo: record.receiptNo,
     })
 
     const printWindow = window.open('', '_blank')

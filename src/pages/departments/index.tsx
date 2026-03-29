@@ -49,8 +49,8 @@ const Departments: React.FC = () => {
         setError(null)
 
         const url = debouncedSearch
-          ? `${API_BASE}/api/all-departments?search=${debouncedSearch}`
-          : `${API_BASE}/api/all-departments`
+          ? `${API_BASE}/api/all-departments?type=OPD&search=${debouncedSearch}`
+          : `${API_BASE}/api/all-departments?type=OPD`
 
         const res = await fetch(url, {
           headers: {
@@ -60,7 +60,6 @@ const Departments: React.FC = () => {
           signal: controller.signal,
         })
 
-        
         const data = await res.json()
         if (!res.ok) {
           setError(data.message || data.general_error || 'Something went wrong')
@@ -169,9 +168,12 @@ const Departments: React.FC = () => {
               />
             </div>
 
-            <Link to={routePaths.ADD_DEPARTMENT}>
-              <Button>+ Add Department</Button>
-            </Link>
+            <Button asLink={true} to={routePaths.BULK_ADD_DEPARTMENT}>
+              + Bulk Upload Department
+            </Button>
+            <Button asLink={true} to={routePaths.ADD_DEPARTMENT}>
+              + Add Department
+            </Button>
           </div>
         </div>
 

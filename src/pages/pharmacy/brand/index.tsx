@@ -1,83 +1,71 @@
-// pages/pharmacy/Distributor.tsx
-import { useEffect, useState } from "react";
-import Button from "../../../components/button/Button";
-import { Input } from "../../../components/input/Input";
-import { routePaths } from "../../../constants/routePaths";
-import { Link } from "react-router-dom";
-import Loading from "../../../components/loading/Loading";
+import { useEffect, useState } from 'react'
+import Button from '../../../components/button/Button'
+import { Input } from '../../../components/input/Input'
+import { routePaths } from '../../../constants/routePaths'
+import { Link } from 'react-router-dom'
+import Loading from '../../../components/loading/Loading'
 
-interface CompanyType {
-  id: number;
-  name: string;
+interface BrandType {
+  id: number
+  name: string
+  code?: string
+  phone?: string
+  email?: string
+  remarks?: string
+  isActive: boolean
 }
 
-interface DistributorType {
-  id: number;
-  name: string;
-  contactPerson?: string;
-  phone?: string;
-  email?: string;
-  status: boolean;
-  companies: CompanyType[];
-}
+const Brand = () => {
+  const [brands, setBrands] = useState<BrandType[]>([])
+  const [loading, setLoading] = useState<boolean>(false)
+  const [error, setError] = useState<string | null>(null)
+  const [search, setSearch] = useState('')
 
-const Distributor = () => {
-  const [distributors, setDistributors] = useState<DistributorType[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [search, setSearch] = useState("");
+  const API_BASE = import.meta.env.VITE_API_BASE_URL
+  const token = localStorage.getItem('token')
 
-  const API_BASE = import.meta.env.VITE_API_BASE_URL;
-  const token = localStorage.getItem("token");
-
-  const fetchDistributors = async () => {
+  const fetchBrands = async () => {
     try {
-      setLoading(true);
-      setError(null);
+      setLoading(true)
+      setError(null)
 
-      const res = await fetch(`${API_BASE}/api/distributor`, {
-        method: "GET",
+      const res = await fetch(`${API_BASE}/api/brand`, {
+        method: 'GET',
         headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
+          'Content-Type': 'application/json',
+          Authorization: token ? `Bearer ${token}` : '',
         },
-      });
+      })
 
       if (res.status === 401 || res.status === 403) {
-        throw new Error("Unauthorized. Please login again.");
+        throw new Error('Unauthorized. Please login again.')
       }
 
-      if (!res.ok) {
-        throw new Error("Failed to fetch distributors");
-      }
+      if (!res.ok) throw new Error('Failed to fetch brands')
 
-      const data = await res.json();
-      setDistributors(data.data || []);
+      const data = await res.json()
+      setBrands(data.data || [])
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("Something went wrong");
-      }
+      if (err instanceof Error) setError(err.message)
+      else setError('Something went wrong')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   useEffect(() => {
-    fetchDistributors();
-  }, []);
+    fetchBrands()
+  }, [])
 
-  // Filter distributors by search
-  const filteredDistributors = distributors.filter((d) =>
-    d.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredBrands = brands.filter((b) =>
+    b.name.toLowerCase().includes(search.toLowerCase())
+  )
 
   return (
     <div className="flex flex-col gap-10 relative">
       {/* Header */}
       <div className="flex justify-between items-center w-full border-b pb-3">
-        <p className="text-xl font-semibold">Distributors Management</p>
+        <p className="text-xl font-semibold">Brand Management</p>
         <div className="flex items-center gap-5 min-w-100">
           {/* Search Input */}
           <div className="flex items-center gap-2 py-1.5 w-full rounded-lg border px-2 border-gray">
@@ -99,7 +87,7 @@ const Distributor = () => {
 
             <Input
               type="text"
-              placeholder="Search distributor..."
+              placeholder="Search brand..."
               variant="none"
               className="outline-none"
               value={search}
@@ -107,8 +95,8 @@ const Distributor = () => {
             />
           </div>
 
-          <Button asLink={true} to={routePaths.ADD_DISTRIBUTOR}>
-            + Add Distributor
+          <Button asLink to={routePaths.ADD_BRAND}>
+            + Add Brand
           </Button>
         </div>
       </div>
@@ -120,10 +108,10 @@ const Distributor = () => {
             <tr>
               <th className="px-6 py-4">ID</th>
               <th className="px-6 py-4">Name</th>
-              <th className="px-6 py-4">Contact Person</th>
+              <th className="px-6 py-4">Code</th>
               <th className="px-6 py-4">Phone</th>
               <th className="px-6 py-4">Email</th>
-              <th className="px-6 py-4">Companies</th>
+              <th className="px-6 py-4">Remarks</th>
               <th className="px-6 py-4">Status</th>
               <th className="px-6 py-4">Action</th>
             </tr>
@@ -148,43 +136,43 @@ const Distributor = () => {
               </tr>
             )}
 
-            {!loading && !error && filteredDistributors.length === 0 && (
+            {!loading && !error && filteredBrands.length === 0 && (
               <tr>
                 <td colSpan={8} className="py-6 text-center">
-                  No distributors found.
+                  No brands found.
                 </td>
               </tr>
             )}
 
             {!loading &&
               !error &&
-              filteredDistributors.length > 0 &&
-              filteredDistributors.map((dist) => (
-                <tr key={dist.id} className="bg-[#DFDEDE] border-b border-gray-200">
-                  <td className="px-6 py-4 font-medium text-gray-900">{dist.id}</td>
-                  <td className="px-6 py-4">{dist.name}</td>
-                  <td className="px-6 py-4">{dist.contactPerson || "-"}</td>
-                  <td className="px-6 py-4">{dist.phone || "-"}</td>
-                  <td className="px-6 py-4">{dist.email || "-"}</td>
+              filteredBrands.length > 0 &&
+              filteredBrands.map((brand) => (
+                <tr key={brand.id} className="bg-[#DFDEDE] border-b border-gray-200">
+                  <td className="px-6 py-4 font-medium text-gray-900">{brand.id}</td>
+                  <td className="px-6 py-4">{brand.name}</td>
+                  <td className="px-6 py-4">{brand.code || '-'}</td>
+                  <td className="px-6 py-4">{brand.phone || '-'}</td>
+                  <td className="px-6 py-4">{brand.email || '-'}</td>
                   <td className="px-6 py-4">
-                    {dist.companies.length > 0
-                      ? dist.companies.map((c) => c.name).join(", ")
-                      : "-"}
+                    {brand.remarks?.length && brand.remarks.length > 45
+                      ? `${brand.remarks.substring(0, 45)}...`
+                      : brand.remarks || '-'}
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-1">
                       <span
                         className={`w-[10px] h-[10px] rounded-full ${
-                          dist.status ? "bg-[#00cc00]" : "bg-[#cc0000]"
+                          brand.isActive ? 'bg-[#00cc00]' : 'bg-[#cc0000]'
                         } block`}
                       ></span>
-                      {dist.status ? "Active" : "Inactive"}
+                      {brand.isActive ? 'Active' : 'Inactive'}
                     </div>
                   </td>
                   <td className="px-6 py-4 flex items-center gap-2">
                     {/* Edit */}
                     <Link
-                      to={`${routePaths.EDIT_DISTRIBUTOR}/${dist.id}`}
+                      to={`${routePaths.BRAND}/${brand.id}`}
                       className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all ease-linear duration-200"
                     >
                       <svg
@@ -196,6 +184,7 @@ const Distributor = () => {
                         <use href="/assets/svg/edit-icon.svg#edit-icon" />
                       </svg>
                     </Link>
+                    {/* Delete */}
                   </td>
                 </tr>
               ))}
@@ -203,8 +192,7 @@ const Distributor = () => {
         </table>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Distributor;
-
+export default Brand

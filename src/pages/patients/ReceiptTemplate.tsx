@@ -42,7 +42,8 @@ type ReceiptTemplateProps = {
   totalFee: number
   finalFee: number
   discount: number
-  // tokenNo: number
+  tokenNumber?: number
+  receiptNo: string
 }
 
 type CartItem = {
@@ -57,7 +58,8 @@ const ReceiptTemplate = ({
   totalFee,
   finalFee,
   discount,
-  // tokenNo
+  tokenNumber,
+  receiptNo
 }: ReceiptTemplateProps) => {
   const today = new Date()
 
@@ -98,7 +100,7 @@ const ReceiptTemplate = ({
         // }
 
         .receipt-main {
-  width: 83mm; /* keep for thermal printer */
+  width: 88mm; /* keep for thermal printer */
   padding: 5px 1px; /* optional smaller padding */
   margin: 0 auto;
   font-family: 'Courier New', Courier, monospace;
@@ -193,21 +195,23 @@ const ReceiptTemplate = ({
         </div>
 
         <!-- Patient Info -->
+        ${tokenNumber ? `<div class="token-box">Token: ${tokenNumber}</div>` : ''}
         <table class="info-table">
           <tr><td class="bold">Date:</td><td>${formattedDate}</td></tr>
           <tr><td class="bold">M.R #:</td><td>MR-${patient.patientId}</td></tr>
+          <tr><td class="bold">Receipt No. #:</td><td>${receiptNo}</td></tr>
           <tr><td class="bold">Patient:</td><td>${patient.name}</td></tr>
           <tr><td class="bold">Age:</td><td>${patient.age}</td></tr>
          <tr>
     <td class="bold" style="vertical-align: top;">Department:</td>
     <td style="white-space: normal;">
-      ${[...new Set(cart.map(item => item.department.name))].join('<br/>')}
+      ${[...new Set(cart.map((item) => item.department.name))].join('<br/>')}
     </td>
   </tr>
   <tr>
     <td class="bold" style="vertical-align: top;">Doctor:</td>
     <td style="white-space: normal;">
-      ${[...new Set(cart.map(item => item.doctor.name))].join('<br/>')}
+      ${[...new Set(cart.map((item) => item.doctor.name))].join('<br/>')}
     </td>
   </tr>
 

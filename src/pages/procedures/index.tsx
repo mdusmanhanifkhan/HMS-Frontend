@@ -169,6 +169,9 @@ const Procedures = () => {
           </div>
 
           {/* Add Procedure Button */}
+          <Button asLink={true} to={routePaths.BULK_ADD_PROCEDURE}>
+            + Bulk Upload Procedures
+          </Button>
           <Link to={routePaths.ADD_PROCEDURE}>
             <Button>+ Add Procedure</Button>
           </Link>
