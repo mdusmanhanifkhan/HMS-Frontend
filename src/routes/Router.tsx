@@ -1,5 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom'
-import NewVersion from '../pages/NewVersion'
+// import { createBrowserRouter } from 'react-router-dom'
 // import App from '../App.js'
 // import { routePaths } from '../constants/routePaths.ts'
 // import ComingSoon from '../pages/ComingSoon.tsx'
@@ -89,310 +88,327 @@ import NewVersion from '../pages/NewVersion'
 // import BulkUploadDoctor from '../pages/doctors/BulkUploadDoctor.tsx'
 // import BulkUploadDoctorFee from '../pages/doctor-fee/BulkUploadDoctorFee.tsx'
 // import Permissions from '../pages/user-management/Permissions.tsx'
-// import AddPatientVitals from '../pages/nursing-dept/check-up/AddPatientVitals.tsx'
+// // import AddPatientVitals from '../pages/nursing-dept/check-up/AddPatientVitals.tsx'
+
+// export const router = createBrowserRouter([
+//   {
+//     path: '/login',
+//     element: (
+//       <PublicRoute>
+//         <Login />
+//       </PublicRoute>
+//     ),
+//   },
+//   {
+//     path: '/',
+//     element: <App />,
+//     children: [
+//       { path: '/', element: <Dashboard /> },
+
+//       // Patient
+//       {
+//         path: routePaths.PATIENTS,
+//         element: (
+//           <ProtectedRoute requiredPermission="manage_patients">
+//             <Patients />
+//           </ProtectedRoute>
+//         ),
+//       },
+//       { path: routePaths.ADD_PATIENTS, element: <AddPatients /> },
+//       { path: routePaths.BULK_ADD_PATIENTS, element: <BulkUpload /> },
+//       { path: `${routePaths.PATIENTS}/:id`, element: <EditPatients /> },
+//       {
+//         path: `${routePaths.PATIENTS}${routePaths.PATIENTS_RECEIPT_GENERATE}/:id`,
+//         element: <PatientReceiptGenerator />,
+//       },
+//       {
+//         path: `${routePaths.PATIENTS}${routePaths.OLD_PATIENTS_RECEIPT_GENERATE}/:id`,
+//         element: <OldPatientReceiptGenerator />,
+//       },
+//       {
+//         path: `${routePaths.PATIENT_HISTORY}/:id`,
+//         element: <PatientHistory />,
+//       },
+//       { path: routePaths.PATIENT_HISTORY, element: <AllPatients /> },
+//       { path: routePaths.APPOINTMENTS, element: <ComingSoon /> },
+//       // Department
+//       { path: routePaths.DEPARTMENTS, element: <Departments /> },
+//       { path: routePaths.ADD_DEPARTMENT, element: <AddDepartments /> },
+//       {
+//         path: routePaths.BULK_ADD_DEPARTMENT,
+//         element: <BulkUploadDepartment />,
+//       },
+//       {
+//         path: `${routePaths.EDIT_DEPARTMENT}/:id`,
+//         element: <EditDepartments />,
+//       },
+//       // Procedure
+//       { path: routePaths.PROCEDURE, element: <Procedures /> },
+//       { path: routePaths.ADD_PROCEDURE, element: <AddProcedure /> },
+//       {
+//         path: routePaths.BULK_ADD_PROCEDURE,
+//         element: <BulkUploadProcedures />,
+//       },
+//       { path: `${routePaths.EDIT_PROCEDURE}/:id`, element: <EditProcedure /> },
+//       { path: routePaths.VIEW_PROCEDURE, element: <ViewProcedure /> },
+//       // Doctors
+//       { path: routePaths.DOCTORS, element: <Doctors /> },
+//       { path: routePaths.ADD_DOCTOR, element: <AddDoctor /> },
+//       { path: routePaths.BULK_ADD_DOCTOR, element: <BulkUploadDoctor /> },
+//       { path: `${routePaths.EDIT_DOCTOR}/:id`, element: <EditDoctor /> },
+//       { path: routePaths.VIEW_DOCTOR, element: <ViewDoctor /> },
+//       // Doctor Fee
+//       { path: routePaths.DOCTOR_FEE, element: <DoctorFee /> },
+//       {
+//         path: routePaths.BULK_ADD_DOCTOR_FEE,
+//         element: <BulkUploadDoctorFee />,
+//       },
+//       { path: routePaths.ADD_DOCTOR_FEE, element: <AddDoctorFee /> },
+//       { path: `${routePaths.EDIT_DOCTOR_FEE}/:id`, element: <EditDoctorFee /> },
+//       // LAB Fee
+//       // { path: routePaths.LAB_FEE, element: <LabFee /> },
+//       { path: routePaths.TOKEN, element: <TokenReceiptGenerate /> },
+//       // { path: `${routePaths.EDIT_DOCTOR_FEE}/:id`, element: <EditDoctorFee /> },
+//       // WELFARE MANAGEMENT
+//       { path: routePaths.WELFARE_MANAGEMENT, element: <Welfare /> },
+//       {
+//         path: `${routePaths.ADD_WELFARE_MANAGEMENT}/:id`,
+//         element: <AddWelfarePatient />,
+//       },
+//       // Coming soon
+//       { path: routePaths.BILLING, element: <ComingSoon /> },
+//       { path: routePaths.VITALS, element: <ComingSoon /> },
+//       { path: routePaths.CONSULTATION, element: <ComingSoon /> },
+//       { path: routePaths.PHARMACY, element: <ComingSoon /> },
+//       { path: routePaths.LABORATORY, element: <ComingSoon /> },
+//       { path: routePaths.INVENTORY, element: <ComingSoon /> },
+//       { path: routePaths.REPORTS, element: <ComingSoon /> },
+//       { path: routePaths.USERS_MANAGEMENT, element: <UserManagement /> },
+//       { path: routePaths.CREATE_USER, element: <CreateUser /> },
+//       { path: routePaths.SETTINGS, element: <Setting /> },
+//       {
+//         path: routePaths.FINANCE_REPORT,
+//         element: <FinancialReport />,
+//       },
+//       {
+//         path: routePaths.PATIENT_REPORT,
+//         element: <PatientReport />,
+//       },
+//       {
+//         path: '/add-patient-back-date',
+//         element: <AddPatientBackDate />,
+//       },
+//       {
+//         path: routePaths.SUPPLIER,
+//         element: <Supplier />,
+//       },
+//       {
+//         path: routePaths.ADD_SUPPLIER,
+//         element: <AddSupplier />,
+//       },
+//       {
+//         path: `${routePaths.EDIT_SUPPLIER}/:id`,
+//         element: <EditSupplier />,
+//       },
+//       {
+//         path: routePaths.BRAND,
+//         element: <Brand />,
+//       },
+//       {
+//         path: routePaths.ADD_BRAND,
+//         element: <AddBrand />,
+//       },
+//       {
+//         path: `${routePaths.BRAND}/:id`,
+//         element: <EditBrand />,
+//       },
+//       {
+//         path: routePaths.PRODUCT,
+//         element: <Medicine />,
+//       },
+//       {
+//         path: routePaths.ADD_PRODUCT,
+//         element: <AddMedicine />,
+//       },
+//       {
+//         path: routePaths.GRN,
+//         element: <ApprovedPOListGrn />,
+//       },
+//       {
+//         path: `${routePaths.ADD_GRN}/:id`,
+//         element: <AddGrn />,
+//       },
+//       {
+//         path: routePaths.STOCK,
+//         element: <Stock />,
+//       },
+//       {
+//         path: routePaths.SALE_INVOICE,
+//         element: <SalesInvoice />,
+//       },
+//       {
+//         path: routePaths.SALE_RETURN,
+//         element: <SaleReturn />,
+//       },
+//       {
+//         path: routePaths.CATEGORY,
+//         element: <Category />,
+//       },
+//       {
+//         path: routePaths.ADD_CATEGORY,
+//         element: <AddCategory />,
+//       },
+//       {
+//         path: `${routePaths.CATEGORY}/:id`,
+//         element: <EditCategory />,
+//       },
+//       {
+//         path: routePaths.SUB_CATEGORY,
+//         element: <SubCategory />,
+//       },
+//       {
+//         path: routePaths.ADD_SUB_CATEGORY,
+//         element: <AddSubCategory />,
+//       },
+//       {
+//         path: routePaths.DOSAGE_FORM,
+//         element: <DosageForm />,
+//       },
+//       {
+//         path: routePaths.ADD_DOSAGE_FORM,
+//         element: <AddDosageForm />,
+//       },
+//       {
+//         path: routePaths.PACKING_TYPE,
+//         element: <PackingType />,
+//       },
+//       {
+//         path: routePaths.ADD_PACKING_TYPE,
+//         element: <AddPackingType />,
+//       },
+//       {
+//         path: `${routePaths.EDIT_PACKING_TYPE}/:id`,
+//         element: <EditPackingType />,
+//       },
+//       {
+//         path: '/indent',
+//         element: <Indent />,
+//       },
+//       {
+//         path: '/indent/add',
+//         element: <AddIndent />,
+//       },
+//       {
+//         path: routePaths.PURCHASE_ORDER,
+//         element: <PurchaseOrder />,
+//       },
+//       {
+//         path: routePaths.SALE_REPORT,
+//         element: <SaleReport />,
+//       },
+//       {
+//         path: `${routePaths.ADD_PURCHASE_ORDER}/:id`,
+//         element: <CreatePurchaseOrder />,
+//       },
+//       {
+//         path: `${routePaths.PURCHASE_ORDER_APPROVEL}`,
+//         element: <POListApprovel />,
+//       },
+//       {
+//         path: `${routePaths.PURCHASE_ORDER_APPROVEL}/:id`,
+//         element: <POApprovel />,
+//       },
+//       {
+//         path: `${routePaths.SEND_TO_SUPPLIER}`,
+//         element: <SendToSupplier />,
+//       },
+//       {
+//         path: `${routePaths.ACCOUNTS_PO_APPROVEL}/:id`,
+//         element: <PurchaseOrderPayment />,
+//       },
+//       {
+//         path: `${routePaths.ACCOUNTS_PO_LIST}`,
+//         element: <AccountsPurchaseOrderList />,
+//       },
+//       {
+//         path: `${routePaths.UNIT}`,
+//         element: <Unit />,
+//       },
+//       {
+//         path: `${routePaths.ADD_UNIT}`,
+//         element: <AddUnit />,
+//       },
+//       {
+//         path: `${routePaths.EDIT_UNIT}/:id`,
+//         element: <EditUnit />,
+//       },
+//       {
+//         path: `${routePaths.GENERIC_NAME}`,
+//         element: <GenericName />,
+//       },
+//       {
+//         path: `${routePaths.ADD_GENERIC_NAME}`,
+//         element: <AddGenericName />,
+//       },
+//       {
+//         path: `${routePaths.GENERIC_NAME}/:id`,
+//         element: <EditGenericName />,
+//       },
+//       {
+//         path: `${routePaths.ORGANIZATION}`,
+//         element: <Organization />,
+//       },
+//       {
+//         path: `${routePaths.ADD_ORGANIZATION}`,
+//         element: <AddOrganization />,
+//       },
+//       {
+//         path: `${routePaths.LAB}/:id`,
+//         element: <DiagnosticReceiptGenerator />,
+//       },
+//       // {
+//       //   path: `${routePaths.ADD_VITALS}`,
+//       //   element: <AddPatientVitals />,
+//       // },
+//       {
+//         path: `/download`,
+//         element: <AllDownloads />,
+//       },
+//       {
+//         path: `/upload`,
+//         element: <AllUploads />,
+//       },
+//       {
+//         path: routePaths.ROLE_MANAGEMENT,
+//         element: (
+//           //  <ProtectedRoute requiredPermission="manage_roles">
+//           <CreateRole />
+//         ),
+//         //  {/* </ProtectedRoute> */}
+//       },
+//       {
+//         path: routePaths.PERMISSION_MANAGEMENT,
+//         element: <Permissions />,
+//       },
+//       {
+//         path: routePaths.CREATE_PERMISSION,
+//         element: <CreatePermission />,
+//       },
+//     ],
+//   },
+// ])
+
+import { createBrowserRouter, Navigate } from 'react-router-dom';
+import NewVersion from '../pages/NewVersion';
 
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: (
-        <NewVersion />
-    ),
+    element: <NewVersion />,
   },
-  // {
-  //   path: '/',
-  //   element: <App />,
-  //   children: [
-  //     { path: '/', element: <Dashboard /> },
-
-  //     // Patient
-  //     {
-  //       path: routePaths.PATIENTS,
-  //       element: (
-  //         <ProtectedRoute requiredPermission="manage_patients">
-  //           <Patients />
-  //         </ProtectedRoute>
-  //       ),
-  //     },
-  //     { path: routePaths.ADD_PATIENTS, element: <AddPatients /> },
-  //     { path: routePaths.BULK_ADD_PATIENTS, element: <BulkUpload /> },
-  //     { path: `${routePaths.PATIENTS}/:id`, element: <EditPatients /> },
-  //     {
-  //       path: `${routePaths.PATIENTS}${routePaths.PATIENTS_RECEIPT_GENERATE}/:id`,
-  //       element: <PatientReceiptGenerator />,
-  //     },
-  //     {
-  //       path: `${routePaths.PATIENTS}${routePaths.OLD_PATIENTS_RECEIPT_GENERATE}/:id`,
-  //       element: <OldPatientReceiptGenerator />,
-  //     },
-  //     {
-  //       path: `${routePaths.PATIENT_HISTORY}/:id`,
-  //       element: <PatientHistory />,
-  //     },
-  //     { path: routePaths.PATIENT_HISTORY, element: <AllPatients /> },
-  //     { path: routePaths.APPOINTMENTS, element: <ComingSoon /> },
-  //     // Department
-  //     { path: routePaths.DEPARTMENTS, element: <Departments /> },
-  //     { path: routePaths.ADD_DEPARTMENT, element: <AddDepartments /> },
-  //     {
-  //       path: routePaths.BULK_ADD_DEPARTMENT,
-  //       element: <BulkUploadDepartment />,
-  //     },
-  //     {
-  //       path: `${routePaths.EDIT_DEPARTMENT}/:id`,
-  //       element: <EditDepartments />,
-  //     },
-  //     // Procedure
-  //     { path: routePaths.PROCEDURE, element: <Procedures /> },
-  //     { path: routePaths.ADD_PROCEDURE, element: <AddProcedure /> },
-  //     {
-  //       path: routePaths.BULK_ADD_PROCEDURE,
-  //       element: <BulkUploadProcedures />,
-  //     },
-  //     { path: `${routePaths.EDIT_PROCEDURE}/:id`, element: <EditProcedure /> },
-  //     { path: routePaths.VIEW_PROCEDURE, element: <ViewProcedure /> },
-  //     // Doctors
-  //     { path: routePaths.DOCTORS, element: <Doctors /> },
-  //     { path: routePaths.ADD_DOCTOR, element: <AddDoctor /> },
-  //     { path: routePaths.BULK_ADD_DOCTOR, element: <BulkUploadDoctor /> },
-  //     { path: `${routePaths.EDIT_DOCTOR}/:id`, element: <EditDoctor /> },
-  //     { path: routePaths.VIEW_DOCTOR, element: <ViewDoctor /> },
-  //     // Doctor Fee
-  //     { path: routePaths.DOCTOR_FEE, element: <DoctorFee /> },
-  //     {
-  //       path: routePaths.BULK_ADD_DOCTOR_FEE,
-  //       element: <BulkUploadDoctorFee />,
-  //     },
-  //     { path: routePaths.ADD_DOCTOR_FEE, element: <AddDoctorFee /> },
-  //     { path: `${routePaths.EDIT_DOCTOR_FEE}/:id`, element: <EditDoctorFee /> },
-  //     // LAB Fee
-  //     // { path: routePaths.LAB_FEE, element: <LabFee /> },
-  //     { path: routePaths.TOKEN, element: <TokenReceiptGenerate /> },
-  //     // { path: `${routePaths.EDIT_DOCTOR_FEE}/:id`, element: <EditDoctorFee /> },
-  //     // WELFARE MANAGEMENT
-  //     { path: routePaths.WELFARE_MANAGEMENT, element: <Welfare /> },
-  //     {
-  //       path: `${routePaths.ADD_WELFARE_MANAGEMENT}/:id`,
-  //       element: <AddWelfarePatient />,
-  //     },
-  //     // Coming soon
-  //     { path: routePaths.BILLING, element: <ComingSoon /> },
-  //     { path: routePaths.VITALS, element: <ComingSoon /> },
-  //     { path: routePaths.CONSULTATION, element: <ComingSoon /> },
-  //     { path: routePaths.PHARMACY, element: <ComingSoon /> },
-  //     { path: routePaths.LABORATORY, element: <ComingSoon /> },
-  //     { path: routePaths.INVENTORY, element: <ComingSoon /> },
-  //     { path: routePaths.REPORTS, element: <ComingSoon /> },
-  //     { path: routePaths.USERS_MANAGEMENT, element: <UserManagement /> },
-  //     { path: routePaths.CREATE_USER, element: <CreateUser /> },
-  //     { path: routePaths.SETTINGS, element: <Setting /> },
-  //     {
-  //       path: routePaths.FINANCE_REPORT,
-  //       element: <FinancialReport />,
-  //     },
-  //     {
-  //       path: routePaths.PATIENT_REPORT,
-  //       element: <PatientReport />,
-  //     },
-  //     {
-  //       path: '/add-patient-back-date',
-  //       element: <AddPatientBackDate />,
-  //     },
-  //     {
-  //       path: routePaths.SUPPLIER,
-  //       element: <Supplier />,
-  //     },
-  //     {
-  //       path: routePaths.ADD_SUPPLIER,
-  //       element: <AddSupplier />,
-  //     },
-  //     {
-  //       path: `${routePaths.EDIT_SUPPLIER}/:id`,
-  //       element: <EditSupplier />,
-  //     },
-  //     {
-  //       path: routePaths.BRAND,
-  //       element: <Brand />,
-  //     },
-  //     {
-  //       path: routePaths.ADD_BRAND,
-  //       element: <AddBrand />,
-  //     },
-  //     {
-  //       path: `${routePaths.BRAND}/:id`,
-  //       element: <EditBrand />,
-  //     },
-  //     {
-  //       path: routePaths.PRODUCT,
-  //       element: <Medicine />,
-  //     },
-  //     {
-  //       path: routePaths.ADD_PRODUCT,
-  //       element: <AddMedicine />,
-  //     },
-  //     {
-  //       path: routePaths.GRN,
-  //       element: <ApprovedPOListGrn />,
-  //     },
-  //     {
-  //       path: `${routePaths.ADD_GRN}/:id`,
-  //       element: <AddGrn />,
-  //     },
-  //     {
-  //       path: routePaths.STOCK,
-  //       element: <Stock />,
-  //     },
-  //     {
-  //       path: routePaths.SALE_INVOICE,
-  //       element: <SalesInvoice />,
-  //     },
-  //     {
-  //       path: routePaths.SALE_RETURN,
-  //       element: <SaleReturn />,
-  //     },
-  //     {
-  //       path: routePaths.CATEGORY,
-  //       element: <Category />,
-  //     },
-  //     {
-  //       path: routePaths.ADD_CATEGORY,
-  //       element: <AddCategory />,
-  //     },
-  //     {
-  //       path: `${routePaths.CATEGORY}/:id`,
-  //       element: <EditCategory />,
-  //     },
-  //     {
-  //       path: routePaths.SUB_CATEGORY,
-  //       element: <SubCategory />,
-  //     },
-  //     {
-  //       path: routePaths.ADD_SUB_CATEGORY,
-  //       element: <AddSubCategory />,
-  //     },
-  //     {
-  //       path: routePaths.DOSAGE_FORM,
-  //       element: <DosageForm />,
-  //     },
-  //     {
-  //       path: routePaths.ADD_DOSAGE_FORM,
-  //       element: <AddDosageForm />,
-  //     },
-  //     {
-  //       path: routePaths.PACKING_TYPE,
-  //       element: <PackingType />,
-  //     },
-  //     {
-  //       path: routePaths.ADD_PACKING_TYPE,
-  //       element: <AddPackingType />,
-  //     },
-  //     {
-  //       path: `${routePaths.EDIT_PACKING_TYPE}/:id`,
-  //       element: <EditPackingType />,
-  //     },
-  //     {
-  //       path: '/indent',
-  //       element: <Indent />,
-  //     },
-  //     {
-  //       path: '/indent/add',
-  //       element: <AddIndent />,
-  //     },
-  //     {
-  //       path: routePaths.PURCHASE_ORDER,
-  //       element: <PurchaseOrder />,
-  //     },
-  //     {
-  //       path: routePaths.SALE_REPORT,
-  //       element: <SaleReport />,
-  //     },
-  //     {
-  //       path: `${routePaths.ADD_PURCHASE_ORDER}/:id`,
-  //       element: <CreatePurchaseOrder />,
-  //     },
-  //     {
-  //       path: `${routePaths.PURCHASE_ORDER_APPROVEL}`,
-  //       element: <POListApprovel />,
-  //     },
-  //     {
-  //       path: `${routePaths.PURCHASE_ORDER_APPROVEL}/:id`,
-  //       element: <POApprovel />,
-  //     },
-  //     {
-  //       path: `${routePaths.SEND_TO_SUPPLIER}`,
-  //       element: <SendToSupplier />,
-  //     },
-  //     {
-  //       path: `${routePaths.ACCOUNTS_PO_APPROVEL}/:id`,
-  //       element: <PurchaseOrderPayment />,
-  //     },
-  //     {
-  //       path: `${routePaths.ACCOUNTS_PO_LIST}`,
-  //       element: <AccountsPurchaseOrderList />,
-  //     },
-  //     {
-  //       path: `${routePaths.UNIT}`,
-  //       element: <Unit />,
-  //     },
-  //     {
-  //       path: `${routePaths.ADD_UNIT}`,
-  //       element: <AddUnit />,
-  //     },
-  //     {
-  //       path: `${routePaths.EDIT_UNIT}/:id`,
-  //       element: <EditUnit />,
-  //     },
-  //     {
-  //       path: `${routePaths.GENERIC_NAME}`,
-  //       element: <GenericName />,
-  //     },
-  //     {
-  //       path: `${routePaths.ADD_GENERIC_NAME}`,
-  //       element: <AddGenericName />,
-  //     },
-  //     {
-  //       path: `${routePaths.GENERIC_NAME}/:id`,
-  //       element: <EditGenericName />,
-  //     },
-  //     {
-  //       path: `${routePaths.ORGANIZATION}`,
-  //       element: <Organization />,
-  //     },
-  //     {
-  //       path: `${routePaths.ADD_ORGANIZATION}`,
-  //       element: <AddOrganization />,
-  //     },
-  //     {
-  //       path: `${routePaths.LAB}/:id`,
-  //       element: <DiagnosticReceiptGenerator />,
-  //     },
-  //     // {
-  //     //   path: `${routePaths.ADD_VITALS}`,
-  //     //   element: <AddPatientVitals />,
-  //     // },
-  //     {
-  //       path: `/download`,
-  //       element: <AllDownloads />,
-  //     },
-  //     {
-  //       path: `/upload`,
-  //       element: <AllUploads />,
-  //     },
-  //     {
-  //       path: routePaths.ROLE_MANAGEMENT,
-  //       element: (
-  //         //  <ProtectedRoute requiredPermission="manage_roles">
-  //         <CreateRole />
-  //       ),
-  //       //  {/* </ProtectedRoute> */}
-  //     },
-  //     {
-  //       path: routePaths.PERMISSION_MANAGEMENT,
-  //       element: <Permissions />,
-  //     },
-  //     {
-  //       path: routePaths.CREATE_PERMISSION,
-  //       element: <CreatePermission />,
-  //     },
-  //   ],
-  // },
-])
+  // Catch-all redirect
+  {
+    path: '*',
+    element: <Navigate to="/" replace />,
+  },
+]);
