@@ -16,7 +16,7 @@ const Notification = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  // console.log(setNotifications)
+  console.log(setNotifications)
 
   return (
     <div className="relative">
