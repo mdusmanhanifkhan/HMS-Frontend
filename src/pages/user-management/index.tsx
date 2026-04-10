@@ -101,10 +101,10 @@ const UserManagement: React.FC = () => {
   }, [debouncedSearch, token])
 
   /* ================= DELETE ================= */
-  const handleDeleteClick = (user: User) => {
-    setUserToDelete(user)
-    setDeleteModalOpen(true)
-  }
+  // const handleDeleteClick = (user: User) => {
+  //   setUserToDelete(user)
+  //   setDeleteModalOpen(true)
+  // }
 
   const confirmDelete = async () => {
     if (!userToDelete || !token) return
@@ -214,27 +214,44 @@ const UserManagement: React.FC = () => {
                   </td>
 
                   {/* STATUS */}
-                  <td className="px-6 py-4">
-                    <span
-                      className={`px-2 py-1 rounded text-xs ${
-                        user.status
-                          ? 'bg-green-100 text-green-700'
-                          : 'bg-red-100 text-red-700'
-                      }`}
-                    >
+               
+                   <td className="px-6 py-4">
+                    <div className="flex items-center gap-1">
+                      <span
+                        className={`w-[10px] h-[10px] rounded-full ${
+                          user.status ? 'bg-[#00cc00]' : 'bg-[#cc0000]'
+                        }`}
+                      />
                       {user.status ? 'Active' : 'Inactive'}
-                    </span>
+                    </div>
                   </td>
+                  
 
                   {/* ACTION */}
                   <td className="px-6 py-4 flex gap-2">
                     {/* <Link to={`${routePaths.EDIT_USER}/${user.id}`}>
                       <Button>Edit</Button>
                     </Link> */}
+                    <td className="px-6 py-4 flex items-end justify-end gap-2">
+                    {/* Edit */}
+                    <Link
+                      to={`${routePaths.USERS_MANAGEMENT}/${user.id}`}
+                      className="bg-dark p-1 rounded-md group hover:bg-white border border-dark transition-all duration-200"
+                    >
+                      <svg
+                        className="w-[18px] h-[18px] text-white group-hover:text-dark"
+                        viewBox="0 0 12 12"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <use href="/assets/svg/edit-icon.svg#edit-icon" />
+                      </svg>
+                    </Link>
+                  </td>
 
-                    <Button onClick={() => handleDeleteClick(user)}>
+                    {/* <Button onClick={() => handleDeleteClick(user)}>
                       Delete
-                    </Button>
+                    </Button> */}
                   </td>
                 </tr>
               ))
