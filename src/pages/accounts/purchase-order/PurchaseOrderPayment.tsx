@@ -6,7 +6,7 @@ import { Label } from '../../../components/input/Label'
 import { GroupInput } from '../../../components/input/GroupInput'
 import Dropdown from '../../../components/input/Dropdown'
 
-interface Distributor {
+interface Supplier {
   id: number
   name: string
   contactPerson?: string
@@ -25,7 +25,7 @@ interface PurchaseOrder {
   id: number
   poNo: string
   poDate: string
-  distributor: Distributor
+  supplier: Supplier
   totalAmount: number
   items: POItem[]
   status: string
@@ -177,7 +177,7 @@ const PurchaseOrderPayment = () => {
             <strong>Date:</strong> {new Date(po.poDate).toLocaleDateString()}
           </div>
           <div>
-            <strong>Distributor:</strong> {po.distributor.name}
+            <strong>Supplier:</strong> {po.supplier.name}
           </div>
           <div>
             <strong>Total Amount:</strong> {po.totalAmount}

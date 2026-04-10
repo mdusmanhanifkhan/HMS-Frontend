@@ -4,7 +4,7 @@ import Button from '../../../components/button/Button'
 import { routePaths } from '../../../constants/routePaths'
 import { useNavigate } from 'react-router-dom'
 
-interface Distributor {
+interface Supplier {
   id: number
   name: string
   contactPerson?: string
@@ -29,7 +29,7 @@ interface PurchaseOrder {
   poNo: string
   poDate: string
   distributorId: number
-  distributor?: Distributor | null
+  supplier?: Supplier | null
   status: string
   totalAmount: number
   items: POItem[]
@@ -155,7 +155,7 @@ const AccountsPurchaseOrderList = () => {
                   <td className="px-6 py-4">
                     {new Date(po.poDate).toLocaleDateString()}
                   </td>
-                  <td className="px-6 py-4">{po.distributor?.name || 'N/A'}</td>
+                  <td className="px-6 py-4">{po.supplier?.name || 'N/A'}</td>
                   <td
                     className={`px-6 py-4 text-sm font-semibold ${getStatusColor(po.status)}`}
                   >

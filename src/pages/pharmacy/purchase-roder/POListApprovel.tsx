@@ -141,9 +141,6 @@ const POListApprovel = () => {
       {/* Header */}
       <div className="flex justify-between items-center w-full border-b pb-3">
         <p className="text-xl font-semibold">Purchase Orders Approval</p>
-        <Button asLink to={routePaths.ADD_PURCHASE_ORDER}>
-          + Create PO
-        </Button>
       </div>
 
       {/* Table */}
